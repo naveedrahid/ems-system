@@ -24,7 +24,7 @@
         <header class="main-header">
             <a href="assets/index2.html" class="logo">
                 <span class="logo-mini"><b>C</b>MS</span>
-                <span class="logo-lg"><b>CMS</b> Panel</span>
+                <span class="logo-lg"><b>CMS</b> Panelsdsdfd</span>
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -78,15 +78,14 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{ asset('admin/images/face8.jpg') }}" class="user-image" alt="User Image">
-                                <span class="hidden-xs">Ayaz Ahmed Mast</span>
+                                <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <li class="user-header">
                                     <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle"
                                         alt="User Image">
                                     <p>
-                                        Ayaz Ahmed Mast - Web Developer
-                                        <small>Member since Nov. 2019</small>
+                                        Hello, {{ auth()->user()->name }}
                                     </p>
                                 </li>
                                 <li class="user-footer">
@@ -110,7 +109,7 @@
                         <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle" alt="User Image">
                     </div>
                     <div class="pull-left info">
-                        <p>Ayaz Ahmed Mast</p>
+                        <p>Hello, {{ auth()->user()->name }}!</p>
                     </div>
                 </div>
                 <ul class="sidebar-menu" data-widget="tree">
@@ -120,19 +119,17 @@
                     </li>
                     <li class="active treeview">
                         <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Users</span>
+                            <i class="fa fa-users"></i> <span>Employee</span>
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View User
+                            <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View Employee
                                 </a></li>
                             <li class="active"><a href="{{ route('user_create') }}"><i class="fa fa-circle-o"></i>
                                     Add
-                                    User</a>
-                            </li>
-                            <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i> Edit User </a>
+                                    Employee</a>
                             </li>
                         </ul>
                     </li>
@@ -150,11 +147,47 @@
                             <li class="active"><a href="{{ route('role_create') }}"><i class="fa fa-circle-o"></i>
                                     Add Role</a>
                             </li>
-                            <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i> Edit Role </a>
+                        </ul>
+                    </li>
+                    <li class="active treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Attendance</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
+                                    Attendance
+                                </a>
                             </li>
                         </ul>
                     </li>
                     <li class="active treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Leave Managment</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="#"><i class="fa fa-circle-o"></i> View
+                                    Leave
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="active treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Employee Dashboard</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {{-- <li class="active treeview">
                         <a href="javascript:;">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
                             <span class="pull-right-container">
@@ -169,7 +202,7 @@
                                 </button>
                             </form>
                         </ul>
-                    </li>
+                    </li> --}}
                 </ul>
             </section>
         </aside>
