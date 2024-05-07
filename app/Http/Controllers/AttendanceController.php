@@ -52,17 +52,15 @@ class AttendanceController extends Controller
     
         $officeClosingTime = Carbon::createFromTime(17, 0, 0);
         $checkOutTime = now();
-        $totalOvertime = null; // Initialize total overtime as null
+        $totalOvertime = null;
     
         if ($checkOutTime > $officeClosingTime) {
-            // Calculate overtime if check out is after 5:00 PM
             $officeClosingDateTime = Carbon::createFromTime(17, 0, 0);
             $checkOutDateTime = Carbon::parse($date . ' ' . $time);
             $overtime = $checkOutDateTime->diff($officeClosingDateTime)->format('%H:%I');
             $totalOvertime = $overtime;
         }
     
-        // Update or create attendance record
         Attendance::updateOrCreate(
             ['user_id' => $user_id, 'attendance_date' => $date],
             [

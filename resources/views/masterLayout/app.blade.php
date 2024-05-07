@@ -66,6 +66,9 @@
 
                             @if (!$userCheckedOut)
                                 <li class="nav-item checkoutMain">
+                                    <script>
+                                        const userId = {{ auth()->user()->id }};
+                                    </script>
                                     <form action="{{ route('checkOut') }}" method="POST" id="checkOut"
                                         data-already-checked-out="{{ auth()->check() && auth()->user()->hasCheckedOut ? 'true' : 'false' }}">
                                         @csrf

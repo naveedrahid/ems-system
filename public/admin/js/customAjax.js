@@ -92,14 +92,13 @@ $(document).ready(function () {
 
     // post check out request
 
-
     $('#checkOut').submit(function (e) {
         e.preventDefault();
         const url = $(this).attr('action');
         const token = $('meta[name="csrf-token"]').attr('content');
         const alreadyCheckedOut = $(this).data('already-checked-out');
 
-        if (confirm("Are you sure you want to check out early?")) {
+        if (confirm("Are you sure you want to check out?")) {
             if (alreadyCheckedOut === 'true') {
                 Swal.fire({
                     icon: 'error',
@@ -159,4 +158,5 @@ $(document).ready(function () {
             });
         }
     });
+
 });
