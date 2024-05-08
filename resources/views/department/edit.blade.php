@@ -10,7 +10,6 @@
             <div class="row justify-content-center">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-
                     <form action="{{ route('departmentUpdate', $department->id) }}" method="PUT" id="departmentDataUpdate">
                         @csrf
                         @method('PUT')

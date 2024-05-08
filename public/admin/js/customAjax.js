@@ -150,10 +150,10 @@ $(document).ready(function () {
         e.preventDefault();
         const departmentId = $(this).data('department-id');
         const deleteRoute = $(this).data('delete-route').replace(':id', departmentId);
-    
+
         // Store reference to clicked element
         const $clickedElement = $(this);
-    
+
         Swal.fire({
             title: 'Are you sure?',
             text: 'You will not be able to recover this department!',
@@ -166,7 +166,7 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 const token = $('meta[name="csrf-token"]').attr('content');
-    
+
                 $.ajax({
                     type: "DELETE",
                     url: deleteRoute,
@@ -193,7 +193,7 @@ $(document).ready(function () {
             }
         });
     });
-    
+
 
     // post check in request
 
@@ -306,5 +306,216 @@ $(document).ready(function () {
             });
         }
     });
+
+    // Create Designation
+
+    $('#designationSoter').submit(function (e) {
+        e.preventDefault();
+
+        const departmentId = $('select[name="department_id"]').val().trim();
+        const designationName = $('input[name="designation_name"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+        if (departmentId === '' || designationName === '' || status === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Department ID, Designation Name, or Status cannot be empty.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+                $('#designationSoter')[0].reset();
+                $('#department_id').val('');
+                $('#designation_name').val('');
+                $('#status').val('');
+                // window.location.reload(); // or redirect to a different page
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Designation.',
+                });
+            });
+    });
+
+    // Update Designation
+
+    $('#designationUpdate').submit(function (e) {
+        e.preventDefault();
+
+        const departmentId = $('select[name="department_id"]').val().trim();
+        const designationName = $('input[name="designation_name"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+        if (departmentId === '' || designationName === '' || status === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Department ID, Designation Name, or Status cannot be empty.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        formData.append('_method', 'PUT');
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Designation.',
+                });
+            });
+    });
+
+    // Destroy Designation
+
+    $('.delete-designation').on('click', function (e) {
+        e.preventDefault();
+        const designationId = $(this).data('designation-id');
+        const deleteRoute = $(this).data('delete-route').replace(':id', designationId);
+        const $clickedElement = $(this);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this designation!',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function (response) {
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                    });
+                    $clickedElement.closest('tr').fadeOut('slow', function () {
+                        $(this).css('backgroundColor', 'red').remove();
+                    });
+                }).catch(function (xhr) {
+                    console.error(xhr);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to delete Department.',
+                    });
+                });
+            }
+        });
+    });
+
+    // Update Status Designation
+
+    $('.status-toggle').click(function () {
+        const button = $(this);
+        const id = button.data('id');
+        const status = button.data('status');
+        const newStatus = status === 'active' ? 'deactive' : 'active';
+        const statusIcon = status === 'active' ? 'up' : 'down';
+        const btnClass = status === 'active' ? 'info' : 'danger';
+    
+        $.ajax({
+            url: '/update-status/' + id,
+            method: 'PUT',
+            data: { status: newStatus },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
+                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
+                });
+                button.data('status', newStatus);
+            },
+            error: function (xhr) {
+                console.error(xhr);
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Failed to update status"
+                });
+            }
+        });
+    });
+    
+    
 
 });
