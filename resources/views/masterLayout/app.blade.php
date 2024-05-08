@@ -128,7 +128,8 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View Employee
+                            <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View
+                                    Employee
                                 </a></li>
                             <li class="active"><a href="{{ route('user_create') }}"><i class="fa fa-circle-o"></i>
                                     Add
@@ -136,7 +137,83 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="active treeview">
+                    <li class="treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Department</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="{{ route('departmentView') }}"><i class="fa fa-circle-o"></i> View Department
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="{{ route('departmentCreate') }}"><i class="fa fa-circle-o"></i>
+                                    Add Department
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Desgination</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Desgination
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    Add Desgination
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Bank Detail</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Bank Detail
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    Add Bank Detail
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="javascript:;">
+                            <i class="fa fa-users"></i> <span>Employee Document</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Document
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    Add Document
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
                         <a href="javascript:;">
                             <i class="fa fa-users"></i> <span>Role Manage</span>
                             <span class="pull-right-container">
@@ -152,7 +229,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="active treeview">
+                    <li class="treeview">
                         <a href="javascript:;">
                             <i class="fa fa-users"></i> <span>Attendance</span>
                             <span class="pull-right-container">
@@ -167,7 +244,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="active treeview">
+                    <li class="treeview">
                         <a href="javascript:;">
                             <i class="fa fa-users"></i> <span>Leave Managment</span>
                             <span class="pull-right-container">
@@ -182,7 +259,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="active treeview">
+                    <li class="treeview">
                         <a href="javascript:;">
                             <i class="fa fa-users"></i> <span>Employee Dashboard</span>
                             <span class="pull-right-container">
@@ -190,22 +267,19 @@
                             </span>
                         </a>
                     </li>
-                    {{-- <li class="active treeview">
+                    <li class="treeview">
                         <a href="javascript:;">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
                         </a>
                         <ul class="treeview-menu">
                             <form action="{{ route('logoutUser') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-danger  btnLogout">
-                                    <span>Logout</span>
+                                    <i class="fa-solid fa-power-off"></i>
                                 </button>
                             </form>
                         </ul>
-                    </li> --}}
+                    </li>
                 </ul>
             </section>
         </aside>

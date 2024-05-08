@@ -15,6 +15,11 @@ class CreateAccountUsersTable extends Migration
     {
         Schema::create('account_users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('employee_id');
+            $table->foreignId('user_id');
+            $table->string('acc_title')->nullable();
+            $table->string('account_number')->unique()->nullable();
+            $table->string('bank_name')->nullable();
             $table->timestamps();
         });
     }

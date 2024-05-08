@@ -17,7 +17,7 @@ class CreateDesignationsTable extends Migration
             $table->id();
             $table->foreignId('department_id');
             $table->String('designation_name');
-            $table->String('status');
+            $table->enum('status', ['active', 'deactive'])->default('deactive');
             $table->timestamps();
         });
     }
