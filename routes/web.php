@@ -86,13 +86,14 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     ]);
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
-
 });
 
-Route::get('/', [HomeController::class, 'dashboard'])->name('home');
-Route::get('/admin', [HomeController::class, 'index'])->name('admin');
-Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [HomeController::class, 'dashboard'])->name('home');
+    Route::get('/admin', [HomeController::class, 'index'])->name('admin');
+    Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
 
-Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
-Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
-Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
+    Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
+    Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
+    Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
+});
