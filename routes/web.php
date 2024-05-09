@@ -89,7 +89,6 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
 });
 
-
 Route::get('/', [HomeController::class, 'dashboard'])->name('home');
 Route::get('/admin', [HomeController::class, 'index'])->name('admin');
 Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');

@@ -3,10 +3,10 @@
 @section('content')
     <div class="col-lg-4 mx-auto">
         <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-            <div class="brand-logo">
+            {{-- <div class="brand-logo">
                 <img src="../../assets/images/logo.svg" alt="logo">
-            </div>
-            <div class="card-header">{{ __('Login') }}</div>
+            </div> --}}
+            {{-- <div class="card-header">{{ __('Login') }}</div> --}}
                 <form method="POST" action="{{ route('login') }}" class="pt-3">
                     @csrf
                     <div class="form-group">
@@ -40,11 +40,11 @@
                             {{ __('Login') }}
                         </button>
     
-                        @if (Route::has('password.request'))
+                        {{-- @if (Route::has('password.request'))
                             <a class="btn btn-link p-0 mt-3" href="{{ route('password.request') }}">
                                 {{ __('Forgot Your Password?') }}
                             </a>
-                        @endif
+                        @endif --}}
                     </div>
                 </form>
             </div>
