@@ -165,11 +165,19 @@
                         </a>
                         <ul class="treeview-menu">
                             <li class="">
+<<<<<<< HEAD
                                 <a href="{{route('designation.view')}}"><i class="fa fa-circle-o"></i> View Desgination
                                 </a>
                             </li>
                             <li class="active">
                                 <a href="{{route('designation.create')}}"><i class="fa fa-circle-o"></i>
+=======
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Desgination
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
+>>>>>>> c5a43a3f246828e25ad36cbac825846135a22b4c
                                     Add Desgination
                                 </a>
                             </li>
