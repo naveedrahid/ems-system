@@ -165,11 +165,11 @@
                         </a>
                         <ul class="treeview-menu">
                             <li class="">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Desgination
+                                <a href="{{route('designation.view')}}"><i class="fa fa-circle-o"></i> View Desgination
                                 </a>
                             </li>
                             <li class="active">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                <a href="{{route('designation.create')}}"><i class="fa fa-circle-o"></i>
                                     Add Desgination
                                 </a>
                             </li>
@@ -298,7 +298,7 @@
             <div class="pull-right hidden-xs">
                 <b>Version</b> 2.3.6
             </div>
-            <strong>Copyright &copy; 2018-2019 <a href="https://www.afaicon.com">AFA Icon</a>.</strong> All rights
+            <strong>Copyright &copy; 2018-2019 <a href="#">Pixel 360</a>.</strong> All rights
             reserved.
         </footer>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"
