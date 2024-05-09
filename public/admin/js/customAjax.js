@@ -467,7 +467,7 @@ $(document).ready(function () {
         const newStatus = status === 'active' ? 'deactive' : 'active';
         const statusIcon = status === 'active' ? 'down' : 'up';
         const btnClass = status === 'active' ? 'danger' : 'info';
-    
+
         $.ajax({
             url: '/update-status/' + id,
             method: 'PUT',
@@ -515,7 +515,219 @@ $(document).ready(function () {
             }
         });
     });
-    
-    
 
+    // Add Users
+
+    $('#addUsers').submit(function (e) {
+        e.preventDefault();
+
+        const user_name = $('input[name="user_name"]').val().trim();
+        const fater_name = $('input[name="fater_name"]').val().trim();
+        const user_email = $('input[name="user_email"]').val().trim();
+        const city = $('input[name="city"]').val().trim();
+        const phone_number = $('input[name="phone_number"]').val().trim();
+        const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
+        const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
+        const employee_img = $('input[name="employee_img"]').val().trim();
+        const gender = $('select[name="gender"]').val().trim();
+        const date_of_birth = $('input[name="date_of_birth"]').val().trim();
+        const joining_date = $('input[name="joining_date"]').val().trim();
+        const address = $('input[name="address"]').val().trim();
+        const user_password = $('input[name="user_password"]').val().trim();
+        const user_role = $('select[name="user_role"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+
+        emergency_person_name
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || employee_img == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'All Fields cannot be empty.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+                $('#addUsers')[0].reset();
+                $('#user_name').val('');
+                $('#fater_name').val('');
+                $('#user_email').val('');
+                $('#city').val('');
+                $('#phone_number').val('');
+                $('#emergency_phone_number').val('');
+                $('#emergency_person_name').val('');
+                $('#employee_img').val('');
+                $('#user_role').val('');
+                $('#gender').val('');
+                $('#date_of_birth').val('');
+                $('#joining_date').val('');
+                $('#address').val('');
+                $('#user_password').val('');
+                $('#status').val('');
+                // window.location.reload(); // or redirect to a different page
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Designation.',
+                });
+            });
+    });
+
+    // Update User
+
+    $('#UpdateUser').submit(function (e) {
+        e.preventDefault();
+
+        const user_name = $('input[name="user_name"]').val().trim();
+        const fater_name = $('input[name="fater_name"]').val().trim();
+        const user_email = $('input[name="user_email"]').val().trim();
+        const city = $('input[name="city"]').val().trim();
+        const phone_number = $('input[name="phone_number"]').val().trim();
+        const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
+        const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
+        const employee_img = $('input[name="employee_img"]').val().trim();
+        const gender = $('select[name="gender"]').val().trim();
+        const date_of_birth = $('input[name="date_of_birth"]').val().trim();
+        const joining_date = $('input[name="joining_date"]').val().trim();
+        const address = $('input[name="address"]').val().trim();
+        const user_password = $('input[name="user_password"]').val().trim();
+        const user_role = $('select[name="user_role"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+
+        emergency_person_name
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'All Fields cannot be empty.',
+            });
+            return;
+        }
+
+        let fileExtension = '';
+        if (employee_img) {
+            fileExtension = employee_img.split('.').pop().toLowerCase();
+        }
+        const allowedExtensions = ['jpeg', 'jpg', 'png'];
+        if (fileExtension && !allowedExtensions.includes(fileExtension)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Invalid image format. Please select a JPEG, JPG, PNG or file.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        formData.append('_method', 'PUT');
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+                // $('#addUsers')[0].reset();
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Designation.',
+                });
+            });
+    });
+
+    // user status update
+
+    $('.status-toggle').click(function () {
+        const button = $(this);
+        const id = button.data('id');
+        const status = button.data('status');
+        const newStatus = status === 'active' ? 'deactive' : 'active';
+        const statusIcon = status === 'active' ? 'down' : 'up';
+        const btnClass = status === 'active' ? 'danger' : 'info';
+
+        $.ajax({
+            url: '/user-status/' + id,
+            method: 'PUT',
+            data: { status: newStatus },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
+                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
+                });
+                button.data('status', newStatus);
+            },
+            error: function (xhr) {
+                console.error(xhr);
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Failed to update status"
+                });
+            }
+        });
+    });
 });

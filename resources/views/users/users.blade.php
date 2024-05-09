@@ -50,12 +50,14 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger btn-sm"><i class="fa fa-thumbs-down"></i></button>
-                                    <button class="btn btn-info btn-sm"><i class="fa fa-thumbs-up"></i></button>
+                                    <button
+                                        class="status-toggle btn btn-{{ $user->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                        data-id="{{ $user->id }}" data-status="{{ $user->status }}">
+                                        <i class="fa fa-thumbs-{{ $user->status === 'active' ? 'up' : 'down' }}"></i>
+                                    </button>
                                 </td>
                                 <td>
-                                    <a href="#" class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
-                                    <button class="btn btn-danger btn-flat btn-sm"> <i class="fa-regular fa-trash-can"></i></button>
+                                    <a href="{{route('user_edit', $user->id)}}" class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                         </tbody>

@@ -122,18 +122,18 @@
                     </li>
                     <li class="active treeview">
                         <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Employee</span>
+                            <i class="fa fa-users"></i> <span>User</span>
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
                         <ul class="treeview-menu">
                             <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View
-                                    Employee
+                                    User
                                 </a></li>
                             <li class="active"><a href="{{ route('user_create') }}"><i class="fa fa-circle-o"></i>
                                     Add
-                                    Employee</a>
+                                    User</a>
                             </li>
                         </ul>
                     </li>
