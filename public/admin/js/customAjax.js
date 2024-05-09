@@ -465,13 +465,8 @@ $(document).ready(function () {
         const id = button.data('id');
         const status = button.data('status');
         const newStatus = status === 'active' ? 'deactive' : 'active';
-<<<<<<< HEAD
         const statusIcon = status === 'active' ? 'down' : 'up';
         const btnClass = status === 'active' ? 'danger' : 'info';
-=======
-        const statusIcon = status === 'active' ? 'up' : 'down';
-        const btnClass = status === 'active' ? 'info' : 'danger';
->>>>>>> c5a43a3f246828e25ad36cbac825846135a22b4c
     
         $.ajax({
             url: '/update-status/' + id,

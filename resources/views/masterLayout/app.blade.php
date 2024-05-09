@@ -22,9 +22,8 @@
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
         <header class="main-header">
-            <a href="assets/index2.html" class="logo">
-                <span class="logo-mini"><b>C</b>MS</span>
-                <span class="logo-lg"><b>CMS</b> Panelsdsdfd</span>
+            <a href="javascrip:;" class="logo">
+                Pixel360
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -164,20 +163,12 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li class="">
-<<<<<<< HEAD
+                            <li class="active">
                                 <a href="{{route('designation.view')}}"><i class="fa fa-circle-o"></i> View Desgination
                                 </a>
                             </li>
                             <li class="active">
                                 <a href="{{route('designation.create')}}"><i class="fa fa-circle-o"></i>
-=======
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Desgination
-                                </a>
-                            </li>
-                            <li class="active">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
->>>>>>> c5a43a3f246828e25ad36cbac825846135a22b4c
                                     Add Desgination
                                 </a>
                             </li>
