@@ -16,14 +16,15 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function hasRole($role){
+    public function hasRole($role)
+    {
         return $this->role->id == $role;
     }
 
     public function employee()
-{
-    return $this->hasOne(Employee::class);
-}
+    {
+        return $this->hasOne(Employee::class);
+    }
 
     /**
      * The attributes that are mass assignable.

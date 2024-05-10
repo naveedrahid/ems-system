@@ -117,9 +117,11 @@ class UserController extends Controller
     public function edit(Request $request, $id)
     {
         $users = User::findOrFail($id);
-        $employee = Employee::where('user_id', $id)->first();
+        // $employee = Employee::where('user_id', $id)->first();
         $roles = Role::pluck('name', 'id');
-        return view('users.edit', compact('users', 'employee', 'roles'));
+        
+        // dd($users->employee);
+        return view('users.edit', compact('users', 'roles'));
     }
 
     /**
