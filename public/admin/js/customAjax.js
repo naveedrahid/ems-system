@@ -607,7 +607,7 @@ $(document).ready(function () {
         const phone_number = $('input[name="phone_number"]').val().trim();
         const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
         const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
-        const employee_img = $('input[name="employee_img"]').val().trim();
+        // const employee_img = $('#employee_img')[0].files[0];
         const gender = $('select[name="gender"]').val().trim();
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
@@ -616,8 +616,8 @@ $(document).ready(function () {
         const user_role = $('select[name="user_role"]').val().trim();
         const status = $('select[name="status"]').val().trim();
 
-        emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+        
+        if (emergency_person_name == '' || user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -626,19 +626,21 @@ $(document).ready(function () {
             return;
         }
 
-        let fileExtension = '';
-        if (employee_img) {
-            fileExtension = employee_img.split('.').pop().toLowerCase();
-        }
-        const allowedExtensions = ['jpeg', 'jpg', 'png'];
-        if (fileExtension && !allowedExtensions.includes(fileExtension)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Invalid image format. Please select a JPEG, JPG, PNG or file.',
-            });
-            return;
-        }
+        // let fileExtension = '';
+        // if (employee_img) {
+        //     const fileName = employee_img.name;
+        //     fileExtension = fileName.split('.').pop().toLowerCase();
+        // }
+        
+        // const allowedExtensions = ['jpeg', 'jpg', 'png'];
+        // if (fileExtension && !allowedExtensions.includes(fileExtension)) {
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Error!',
+        //         text: 'Invalid image format. Please select a JPEG, JPG, PNG or file.',
+        //     });
+        //     return;
+        // }
 
         const formData = new FormData(this);
         formData.append('_method', 'PUT');
