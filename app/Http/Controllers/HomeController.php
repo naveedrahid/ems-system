@@ -27,6 +27,11 @@ class HomeController extends Controller
         return view('auth.login');
     }
 
+    // public function employeeDashboard()
+    // {
+    //     return view('employeeDashboard');
+    // }
+
     public function dashboard()
     {
         return view('dashboard');

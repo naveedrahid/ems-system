@@ -16,3 +16,9 @@
     background: #fff;
     color: #000;
 }
+.logout i{
+    font-size: 17px;
+    color: #444444;
+    cursor: pointer;
+    padding: 10px 17px;
+}

@@ -51,7 +51,7 @@
                                 </td>
                                 <td>
                                     <button
-                                        class="status-toggle btn btn-{{ $user->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                        class="user-toggle btn btn-{{ $user->status === 'active' ? 'info' : 'danger' }} btn-sm"
                                         data-id="{{ $user->id }}" data-status="{{ $user->status }}">
                                         <i class="fa fa-thumbs-{{ $user->status === 'active' ? 'up' : 'down' }}"></i>
                                     </button>

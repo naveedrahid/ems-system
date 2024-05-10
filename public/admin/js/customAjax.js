@@ -677,7 +677,7 @@ $(document).ready(function () {
 
     // user status update
 
-    $('.status-toggle').click(function () {
+    $('.user-toggle').click(function () {
         const button = $(this);
         const id = button.data('id');
         const status = button.data('status');

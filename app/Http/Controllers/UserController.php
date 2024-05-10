@@ -129,6 +129,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request, $id)
     {
 
@@ -147,7 +148,7 @@ class UserController extends Controller
             'phone_number' => 'required',
             'emergency_phone_number' => 'required',
             'emergency_person_name' => 'required',
-            'employee_img' => $request->hasFile('employee_img') ? 'image|mimes:jpeg,png,jpg,gif|max:2048' : '',
+            // 'employee_img' => $request->hasFile('employee_img') ? 'image|mimes:jpeg,png,jpg,gif|max:2048' : '',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
         ]);
@@ -165,19 +166,22 @@ class UserController extends Controller
             $user->role()->associate($role);
             $user->save();
         }
-        
-        // $userData = [];
-        
+
+        $userData = [];
+
         if ($request->hasFile('employee_img')) {
-            $oldImagePath = public_path('upload') . '/' . $user->employee->employee_img;
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
+            if ($user->employee && $user->employee->employee_img) {
+                $imagePath = public_path('upload') . '/' . $user->employee->employee_img;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
             }
-    
+
             $imageName = time() . '.' . $request->file('employee_img')->getClientOriginalExtension();
             $request->file('employee_img')->move(public_path('upload'), $imageName);
-    
-            $user->employee->update(['employee_img' => $imageName]);
+            $userData['employee_img'] = $imageName;
+        } else {
+            $userData['employee_img'] = null; 
         }
 
         if ($user->employee) {
@@ -191,8 +195,8 @@ class UserController extends Controller
                 'phone_number' => $request->phone_number,
                 'emergency_phone_number' => $request->emergency_phone_number,
                 'emergency_person_name' => $request->emergency_person_name,
+                'employee_img' => $userData['employee_img'],
                 'gender' => $request->gender,
-                // 'employee_img' => isset($userData['employee_img']) ? $userData['employee_img'] : $user->employee->employee_img,
             ]);
         }
 

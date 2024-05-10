@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{ asset('admin/css/main.css') }}">
 </head>
 
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition sidebar-mini skin-blue-light">
     <div class="wrapper">
         <header class="main-header">
             <a href="javascrip:;" class="logo">
@@ -36,48 +36,6 @@
 
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav flexBtnHeader">
-                        @php
-                            $userId = Auth::id();
-                            $attendance = DB::table('attendances')
-                                ->where('user_id', $userId)
-                                ->whereDate('attendance_date', now()->toDateString())
-                                ->first();
-                            $userCheckedInToday = $attendance !== null;
-                        @endphp
-
-                        @if (!$userCheckedInToday)
-                            @php
-                                $checkInTime = \Carbon\Carbon::createFromTimeString('07:45:00');
-                                $currentTime = \Carbon\Carbon::now();
-                            @endphp
-
-                            @if ($currentTime->greaterThanOrEqualTo($checkInTime))
-                                <li class="nav-item checkinMain">
-                                    <form action="{{ route('checkIn') }}" method="POST" id="checkin">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success checkinBtn">Check In</button>
-                                    </form>
-                                </li>
-                            @endif
-                        @else
-                            @php
-                                $userCheckedOut = $attendance->check_out !== null;
-                            @endphp
-
-                            @if (!$userCheckedOut)
-                                <li class="nav-item checkoutMain">
-                                    <script>
-                                        const userId = {{ auth()->user()->id }};
-                                    </script>
-                                    <form action="{{ route('checkOut') }}" method="POST" id="checkOut"
-                                        data-already-checked-out="{{ auth()->check() && auth()->user()->hasCheckedOut ? 'true' : 'false' }}">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning">Check Out</button>
-                                    </form>
-                                </li>
-                            @endif
-                        @endif
-
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{ asset('admin/images/face8.jpg') }}" class="user-image" alt="User Image">
@@ -113,6 +71,7 @@
                     </div>
                     <div class="pull-left info">
                         <p>Hello, {{ auth()->user()->name }}!</p>
+                        <a href="javascript:;"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
                 <ul class="sidebar-menu" data-widget="tree">
@@ -120,166 +79,251 @@
                     <li class="treeview">
                         <a href="#"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                     </li>
-                    <li class="active treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>User</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i> View
-                                    User
-                                </a></li>
-                            <li class="active"><a href="{{ route('user_create') }}"><i class="fa fa-circle-o"></i>
-                                    Add
-                                    User</a>
+
+                    @if (Auth::user())
+                        @if (Auth::user()->id == 1)
+                            <li class="treeview">
+                                <ul class="treeview-menu">
+                                    <form action="{{ route('logoutUser') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger  btnLogout">
+                                            <i class="fa-solid fa-power-off"></i>
+                                        </button>
+                                    </form>
+                                </ul>
                             </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Department</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="">
-                                <a href="{{ route('departmentView') }}"><i class="fa fa-circle-o"></i> View Department
+                            <li class="active treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>User</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                            View
+                                            User
+                                        </a></li>
+                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add
+                                            User</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Department</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="{{ route('departmentView') }}"><i class="fa fa-circle-o"></i> View
+                                            Department
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="{{ route('departmentCreate') }}"><i class="fa fa-circle-o"></i>
+                                            Add Department
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Desgination</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="active">
+                                        <a href="{{ route('designation.view') }}"><i class="fa fa-circle-o"></i> View
+                                            Desgination
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="{{ route('designation.create') }}"><i class="fa fa-circle-o"></i>
+                                            Add Desgination
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Bank Detail</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="javascript:;"><i class="fa fa-circle-o"></i> View Bank Detail
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                            Add Bank Detail
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Employee Document</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="javascript:;"><i class="fa fa-circle-o"></i> View Document
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                            Add Document
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Role Manage</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class=""><a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>
+                                            View
+                                            all
+                                            Roles</a></li>
+                                    <li class="active"><a href="{{ route('role_create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add Role</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Attendance</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
+                                            Attendance
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Leave Managment</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i> View
+                                            Leave
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Employee Dashboard</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
                             </li>
-                            <li class="active">
-                                <a href="{{ route('departmentCreate') }}"><i class="fa fa-circle-o"></i>
-                                    Add Department
+                        @else
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Leave Managment</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Request A Leave</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>All Leave</a>
+                                    </li>
+                                </ul>
                             </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Desgination</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="active">
-                                <a href="{{route('designation.view')}}"><i class="fa fa-circle-o"></i> View Desgination
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Policy Documents</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Leave Policy</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Medical Policy</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Employee Policy</a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="active">
-                                <a href="{{route('designation.create')}}"><i class="fa fa-circle-o"></i>
-                                    Add Desgination
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Account Setting</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
+                                    </li>
+                                </ul>
                             </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Bank Detail</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Bank Detail
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Attendance</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
+                                            Attendance
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
+                                            Report
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="active">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
-                                    Add Bank Detail
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Employee Document</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i> View Document
-                                </a>
-                            </li>
-                            <li class="active">
-                                <a href="javascript:;"><i class="fa fa-circle-o"></i>
-                                    Add Document
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Role Manage</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class=""><a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i> View
-                                    all
-                                    Roles</a></li>
-                            <li class="active"><a href="{{ route('role_create') }}"><i class="fa fa-circle-o"></i>
-                                    Add Role</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Attendance</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="">
-                                <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
-                                    Attendance
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Leave Managment</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="">
-                                <a href="#"><i class="fa fa-circle-o"></i> View
-                                    Leave
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa fa-users"></i> <span>Employee Dashboard</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                    </li>
-                    <li class="treeview">
-                        <a href="javascript:;">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <form action="{{ route('logoutUser') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger  btnLogout">
-                                    <i class="fa-solid fa-power-off"></i>
-                                </button>
+                        @endif
+                        <li class="treeview">
+                            <form action="{{ route('logoutUser') }}" method="POST" class="logout">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
                             </form>
-                        </ul>
-                    </li>
+                        </li>
+                    @endif
                 </ul>
             </section>
         </aside>
@@ -298,7 +342,7 @@
             <div class="pull-right hidden-xs">
                 <b>Version</b> 2.3.6
             </div>
-            <strong>Copyright &copy; 2018-2019 <a href="#">Pixel 360</a>.</strong> All rights
+            <strong>Copyright &copy; 2024 <a href="#">Pixel 360</a>.</strong> All rights
             reserved.
         </footer>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"
