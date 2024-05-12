@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Home | American Books</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}">
+    {{-- <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}"> --}}
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -24,7 +24,7 @@
     <div class="wrapper">
         <header class="main-header">
             <a href="javascrip:;" class="logo">
-                Pixel360
+                
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -365,7 +365,7 @@
             <div class="pull-right hidden-xs">
                 <b>Version</b> 2.3.6
             </div>
-            <strong>Copyright &copy; 2024 <a href="#">Pixel 360</a>.</strong> All rights
+            <strong>Copyright &copy; 2024 <a href="#"></a>.</strong> All rights
             reserved.
         </footer>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"

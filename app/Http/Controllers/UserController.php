@@ -116,10 +116,11 @@ class UserController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $users = User::findOrFail($id);
+        $users = User::with('employee')->findOrFail($id);
+        // dd($users->toArray());
         // $employee = Employee::where('user_id', $id)->first();
         $roles = Role::pluck('name', 'id');
-        
+
         // dd($users->employee);
         return view('users.edit', compact('users', 'roles'));
     }
@@ -132,78 +133,80 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $id)
-    {
-
-        $user = User::findOrFail($id);
-
-        $request->validate([
-            'user_name' => 'required',
-            'user_email' => 'required|email',
-            'user_role' => 'required',
-            'user_password' => 'required',
-            'date_of_birth' => 'required',
-            'joining_date' => 'required',
-            'fater_name' => 'required',
-            'city' => 'required',
-            'address' => 'required',
-            'phone_number' => 'required',
-            'emergency_phone_number' => 'required',
-            'emergency_person_name' => 'required',
-            // 'employee_img' => $request->hasFile('employee_img') ? 'image|mimes:jpeg,png,jpg,gif|max:2048' : '',
-            'gender' => 'required|in:male,female',
-            'status' => 'required|in:active,deactive',
-        ]);
-
-        $user->update([
-            'name' => $request->user_name,
-            'email' => $request->user_email,
-            'role_id' => $request->user_role,
-            'status' => $request->status,
-            'password' => Hash::make($request->user_password),
-        ]);
-
-        $role = Role::find($request->user_role);
-        if ($role) {
-            $user->role()->associate($role);
-            $user->save();
-        }
-
-        $userData = [];
-
-        if ($request->hasFile('employee_img')) {
-            if ($user->employee && $user->employee->employee_img) {
-                $imagePath = public_path('upload') . '/' . $user->employee->employee_img;
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
-
-            $imageName = time() . '.' . $request->file('employee_img')->getClientOriginalExtension();
-            $request->file('employee_img')->move(public_path('upload'), $imageName);
-            $userData['employee_img'] = $imageName;
-        } else {
-            $userData['employee_img'] = null; 
-        }
-
-        if ($user->employee) {
-            $user->employee->update([
-                'user_id' => $user->id,
-                'date_of_birth' => $request->date_of_birth,
-                'joining_date' => $request->joining_date,
-                'fater_name' => $request->fater_name,
-                'city' => $request->city,
-                'address' => $request->address,
-                'phone_number' => $request->phone_number,
-                'emergency_phone_number' => $request->emergency_phone_number,
-                'emergency_person_name' => $request->emergency_person_name,
-                'employee_img' => $userData['employee_img'],
-                'gender' => $request->gender,
-            ]);
-        }
-
-        return response()->json(['success' => 'User Updated Successfully'], 200);
-    }
+     public function update(Request $request, $id)
+     {
+         $user = User::findOrFail($id);
+     
+         $request->validate([
+             'user_name' => 'required',
+             'user_email' => 'required|email',
+             'user_role' => 'required',
+             'user_password' => 'required',
+             'date_of_birth' => 'required',
+             'joining_date' => 'required',
+             'fater_name' => 'required',
+             'city' => 'required',
+             'address' => 'required',
+             'phone_number' => 'required',
+             'emergency_phone_number' => 'required',
+             'emergency_person_name' => 'required',
+             'gender' => 'required|in:male,female',
+             'status' => 'required|in:active,deactive',
+         ]);
+     
+         $user->update([
+             'name' => $request->user_name,
+             'email' => $request->user_email,
+             'role_id' => $request->user_role,
+             'status' => $request->status,
+             'password' => Hash::make($request->user_password),
+         ]);
+     
+         $role = Role::find($request->user_role);
+         if ($role) {
+             $user->role()->associate($role);
+         }
+     
+         $userData = [];
+     
+         if ($request->hasFile('employee_img')) {
+             if ($user->employee && $user->employee->employee_img) {
+                 $imagePath = public_path('upload') . '/' . $user->employee->employee_img;
+                 if (file_exists($imagePath)) {
+                     unlink($imagePath);
+                 }
+             }
+     
+             $imageName = time() . '.' . $request->file('employee_img')->getClientOriginalExtension();
+             $request->file('employee_img')->move(public_path('upload'), $imageName);
+             $userData['employee_img'] = $imageName;
+         } else {
+             $userData['employee_img'] = null;
+         }
+     
+         $employeeData = [
+             'user_id' => $user->id,
+             'date_of_birth' => $request->date_of_birth,
+             'joining_date' => $request->joining_date,
+             'fater_name' => $request->fater_name,
+             'city' => $request->city,
+             'address' => $request->address,
+             'phone_number' => $request->phone_number,
+             'emergency_phone_number' => $request->emergency_phone_number,
+             'emergency_person_name' => $request->emergency_person_name,
+             'employee_img' => $userData['employee_img'],
+             'gender' => $request->gender,
+         ];
+     
+         if ($user->employee) {
+             $user->employee->update($employeeData);
+         } else {
+             $user->employee()->create($employeeData);
+         }
+     
+         return response()->json(['success' => 'User Updated Successfully'], 200);
+     }
+     
 
     /**
      * Remove the specified resource from storage.
