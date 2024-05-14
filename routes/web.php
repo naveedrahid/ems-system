@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
@@ -90,14 +91,30 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     ]);
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
+    Route::resource('employees', EmployeeController::class)->parameters([
+        'employees' => 'id'
+    ])->names([
+        'create' => 'employees.create',
+        'store' => 'employees.store',
+        'edit' => 'employees.edit',
+        'update' => 'employees.update',
+    ])->except([
+        'index',
+        'show',
+        'destroy'
+    ]);
+
+    Route::put('/employees-status/{id}', [EmployeeController::class, 'updateStatus'])->name('employees.status');
+    Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'dashboard'])->name('home');
     Route::get('/admin', [HomeController::class, 'index'])->name('admin');
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
-
+    
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
-}); 
+    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
+});

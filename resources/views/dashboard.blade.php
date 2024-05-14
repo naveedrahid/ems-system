@@ -9,7 +9,14 @@
                 <div class="col-md-8">
                     <div>
                         <h1>{{ auth()->user()->name }} |
-                            <small>Development - Manager</small>
+                            <small>
+                                @if(optional(auth()->user()->employee)->department || optional(auth()->user()->employee)->designation)
+                                    {{ optional(auth()->user()->employee->department)->department_name ?? 'No Department' }} - 
+                                    {{ optional(auth()->user()->employee->designation)->designation_name ?? 'No Designation' }}
+                                @else
+                                    No Department - No Designation
+                                @endif
+                            </small>
                         </h1>
 
                     </div>
@@ -294,6 +301,26 @@
                     </div>
                 @endif
             @endif
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Categories</span>
+                            <span class="info-box-number">760</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-yellow"><i class="fa fa-user"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Team Members</span>
+                            <span class="info-box-number">2,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 @endsection

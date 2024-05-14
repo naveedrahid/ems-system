@@ -82,7 +82,11 @@
                                         @endif
                                     </td>
                                     <td>{{ $result->total_overtime }}</td>
+<<<<<<< HEAD
                                     <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
+=======
+                                    <td>{{ textFormating($result->status) }}</td>
+>>>>>>> origin/main
                                 </tr>
                             @endif
                         @endforeach

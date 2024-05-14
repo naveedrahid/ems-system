@@ -22,3 +22,29 @@
     cursor: pointer;
     padding: 10px 17px;
 }
+td.imgCircle {
+    display: flex;
+    align-items: center;
+}
+
+td.imgCircle img {
+    border-radius: 100%;
+    margin-right: 10px;
+}
+li.dropdown.user.user-menu {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.treeview.btnLogoutWrapRigth button i {
+    color: #fff;
+    font-size: 15px;
+}
+
+.btnLogoutWrapRigth button.btnLogout {
+    margin: 0;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+}

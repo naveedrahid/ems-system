@@ -8,7 +8,7 @@
         <div class="box-body">
             <div class="row justify-content-center">
                 <div class="col-md-12">
-                    <form method="POST" action="{{route('users.update', $users->id)}}" enctype="multipart/form-data" id="UpdateUser">
+                    <form method="POST" action="{{route('employees.update', $employees->id)}}" enctype="multipart/form-data" id="UpdateEmployee">
                         @csrf
                         @method('PUT')
                         <div class="row">
@@ -63,17 +63,18 @@
                                     <select name="department_id" id="department_id" class="form-control form-select select2" style="width: 100%;">
                                         <option value="">Select Department</option>
                                         @foreach ($departments as $id => $departmentName)
-                                            <option value="{{ $id }}" {{ $employees->employee->department_id == $id ? 'selected' : '' }}>
+                                            <option value="{{ $id }}" {{ optional($employees->employee)->department_id == $id ? 'selected' : '' }}>
                                                 {{ $departmentName }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
+                                
                                 <div class="mb-3 form-group">
                                     <label class="form-label">Designation: <span class="text text-red">*</span></label>
                                     <select name="designation_id" id="designation_id" class="form-control form-select select2" style="width: 100%;">
                                         @foreach ($designations as $id => $designationName)
-                                            <option value="{{ $id }}" {{ $employees->employee->designation_id == $id ? 'selected' : '' }}>
+                                            <option value="{{ $id }}" {{ optional($employees->employee)->designation_id == $id ? 'selected' : '' }}>
                                                 {{ $designationName }}
                                             </option>
                                         @endforeach
@@ -120,7 +121,7 @@
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="{{route('users')}}" class="btn btn-danger">Cancel</a>
+                            <a href="{{route('employees.view')}}" class="btn btn-danger">Cancel</a>
                         </div>
                     </form>
                 </div>

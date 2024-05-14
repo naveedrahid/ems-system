@@ -34,7 +34,12 @@ class HomeController extends Controller
 
     public function dashboard()
     {
-        return view('dashboard');
+        $user = Auth::user();
+        $employee = $user->employee;
+        $department = optional($employee->department)->department_name;
+        $designation = optional($employee->designation)->designation_name;
+    
+        return view('dashboard', compact('department', 'designation'));
     }
 
     public function logout()

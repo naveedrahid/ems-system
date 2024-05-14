@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Home | American Books</title>
+    <title>{{ config('app.name', 'Laravel') }} | American Books</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}"> --}}
+    <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -23,8 +23,8 @@
 <body class="hold-transition sidebar-mini skin-blue-light">
     <div class="wrapper">
         <header class="main-header">
-            <a href="javascrip:;" class="logo">
-                
+            <a href="{{ url('/') }}" class="logo">
+                {{-- <img src="{{asset('/admin/images/Pixelz360.svg')}}" class="img-fluid" alt=""> --}}
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -41,6 +41,12 @@
                                 <img src="{{ asset('admin/images/face8.jpg') }}" class="user-image" alt="User Image">
                                 <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
+                            <div class="treeview btnLogoutWrapRigth">
+                                <form action="{{ route('logoutUser') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                                </form>
+                            </div>
                             <ul class="dropdown-menu">
                                 <li class="user-header">
                                     <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle"
@@ -66,6 +72,7 @@
         <aside class="main-sidebar">
             <section class="sidebar">
                 <div class="user-panel">
+
                     <div class="pull-left image">
                         <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle" alt="User Image">
                     </div>
@@ -251,12 +258,14 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li class="active"><a href="{{ route('user_create') }}"><i
-                                            class="fa fa-circle-o"></i>
-                                        Add New
-                                        Employee</a>
-                                </li>
-                                <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                @if (Auth::user()->id < 3)
+                                    <li class="active"><a href="{{ route('employees.create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add New
+                                            Employee</a>
+                                    </li>
+                                @endif
+                                <li class=""><a href="{{ route('employees.view') }}"><i class="fa fa-circle-o"></i>
                                         View
                                         Employees
                                     </a></li>
@@ -339,11 +348,10 @@
                                 </li>
                             </ul>
                         </li>
-                        
-
-                        <li class="treeview">
-                            <form action="{{ route('logoutUser') }}" method="POST" class="logout">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <li class="treeview btnLogoutWrap">
+                            <form action="{{ route('logoutUser') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
                             </form>
                         </li>
                     @endif
@@ -366,7 +374,6 @@
                 <b>Version</b> 2.3.6
             </div>
             <strong>Copyright &copy; 2024 <a href="#"></a>.</strong> All rights
-            reserved.
         </footer>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>

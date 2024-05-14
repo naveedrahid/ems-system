@@ -34,11 +34,14 @@
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label class="form-label">Emergency Number: <span class="text text-red">*</span></label>
-                                    <input type="tel" name="emergency_phone_number" id="emergency_phone_number" class="form-control">
+                                    <input type="tel" name="emergency_phone_number" id="emergency_phone_number"
+                                        class="form-control">
                                 </div>
                                 <div class="mb-3 form-group">
-                                    <label class="form-label">Emergency Person Name: <span class="text text-red">*</span></label>
-                                    <input type="text" name="emergency_person_name" id="emergency_person_name" class="form-control">
+                                    <label class="form-label">Emergency Person Name: <span
+                                            class="text text-red">*</span></label>
+                                    <input type="text" name="emergency_person_name" id="emergency_person_name"
+                                        class="form-control">
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label class="form-label">Status: <span class="text text-red">*</span></label>
@@ -46,7 +49,8 @@
                                         style="width: 100%;">
                                         <option value="">Select Role</option>
                                         @foreach (['active', 'deactive'] as $status)
-                                            <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>
+                                            <option value="{{ $status }}"
+                                                {{ old('status') == $status ? 'selected' : '' }}>
                                                 {{ ucfirst($status) }}</option>
                                         @endforeach
                                     </select>
@@ -59,24 +63,40 @@
                                     <small class="label label-warning">Cover Photo will be uploaded</small>
                                 </div>
                                 <div class="mb-3 form-group">
+                                    <label class="form-label">Department Name: <span class="text text-red">*</span></label>
+                                    <select name="department_id" id="department_id" class="form-control form-select select2"
+                                        style="width: 100%;">
+                                        <option value="">Select Department</option>
+                                        @foreach ($departments as $id => $departmentName)
+                                            <option value="{{ $id }}">{{ $departmentName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 form-group">
+                                    <label class="form-label">Designation: <span class="text text-red">*</span></label>
+                                    <select name="designation_id" id="designation_id"
+                                        class="form-control form-select select2" style="width: 100%;">
+                                    </select>
+                                </div>
+                                <div class="mb-3 form-group">
                                     <label class="form-label">Gender: <span class="text text-red">*</span></label>
                                     <select name="gender" id="gender" class="form-control form-select select2"
                                         style="width: 100%;">
                                         <option value="">Select Role</option>
                                         @foreach (['male', 'female'] as $status)
-                                            <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>
+                                            <option value="{{ $status }}"
+                                                {{ old('status') == $status ? 'selected' : '' }}>
                                                 {{ ucfirst($status) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3 form-group">
-                                    <label class="form-label">Roll: <span class="text text-red">*</span></label>
+                                    <label class="form-label">Role: <span class="text text-red">*</span></label>
                                     <select name="user_role" id="author_feature" class="form-control form-select select2"
                                         style="width: 100%;">
-                                        <option value="">Select Role</option>
-                                        @foreach ($roles as $roleId => $roleName)
-                                            <option value="{{ $roleId }}">{{ $roleName }}</option>
-                                        @endforeach
+                                        @if (isset($role))
+                                            <option value="{{ $role->id }}" selected>{{ $role->name }}</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="mb-3 form-group">
@@ -86,23 +106,23 @@
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label for="dob">Joining Date: <span class="text text-red">*</span></label>
-                                    <input type="date" name="joining_date" id="joining_date" class="form-control" id="dob"
-                                        placeholder="Joining Date">
+                                    <input type="date" name="joining_date" id="joining_date" class="form-control"
+                                        id="dob" placeholder="Joining Date">
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label for="dob">Address: <span class="text text-red">*</span></label>
-                                    <input type="date" name="address" id="address" class="form-control" id="dob"
-                                        placeholder="Enter Your Address">
+                                    <input type="text" name="address" id="address" class="form-control"
+                                        id="dob" placeholder="Enter Your Address">
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label class="form-label">Password</label>
                                     <input type="password" name="user_password" id="user_password" class="form-control">
                                 </div>
-                            </div>
+                            </div   >
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="{{route('users')}}" class="btn btn-danger">Cancel</a>
+                            <a href="{{ route('users') }}" class="btn btn-danger">Cancel</a>
                         </div>
                     </form>
                 </div>
