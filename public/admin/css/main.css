@@ -56,3 +56,12 @@ li.dropdown.user.user-menu a.dropdown-toggle {
 li.dropdown.user.user-menu a.dropdown-toggle img {
     margin-right: 10px !important;
 }
+li.nav-item.checkinMain {
+    list-style: none;
+}
+li.nav-item.checkinMain {
+    list-style: none;
+}
+
+.main-sidebar, .left-side{padding-top: 55px}
+.main-header .logo{height:53px}
