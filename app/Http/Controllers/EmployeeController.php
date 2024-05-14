@@ -61,7 +61,7 @@ class EmployeeController extends Controller
             'phone_number' => 'required',
             'emergency_phone_number' => 'required',
             'emergency_person_name' => 'required',
-            'employee_img' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
         ]);
@@ -80,8 +80,11 @@ class EmployeeController extends Controller
             $user->save();
         }
 
-        $imageName = time() . '.' . $request->employee_img->extension();
-        $request->employee_img->move(public_path('upload'), $imageName);
+        $imageName = null;
+        if ($request->hasFile('employee_img') && $request->file('employee_img')->isValid()) {
+            $imageName = time() . '.' . $request->employee_img->extension();
+            $request->employee_img->move(public_path('upload'), $imageName);
+        }
 
         Employee::create([
             'user_id' => $user->id,

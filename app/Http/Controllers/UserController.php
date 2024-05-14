@@ -66,7 +66,7 @@ class UserController extends Controller
             'phone_number' => 'required',
             'emergency_phone_number' => 'required',
             'emergency_person_name' => 'required',
-            'employee_img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
         ]);
@@ -85,8 +85,12 @@ class UserController extends Controller
             $user->save();
         }
 
-        $imageName = time() . '.' . $request->employee_img->extension();
-        $request->employee_img->move(public_path('upload'), $imageName);
+        $imageName = null;
+        if ($request->hasFile('employee_img') && $request->file('employee_img')->isValid()) {
+            $imageName = time() . '.' . $request->employee_img->extension();
+            $request->employee_img->move(public_path('upload'), $imageName);
+        }
+
 
         Employee::create([
             'user_id' => $user->id,
@@ -202,23 +206,26 @@ class UserController extends Controller
         ];
 
         if ($request->hasFile('employee_img')) {
-            // Unlink the old image if it exists
             if ($user->employee && $user->employee->employee_img) {
                 $imagePath = public_path('upload') . '/' . $user->employee->employee_img;
                 if (file_exists($imagePath)) {
                     unlink($imagePath);
                 }
             }
-
             $imageName = time() . '.' . $request->file('employee_img')->getClientOriginalExtension();
             $request->file('employee_img')->move(public_path('upload'), $imageName);
             $employeeData['employee_img'] = $imageName;
         }
 
-        $user->employee->update($employeeData);
+        if ($user->employee) {
+            $user->employee->update($employeeData);
+        } else {
+            $user->employee()->create($employeeData);
+        }
 
         return response()->json(['success' => 'User Updated Successfully'], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

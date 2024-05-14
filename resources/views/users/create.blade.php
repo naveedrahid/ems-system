@@ -58,7 +58,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3 form-group">
-                                    <label for="book_img">Add Employee Image: <span class="text text-red">*</span></label>
+                                    <label for="book_img">Add Employee Image:</label>
                                     <input type="file" class="form-control" name="employee_img" id="employee_img">
                                     <small class="label label-warning">Cover Photo will be uploaded</small>
                                 </div>

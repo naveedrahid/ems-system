@@ -33,8 +33,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if ($employees->whereIn('id', [1, 2])->count() > 0)
-                        @foreach ($employees->whereIn('id', [1, 2]) as $employee)
+                    {{-- @if ($employees->whereIn('id', [1, 2])->count() > 0)
+                    @foreach ($employees->whereIn('id', [1, 2]) as $employee) --}}
+                    @if (count($employees) > 0)
+                        @foreach ($employees as $employee)
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>#{{ $employee->id }}</td>

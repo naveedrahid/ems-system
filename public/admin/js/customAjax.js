@@ -528,7 +528,6 @@ $(document).ready(function () {
         const phone_number = $('input[name="phone_number"]').val().trim();
         const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
         const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
-        const employee_img = $('input[name="employee_img"]').val().trim();
         const gender = $('select[name="gender"]').val().trim();
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
@@ -538,7 +537,7 @@ $(document).ready(function () {
         const status = $('select[name="status"]').val().trim();
 
         emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || employee_img == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -575,7 +574,6 @@ $(document).ready(function () {
                 $('#phone_number').val('');
                 $('#emergency_phone_number').val('');
                 $('#emergency_person_name').val('');
-                $('#employee_img').val('');
                 $('#user_role').val('');
                 $('#gender').val('');
                 $('#date_of_birth').val('');
@@ -607,7 +605,6 @@ $(document).ready(function () {
         const phone_number = $('input[name="phone_number"]').val().trim();
         const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
         const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
-        const employee_img = $('#employee_img')[0].files[0];
         const gender = $('select[name="gender"]').val().trim();
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
@@ -744,7 +741,6 @@ $(document).ready(function () {
         const phone_number = $('input[name="phone_number"]').val().trim();
         const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
         const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
-        const employee_img = $('input[name="employee_img"]').val().trim();
         const gender = $('select[name="gender"]').val().trim();
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
@@ -756,7 +752,7 @@ $(document).ready(function () {
         const designation_id = $('select[name="designation_id"]').val().trim();
 
         emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || employee_img == '' || gender == '' || date_of_birth == '' || joining_date == '' ||  address == '' || user_password == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' ||  gender == '' || date_of_birth == '' || joining_date == '' ||  address == '' || user_password == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -793,7 +789,6 @@ $(document).ready(function () {
                 $('#phone_number').val('');
                 $('#emergency_phone_number').val('');
                 $('#emergency_person_name').val('');
-                $('#employee_img').val('');
                 $('#user_role').val('');
                 $('#gender').val('');
                 $('#date_of_birth').val('');

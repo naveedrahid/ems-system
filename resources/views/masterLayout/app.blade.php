@@ -24,7 +24,8 @@
     <div class="wrapper">
         <header class="main-header">
             <a href="{{ url('/') }}" class="logo">
-                <img src="{{ asset('/admin/images/Pixelz360.svg') }}" class="img-fluid" alt="" style="height:40px;">
+                <img src="{{ asset('/admin/images/Pixelz360.svg') }}" class="img-fluid" alt=""
+                    style="height:40px;">
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -40,8 +41,7 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 @if (optional(auth()->user()->employee)->employee_img)
                                     <img src="{{ asset('upload/' . optional(auth()->user()->employee)->employee_img) }}"
-                                        alt="Employee Image" class="profile-user-img img-responsive img-circle"
-                                        style="width:40px;height:40px;margin:unset;">
+                                        alt="Employee Image" class="profile-user-img img-responsive img-circle user-image">
                                 @endif
                                 <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
@@ -98,28 +98,7 @@
 
                     @if (Auth::user())
                         @if (Auth::user()->id == 1)
-                            <li class=" treeview">
-                                <a href="javascript:;">
-                                    <i class="fa fa-users"></i> <span>User</span>
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
-                                                class="fa fa-circle-o"></i>
-                                            Add New
-                                            User</a>
-                                    </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
-                                            View
-                                            User
-                                        </a></li>
-                                    <li class="active"><a href="{{ route('roles') }}"><i
-                                                class="fa fa-circle-o"></i>Roles</a>
-                                    </li>
-                                </ul>
-                            </li>
+
                             <li class="treeview">
                                 <a href="javascript:;">
                                     <i class="fa fa-users"></i> <span>Department</span>
@@ -353,6 +332,14 @@
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
                                 </li>
+                                @if (Auth::user()->id == 1)
+                                <li class="">
+                                    <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
+                                </li>
+                                <li class="active">
+                                    <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
+                                </li>
+                                @endif
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
                                 </li>
@@ -371,12 +358,13 @@
         </aside>
         @yield('main')
         <div class="content-wrapper">
-            <section class="content-header">
-                <h1>
-                    @yield('page-title')
-                </h1>
-            </section>
-            <section class="content">
+        <section class="content-header">
+            <h1>
+                @yield('page-title')
+                <small>Employee</small>
+            </h1>
+        </section>
+        <section class="content">
                 @yield('page-content')
             </section>
         </div>

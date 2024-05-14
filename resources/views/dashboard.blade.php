@@ -1,10 +1,9 @@
 @extends('masterLayout.app')
 @section('main')
-    <div class="content-wrapper" style="min-height: 960px;">
-        <section class="content-header">
-            <h1>
-                Dashboard
-            </h1>
+@section('page-title')
+    Dashboard
+@endsection
+@section('page-content')
             <div class="row">
                 <div class="col-md-8">
                     <div>
@@ -76,8 +75,6 @@
                 </div>
 
             </div>
-        </section>
-        <section class="content">
             @if (Auth::user())
                 @if (Auth::user()->id == 1)
                     <div class="row">
@@ -117,7 +114,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
                             <div class="box box-danger">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Latest Employee</h3>
@@ -180,7 +177,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="col-md-3 col-sm-6 col-xs-12">
                             <div class="box box-info">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Up Coming Holidays</h3>
@@ -224,7 +221,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="col-md-3 col-sm-6 col-xs-12">
                             <div class="box box-info">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Up Coming Birthday</h3>
@@ -301,6 +298,5 @@
                     </div>
                 @endif
             @endif
-        </section>
-    </div>
+@endsection
 @endsection
