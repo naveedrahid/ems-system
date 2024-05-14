@@ -8,8 +8,6 @@
         <div class="box-header with-border">
             @if (Auth::user()->id == 1 || Auth::user()->id == 2)
             <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye-slash"></i></a>
                 <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
                 <a href="{{ route('employees.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
             </h3>
@@ -28,6 +26,7 @@
                 <thead style="background-color: #F8F8F8;">
                     <tr>
                         <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
+                        <th width="10%">Image</th>
                         <th width="20%">Name</th>
                         <th width="20%">Email</th>
                         <th width="10%">Department</th>
@@ -45,7 +44,9 @@
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>
-                                    <img src="{{asset('upload/' . optional($employee->employee)->employee_img )}}" alt="">
+                                    <img class="profile-user-img img-responsive img-circle" src="{{asset('upload/' . optional($employee->employee)->employee_img )}}" alt="" style="width:60px;height:60px;margin:unset;">
+                                </td>
+                                <td>
                                     {{ $employee->name }}
                                 </td>
                                 <td>{{ $employee->email }}</td>

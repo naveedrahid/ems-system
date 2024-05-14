@@ -7,8 +7,6 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye-slash"></i></a>
                 <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
                 <a href="{{ route('departmentCreate') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
             </h3>

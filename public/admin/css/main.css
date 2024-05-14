@@ -48,3 +48,11 @@ li.dropdown.user.user-menu {
     width: 50px;
     height: 50px;
 }
+li.dropdown.user.user-menu a.dropdown-toggle {
+    display: flex;
+    align-items: center;
+}
+
+li.dropdown.user.user-menu a.dropdown-toggle img {
+    margin-right: 10px !important;
+}

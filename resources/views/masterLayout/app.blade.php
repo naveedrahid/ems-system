@@ -24,7 +24,7 @@
     <div class="wrapper">
         <header class="main-header">
             <a href="{{ url('/') }}" class="logo">
-                {{-- <img src="{{asset('/admin/images/Pixelz360.svg')}}" class="img-fluid" alt=""> --}}
+                <img src="{{ asset('/admin/images/Pixelz360.svg') }}" class="img-fluid" alt="" style="height:40px;">
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -38,13 +38,18 @@
                     <ul class="nav navbar-nav flexBtnHeader">
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="{{ asset('admin/images/face8.jpg') }}" class="user-image" alt="User Image">
+                                @if (optional(auth()->user()->employee)->employee_img)
+                                    <img src="{{ asset('upload/' . optional(auth()->user()->employee)->employee_img) }}"
+                                        alt="Employee Image" class="profile-user-img img-responsive img-circle"
+                                        style="width:40px;height:40px;margin:unset;">
+                                @endif
                                 <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
                             <div class="treeview btnLogoutWrapRigth">
                                 <form action="{{ route('logoutUser') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                                    <button type="submit" class="btnLogout"><i
+                                            class="fa-solid fa-arrow-right-from-bracket"></i></button>
                                 </form>
                             </div>
                             <ul class="dropdown-menu">
@@ -74,7 +79,11 @@
                 <div class="user-panel">
 
                     <div class="pull-left image">
-                        <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle" alt="User Image">
+                        @if (optional(auth()->user()->employee)->employee_img)
+                            <img src="{{ asset('upload/' . optional(auth()->user()->employee)->employee_img) }}"
+                                alt="Employee Image" class="profile-user-img img-responsive img-circle"
+                                style="width:40px;height:40px;margin:unset;">
+                        @endif
                     </div>
                     <div class="pull-left info">
                         <p>Hello, {{ auth()->user()->name }}!</p>
@@ -84,7 +93,7 @@
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">MAIN NAVIGATION</li>
                     <li class="treeview">
-                        <a href="#"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        <a href="{{ route('home') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                     </li>
 
                     @if (Auth::user())
@@ -265,7 +274,8 @@
                                             Employee</a>
                                     </li>
                                 @endif
-                                <li class=""><a href="{{ route('employees.view') }}"><i class="fa fa-circle-o"></i>
+                                <li class=""><a href="{{ route('employees.view') }}"><i
+                                            class="fa fa-circle-o"></i>
                                         View
                                         Employees
                                     </a></li>
@@ -351,7 +361,8 @@
                         <li class="treeview btnLogoutWrap">
                             <form action="{{ route('logoutUser') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                                <button type="submit" class="btnLogout"><i
+                                        class="fa-solid fa-arrow-right-from-bracket"></i></button>
                             </form>
                         </li>
                     @endif

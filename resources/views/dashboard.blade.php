@@ -117,36 +117,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @else
-                    <div class="row">
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Leave</span>
-                                    <span class="info-box-number">08</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Used Leave</span>
-                                    <span class="info-box-number">02</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Remaining Leave</span>
-                                    <span class="info-box-number">06</span>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <div class="box box-danger">
                                 <div class="box-header with-border">
@@ -297,30 +267,40 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>  
+                    </div>
+                @else
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Leave</span>
+                                    <span class="info-box-number">08</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Used Leave</span>
+                                    <span class="info-box-number">02</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Remaining Leave</span>
+                                    <span class="info-box-number">06</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endif
             @endif
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Total Categories</span>
-                            <span class="info-box-number">760</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-yellow"><i class="fa fa-user"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Team Members</span>
-                            <span class="info-box-number">2,000</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
     </div>
 @endsection

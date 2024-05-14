@@ -7,8 +7,6 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye-slash"></i></a>
                 <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
                 <a href="{{ route('user_create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
             </h3>
@@ -34,9 +32,9 @@
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
-                @if (count($employees) > 0)
-                    @foreach ($employees as $employee)
-                        <tbody>
+                <tbody>
+                    @if ($employees->whereIn('id', [1, 2])->count() > 0)
+                        @foreach ($employees->whereIn('id', [1, 2]) as $employee)
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>#{{ $employee->id }}</td>
@@ -57,12 +55,13 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <a href="{{route('user_edit', $employee->id)}}" class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
+                                    <a href="{{ route('user_edit', $employee->id) }}" class="btn btn-info btn-flat btn-sm">
+                                        <i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
-                        </tbody>
-                    @endforeach
-                @endif
+                        @endforeach
+                    @endif
+                </tbody>
             </table>
         </div>
         <div class="box-footer clearfix">
