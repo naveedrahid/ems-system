@@ -413,13 +413,13 @@ $(document).ready(function () {
 
     $('.delete-designation').on('click', function (e) {
         e.preventDefault();
-        const designationId = $(this).data('designation-id');
-        const deleteRoute = $(this).data('delete-route').replace(':id', designationId);
+        const leaveType = $(this).data('designation-id');
+        const deleteRoute = $(this).data('delete-route').replace(':id', leaveType);
         const $clickedElement = $(this);
 
         Swal.fire({
             title: 'Are you sure?',
-            text: 'You will not be able to recover this designation!',
+            text: 'You will not be able to recover this Leave Type!',
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -451,7 +451,7 @@ $(document).ready(function () {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Failed to delete Department.',
+                        text: 'Failed to delete Leave Type.',
                     });
                 });
             }
@@ -622,22 +622,6 @@ $(document).ready(function () {
             return;
         }
 
-        // let fileExtension = '';
-        // if (employee_img) {
-        //     const fileName = employee_img.name;
-        //     fileExtension = fileName.split('.').pop().toLowerCase();
-        // }
-
-        // const allowedExtensions = ['jpeg', 'jpg', 'png'];
-        // if (fileExtension && !allowedExtensions.includes(fileExtension)) {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Error!',
-        //         text: 'Invalid image format. Please select a JPEG, JPG, PNG or file.',
-        //     });
-        //     return;
-        // }
-
         const formData = new FormData(this);
         formData.append('_method', 'PUT');
         const url = $(this).attr('action');
@@ -752,7 +736,7 @@ $(document).ready(function () {
         const designation_id = $('select[name="designation_id"]').val().trim();
 
         emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' ||  gender == '' || date_of_birth == '' || joining_date == '' ||  address == '' || user_password == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -932,16 +916,16 @@ $(document).ready(function () {
         });
     });
 
-    $('#department_id').change(function() {
-        var departmentId = $(this).val();
+    $('#department_id').change(function () {
+        const departmentId = $(this).val();
         if (departmentId) {
             $.ajax({
                 url: '/get-designations/' + departmentId,
                 type: 'GET',
-                success: function(data) {
+                success: function (data) {
                     $('#designation_id').empty();
                     $('#designation_id').append('<option value="">Select Designation</option>');
-                    $.each(data, function(key, value) {
+                    $.each(data, function (key, value) {
                         $('#designation_id').append('<option value="' + key + '">' + value + '</option>');
                     });
                 }
@@ -950,6 +934,221 @@ $(document).ready(function () {
             $('#designation_id').empty();
             $('#designation_id').append('<option value="">Select Designation</option>');
         }
+    });
+
+    // add Leave Type
+
+    $('#addLeave').submit(function (e) {
+        e.preventDefault();
+
+        const name = $('input[name="name"]').val().trim();
+        const defaultBalance = $('input[name="default_balance"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+        if (name === '' || defaultBalance === '' || status === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Leave Types Name, Total Leave, or Status cannot be empty.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        const redirectUrl = $('#redirect-url').val();
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+                $('#addLeave')[0].reset();
+                window.location.href = redirectUrl;
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Leave Type.',
+                });
+            });
+    });
+
+    // Update Leave Type
+    $('#updateLeave').submit(function (e) {
+        e.preventDefault();
+
+        const name = $('input[name="name"]').val().trim();
+        const defaultBalance = $('input[name="default_balance"]').val().trim();
+        const status = $('select[name="status"]').val().trim();
+        if (name === '' || defaultBalance === '' || status === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Leave Types Name, Total Leave, or Status cannot be empty.',
+            });
+            return;
+        }
+
+        const formData = new FormData(this);
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        const redirectUrl = $('#redirect-url').val();
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        })
+            .then(function (response) {
+                console.log(response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                });
+                setTimeout(function () {
+                    window.location.href = redirectUrl;
+                }, 2000);
+            })
+            .catch(function (xhr) {
+                console.error(xhr);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create Leave Type.',
+                });
+            });
+    });
+
+    $('.leave-toggle').click(function () {
+        const button = $(this);
+        const id = button.data('id');
+        const status = button.data('status');
+        const newStatus = status === 'active' ? 'deactive' : 'active';
+        const statusIcon = status === 'active' ? 'down' : 'up';
+        const btnClass = status === 'active' ? 'danger' : 'info';
+        const loader = button.find('img');
+
+        $.ajax({
+            url: '/leave-types/' + id + '/status',
+            method: 'PUT',
+            data: { status: newStatus },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
+                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+                button.data('status', newStatus);
+                loader.css('display', 'block');
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    },
+                    willClose: () => {
+                        loader.css('display', 'none');
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
+                });
+            },
+            error: function (xhr) {
+                console.error(xhr);
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    },
+                    willClose: () => {
+                        loader.css('opacity', '0');
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Failed to update status"
+                });
+            }
+        });
+    });
+
+    // Destroy Leave Type
+
+    $('.delete-leave-type').on('click', function (e) {
+        e.preventDefault();
+        const designationId = $(this).data('leave-type-id');
+        const deleteRoute = $(this).data('delete-route').replace(':id', designationId);
+        const $clickedElement = $(this);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this designation!',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function (response) {
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                    });
+                    $clickedElement.closest('tr').fadeOut('slow', function () {
+                        $(this).css('backgroundColor', 'red').remove();
+                    });
+                }).catch(function (xhr) {
+                    console.error(xhr);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to delete Department.',
+                    });
+                });
+            }
+        });
     });
 
 });

@@ -36,11 +36,17 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $employee = $user->employee;
-        $department = optional($employee->department)->department_name;
-        $designation = optional($employee->designation)->designation_name;
+    
+        if ($employee) {
+            $department = optional($employee->department)->department_name;
+            $designation = optional($employee->designation)->designation_name;
+        } else {
+            $department = null;
+            $designation = null;
+        }
     
         return view('dashboard', compact('department', 'designation'));
-    }
+    }    
 
     public function logout()
     {

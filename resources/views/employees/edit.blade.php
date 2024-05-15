@@ -113,10 +113,6 @@
                                     <input type="text" name="address" id="address" class="form-control" id="dob"
                                         placeholder="Enter Your Address" value="{{($employees->employee) ? $employees->employee->address : ''}}">
                                 </div>
-                                <div class="mb-3 form-group">
-                                    <label class="form-label">Password</label>
-                                    <input type="password" name="user_password" id="user_password" class="form-control" value="{{$employees->password}}">
-                                </div>
                             </div>
                         </div>
                         <div class="box-footer">

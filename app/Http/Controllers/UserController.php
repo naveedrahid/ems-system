@@ -108,8 +108,7 @@ class UserController extends Controller
             'gender' => $request->gender,
         ]);
 
-        return response()->json(['message' => 'Employee Created successfully created']);
-        // return redirect()->route('employees.view')->with('message', 'Employee Created successfully created');
+        return response()->json(['message' => 'User Created successfully created']);
     }
 
 
@@ -156,7 +155,6 @@ class UserController extends Controller
             'user_name' => 'required',
             'user_email' => 'required|email',
             'user_role' => 'required',
-            'user_password' => 'required',
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
@@ -178,10 +176,6 @@ class UserController extends Controller
             'role_id' => $request->user_role,
             'status' => $request->status,
         ];
-
-        if ($request->filled('user_password') && $request->user_password != $user->password) {
-            $userData['password'] = Hash::make($request->user_password);
-        }
 
         $user->update($userData);
 

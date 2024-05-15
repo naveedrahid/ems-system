@@ -65,3 +65,16 @@ li.nav-item.checkinMain {
 
 .main-sidebar, .left-side{padding-top: 55px}
 .main-header .logo{height:53px}
+
+img.imgLoader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    display:none;
+}
+.leave-toggle{
+    position:relative;
+}
