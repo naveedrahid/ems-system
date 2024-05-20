@@ -19,7 +19,9 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = User::with('employee.department', 'employee.designation')->get();
+        $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
+            ->with('employee.department', 'employee.designation')
+            ->get(['users.*', 'employees.employee_img', 'employees.gender']);
         return view('employees.index', compact('employees'));
     }
 

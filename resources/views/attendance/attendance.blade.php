@@ -7,9 +7,9 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
-                <a class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                @if (Auth::user()->id < 3)
+                    <a class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                @endif
             </h3>
             <div class="box-tools">
                 <div class="input-group input-group-sm" style="width: 250px;">
@@ -57,7 +57,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $result->total_overtime }}</td>
-                                <td>{{ textFormating($result->status) }}</td>
+                                <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
                             </tr>
                         @endforeach
                     @else
@@ -83,7 +83,6 @@
                                     </td>
                                     <td>{{ $result->total_overtime }}</td>
                                     <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
-                                    <td>{{ textFormating($result->status) }}</td>
                                 </tr>
                             @endif
                         @endforeach

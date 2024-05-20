@@ -41,7 +41,7 @@
                                 <td>{{ $leaveType->default_balance }}</td>
                                 <td>
                                     <button
-                                        class="leave-toggle btn btn-{{ $leaveType->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                        class="p-relative leave-toggle btn btn-{{ $leaveType->status === 'active' ? 'info' : 'danger' }} btn-sm"
                                         data-id="{{ $leaveType->id }}" data-status="{{ $leaveType->status }}">
                                         <i class="fa fa-thumbs-{{ $leaveType->status === 'active' ? 'up' : 'down' }}"></i>
                                         <img src="{{ asset('admin/images/loader.gif') }}" class="imgLoader" width="20" height="20"

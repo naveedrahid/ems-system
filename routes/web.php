@@ -65,6 +65,10 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/role', [RoleController::class, 'index'])->name('roles');
     Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
     Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
+    Route::get('/role/{id}/edit', [RoleController::class, 'edit'])->name('role_edit');
+    Route::put('/role/{id}/update', [RoleController::class, 'update'])->name('role_update');
+    Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
+    Route::put('/role-status/{id}', [RoleController::class, 'updateStatus'])->name('role.status');
 
     // Department Routes
     Route::resource('department', DepartmentController::class)->parameters([
@@ -125,12 +129,12 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
     Route::resource('leave-applications', LeaveApplicationController::class)
         ->parameters([
-            'leave-application' => 'leaveApplication'
+            'leave-applications' => 'id'
         ])->names([
-            'index' => 'leave_application.index',
-            'create' => 'leave_application.create',
+            // 'index' => 'leave_application.index',
+            // 'create' => 'leave_application.create',
             'edit' => 'leave_application.edit',
-            'store' => 'leave_application.store',
+            // 'store' => 'leave_application.store',
             'update' => 'leave_application.update',
             'destroy' => 'leave_application.destroy',
         ])->except([
@@ -147,4 +151,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
+    Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
+    Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');
+    Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');
 });

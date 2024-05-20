@@ -37,16 +37,22 @@
                             <td>#{{ $role->id }}</td>
                             <td>{{ $role->name }}</td>
                             <td>
-                                @if ($role->status !== 'active')
-                                    <button class="btn btn-info btn-sm"><i class="fa fa-thumbs-up"></i></button>
-                                @else
-                                    <button class="btn btn-danger btn-sm"><i class="fa fa-thumbs-down"></i></button>
-                                @endif
+                                <button
+                                    class="p-relative role-toggle btn btn-{{ $role->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                    data-id="{{ $role->id }}" data-status="{{ $role->status }}">
+                                    <i class="fa fa-thumbs-{{ $role->status === 'active' ? 'up' : 'down' }}"></i>
+                                    <img src="{{ asset('admin/images/loader.gif') }}" class="imgLoader" width="20"
+                                        height="20" alt="Loading...">
+                                </button>
                             </td>
                             <td>
-                              <a href="#" class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
-                              <button class="btn btn-danger btn-flat btn-sm"> <i class="fa-regular fa-trash-can"></i></button>
-                          </td>
+                                <a href="{{ route('role_edit', $role->id) }}" class="btn btn-info btn-flat btn-sm"> <i
+                                        class="fa fa-edit"></i></a>
+                                <button class="delete-role btn btn-danger btn-flat btn-sm"
+                                    data-role-id="{{ $role->id }}"
+                                    data-delete-route="{{ route('role_destroy', ':id') }}"><i
+                                        class="fa-regular fa-trash-can"></i></button>
+                            </td>
                         </tr>
                     @endforeach
                 @endif
@@ -76,3 +82,124 @@
     </div>
 @endsection
 @endsection
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('.role-toggle').click(function() {
+            const button = $(this);
+            const id = button.data('id');
+            const status = button.data('status');
+            const newStatus = status === 'active' ? 'deactive' : 'active';
+            const statusIcon = status === 'active' ? 'down' : 'up';
+            const btnClass = status === 'active' ? 'danger' : 'info';
+            const loader = button.find('img');
+
+            $.ajax({
+                url: '/role-status/' + id,
+                method: 'PUT',
+                data: {
+                    status: newStatus
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger'))
+                        .addClass('btn-' + btnClass);
+                    button.find('i').removeClass('fa-thumbs-' + (status === 'active' ?
+                        'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+                    button.data('status', newStatus);
+                    loader.css('display', 'block');
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        },
+                        willClose: () => {
+                            loader.css('display', 'none');
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: "Status " + newStatus.charAt(0).toUpperCase() +
+                            newStatus.slice(1) + " successfully"
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        },
+                        willClose: () => {
+                            loader.css('opacity', '0');
+                        }
+                    });
+                    Toast.fire({
+                        icon: "error",
+                        title: "Failed to update status"
+                    });
+                }
+            });
+        });
+
+        $('.delete-role').on('click', function(e) {
+            e.preventDefault();
+            const roleId = $(this).data('role-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', roleId);
+            const $clickedElement = $(this);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this Role!',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const token = $('meta[name="csrf-token"]').attr('content');
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: deleteRoute,
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        }
+                    }).then(function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                        $clickedElement.closest('tr').fadeOut('slow', function() {
+                            $(this).css('backgroundColor', 'red').remove();
+                        });
+                    }).catch(function(xhr) {
+                        console.error(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to delete Role.',
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>
+@endpush

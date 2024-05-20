@@ -14,8 +14,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}"> --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('admin/dist/css/AdminLTE.min.css') }}">
+    @stack('css')
     <link rel="stylesheet" href="{{ asset('admin/dist/css/skins/_all-skins.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/css/main.css') }}">
 </head>
@@ -147,12 +149,12 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                    <li class="active"><a href="javascript:;"><i
                                                 class="fa fa-circle-o"></i>
                                             Add New
                                             Shift</a>
                                     </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             View
                                             Shift
                                         </a></li>
@@ -167,12 +169,12 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                    <li class="active"><a href="javascript:;"><i
                                                 class="fa fa-circle-o"></i>
                                             Add New
                                             Complaint</a>
                                     </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             View
                                             Complaints
                                         </a></li>
@@ -187,12 +189,12 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                    <li class="active"><a href="javascript:;"><i
                                                 class="fa fa-circle-o"></i>
                                             Add New
                                             Award</a>
                                     </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             View
                                             Awards
                                         </a></li>
@@ -207,12 +209,12 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                    <li class="active"><a href="javascript:;"><i
                                                 class="fa fa-circle-o"></i>
                                             Add New
                                             Notice</a>
                                     </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             View
                                             Notices
                                         </a></li>
@@ -227,11 +229,11 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{ route('user_create') }}"><i
+                                    <li class="active"><a href="javascript:;"><i
                                                 class="fa fa-circle-o"></i>
                                             Create Payslips</a>
                                     </li>
-                                    <li class=""><a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             View
                                             Payslips
                                         </a></li>
@@ -269,13 +271,13 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class="">
-                                    <a href="#"><i class="fa fa-circle-o"></i>Request A Leave</a>
+                                    <a href="{{route('leave_application.create')}}"><i class="fa fa-circle-o"></i>Request A Leave</a>
                                 </li>
                                 <li class="">
-                                    <a href="#"><i class="fa fa-circle-o"></i>All Leave</a>
+                                    <a href="{{route('leave_application.index')}}"><i class="fa fa-circle-o"></i>All Leave</a>
                                 </li>
                                 <li class="">
-                                    <a href="#"><i class="fa fa-circle-o"></i>Leave Types</a>
+                                    <a href="{{route('leave_types.index')}}"><i class="fa fa-circle-o"></i>Leave Types</a>
                                 </li>
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Holidays</a>
@@ -361,7 +363,6 @@
         <section class="content-header">
             <h1>
                 @yield('page-title')
-                <small>Employee</small>
             </h1>
         </section>
         <section class="content">
@@ -376,7 +377,7 @@
         </footer>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" crossorigin="anonymous"
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
@@ -385,10 +386,11 @@
         <script src="admin/js/chartJs.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.js"></script>
         <script src="{{ asset('admin/js/customAjax.js') }}"></script>
-        <script src="{{ asset('admin/plugins/chartjs/Chart.min.js') }}"></script>
+        {{-- <script src="{{ asset('admin/plugins/chartjs/Chart.min.js') }}"></script> --}}
         <script src="{{ asset('admin/dist/js/app.min.js') }}"></script>
         <script src="{{ asset('admin/dist/js/demo.js') }}"></script>
         <script src="{{ asset('admin/js/chartJs.js') }}"></script>
+        @stack('js')
 </body>
 
 </html>

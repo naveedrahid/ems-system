@@ -1,5 +1,11 @@
 $(document).ready(function () {
-
+    function modalCallBack() {
+        $('.modal-toggle').on('click', function (e) {
+            e.preventDefault();
+            $('.modal').toggleClass('is-visible');
+        });
+    }
+    modalCallBack();
     // add Role Request
 
     $('#addRoleForm').submit(function (e) {
@@ -532,12 +538,11 @@ $(document).ready(function () {
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
         const address = $('input[name="address"]').val().trim();
-        const user_password = $('input[name="user_password"]').val().trim();
         const user_role = $('select[name="user_role"]').val().trim();
         const status = $('select[name="status"]').val().trim();
 
         emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_role == '' || status == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -579,7 +584,6 @@ $(document).ready(function () {
                 $('#date_of_birth').val('');
                 $('#joining_date').val('');
                 $('#address').val('');
-                $('#user_password').val('');
                 $('#status').val('');
                 // window.location.reload(); // or redirect to a different page
             })
@@ -609,11 +613,10 @@ $(document).ready(function () {
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
         const address = $('input[name="address"]').val().trim();
-        const user_password = $('input[name="user_password"]').val().trim();
         const user_role = $('select[name="user_role"]').val().trim();
         const status = $('select[name="status"]').val().trim();
 
-        if (emergency_person_name == '' || user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+        if (emergency_person_name == '' || user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' ||  user_role == '' || status == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -729,14 +732,13 @@ $(document).ready(function () {
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
         const address = $('input[name="address"]').val().trim();
-        const user_password = $('input[name="user_password"]').val().trim();
         const user_role = $('select[name="user_role"]').val().trim();
         const status = $('select[name="status"]').val().trim();
         const department_id = $('select[name="department_id"]').val().trim();
         const designation_id = $('select[name="designation_id"]').val().trim();
 
         emergency_person_name
-        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
+        if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_role == '' || status == '' || department_id == '' || designation_id == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -778,7 +780,6 @@ $(document).ready(function () {
                 $('#date_of_birth').val('');
                 $('#joining_date').val('');
                 $('#address').val('');
-                $('#user_password').val('');
                 $('#status').val('');
                 $('#department_id').val('');
                 $('#designation_id').val('');
@@ -811,12 +812,11 @@ $(document).ready(function () {
         const date_of_birth = $('input[name="date_of_birth"]').val().trim();
         const joining_date = $('input[name="joining_date"]').val().trim();
         const address = $('input[name="address"]').val().trim();
-        const user_password = $('input[name="user_password"]').val().trim();
         const user_role = $('select[name="user_role"]').val().trim();
         const status = $('select[name="status"]').val().trim();
 
 
-        if (emergency_person_name == '' || user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_password == '' || user_role == '' || status == '') {
+        if (emergency_person_name == '' || user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number == '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' || date_of_birth == '' || joining_date == '' || address == '' || user_role == '' || status == '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -975,7 +975,9 @@ $(document).ready(function () {
                     text: response.message,
                 });
                 $('#addLeave')[0].reset();
-                window.location.href = redirectUrl;
+                setTimeout(function () {
+                    window.location.href = redirectUrl;
+                }, 2000);
             })
             .catch(function (xhr) {
                 console.error(xhr);
@@ -1113,6 +1115,53 @@ $(document).ready(function () {
         Swal.fire({
             title: 'Are you sure?',
             text: 'You will not be able to recover this designation!',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function (response) {
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                    });
+                    $clickedElement.closest('tr').fadeOut('slow', function () {
+                        $(this).css('backgroundColor', 'red').remove();
+                    });
+                }).catch(function (xhr) {
+                    console.error(xhr);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to delete Department.',
+                    });
+                });
+            }
+        });
+    });
+
+    $('.delete-leave-application').on('click', function (e) {
+        e.preventDefault();
+        const leaveAppId = $(this).data('leave-app-id');
+        const deleteRoute = $(this).data('delete-route').replace(':id', leaveAppId);
+        const $clickedElement = $(this);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this Leave Application!',
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

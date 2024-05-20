@@ -16,12 +16,14 @@
     background: #fff;
     color: #000;
 }
-.logout i{
+
+.logout i {
     font-size: 17px;
     color: #444444;
     cursor: pointer;
     padding: 10px 17px;
 }
+
 td.imgCircle {
     display: flex;
     align-items: center;
@@ -31,6 +33,7 @@ td.imgCircle img {
     border-radius: 100%;
     margin-right: 10px;
 }
+
 li.dropdown.user.user-menu {
     display: flex;
     align-items: center;
@@ -48,6 +51,7 @@ li.dropdown.user.user-menu {
     width: 50px;
     height: 50px;
 }
+
 li.dropdown.user.user-menu a.dropdown-toggle {
     display: flex;
     align-items: center;
@@ -56,15 +60,23 @@ li.dropdown.user.user-menu a.dropdown-toggle {
 li.dropdown.user.user-menu a.dropdown-toggle img {
     margin-right: 10px !important;
 }
-li.nav-item.checkinMain {
-    list-style: none;
-}
+
 li.nav-item.checkinMain {
     list-style: none;
 }
 
-.main-sidebar, .left-side{padding-top: 55px}
-.main-header .logo{height:53px}
+li.nav-item.checkinMain {
+    list-style: none;
+}
+
+.main-sidebar,
+.left-side {
+    padding-top: 55px
+}
+
+.main-header .logo {
+    height: 53px
+}
 
 img.imgLoader {
     position: absolute;
@@ -73,8 +85,118 @@ img.imgLoader {
     right: 0;
     bottom: 0;
     margin: auto;
-    display:none;
+    display: none;
 }
-.leave-toggle{
-    position:relative;
+
+.leave-toggle {
+    position: relative;
+}
+
+
+.popUpWrapper .icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    fill: currentcolor;
+}
+
+.popUpWrapper .modal {
+    position: absolute;
+    z-index: 10000;
+    /* 1 */
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.popUpWrapper .modal.is-visible {
+    visibility: visible;
+}
+
+.popUpWrapper .modal-overlay {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: hsla(0, 0%, 0%, 0.5);
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.3s, opacity 0.3s;
+}
+
+.popUpWrapper .modal.is-visible .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.popUpWrapper .modal-wrapper {
+    position: absolute;
+    z-index: 9999;
+    top: 6em;
+    left: 50%;
+    width: 32em;
+    margin-left: -16em;
+    background-color: #fff;
+    box-shadow: 0 0 1.5em hsla(0, 0%, 0%, 0.35);
+}
+
+.popUpWrapper .modal-transition {
+    transition: all 0.3s 0.12s;
+    transform: translateY(-10%);
+    opacity: 0;
+}
+
+.popUpWrapper .modal.is-visible .modal-transition {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.popUpWrapper .modal-header,
+.modal-content {
+    padding: 1em;
+}
+
+.popUpWrapper .modal-header {
+    position: relative;
+    background-color: #fff;
+    box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.06);
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.popUpWrapper .modal-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1em;
+    color: #aaa;
+    background: none;
+    border: 0;
+}
+
+.popUpWrapper .modal-close:hover {
+    color: #777;
+}
+
+.popUpWrapper .modal-heading {
+    font-size: 1.125em;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.popUpWrapper .modal-content>*:first-child {
+    margin-top: 0;
+}
+
+.popUpWrapper .modal-content>*:last-child {
+    margin-bottom: 0;
+}
+.p-relative{
+    position: relative;
 }

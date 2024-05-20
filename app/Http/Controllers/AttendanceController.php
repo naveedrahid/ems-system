@@ -66,7 +66,7 @@ class AttendanceController extends Controller
             [
                 'check_out' => $time,
                 'status' => $checkOutTime <= $officeClosingTime ? 'early_out' : 'present',
-                'total_overtime' => $totalOvertime, // Update total overtime
+                'total_overtime' => $totalOvertime, 
             ]
         );
     

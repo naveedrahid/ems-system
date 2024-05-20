@@ -2,6 +2,15 @@
 
 use Carbon\Carbon;
 
+// if (!function_exists('get_total_leave_balance')) {
+//     function get_total_leave_balance($start_date, $end_date)
+//     {
+//         $start_date_parsed = Carbon::createFromFormat('Y-m-d', $start_date);
+//         $end_date_parsed = Carbon::createFromFormat('Y-m-d', $end_date);
+//         $total_days = $start_date_parsed->diffInDays($end_date_parsed) + 1;
+//         return $total_days;
+//     }
+// }
 
 if (!function_exists('showEmployeeTime')) {
     function showEmployeeTime($checkIn, $checkOut)

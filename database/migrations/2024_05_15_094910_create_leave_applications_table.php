@@ -17,11 +17,12 @@ class CreateLeaveApplicationsTable extends Migration
             $table->id();
             $table->integer('employee_id');
             $table->integer('leave_type_id');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->string('start_date', 255);
+            $table->string('end_date', 255);
             $table->text('reason')->nullable();
             $table->string('leave_image')->nullable();
             $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->string('total_leave')->nullable();
             $table->timestamps();
         });
     }

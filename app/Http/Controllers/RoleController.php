@@ -67,9 +67,10 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function edit(Role $role)
+    public function edit($id)
     {
-        //
+        $role = Role::findOrFail($id);
+        return view('role-manager.edit', compact('role'));
     }
 
     /**
@@ -79,9 +80,21 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRoleRequest $request, Role $role)
+    public function update(Request $request, $id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        $request->validate([
+            'add_role' => 'required|string',
+        ]);
+    
+        $roleName = strtolower(str_replace(' ', '-', $request->add_role));
+    
+        $role->update([
+            'name' => $roleName,
+        ]);
+
+        return response()->json(['message' => 'Role created successfully'], 200);
     }
 
     /**
@@ -90,8 +103,20 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Role $role)
+    public function destroy($id)
     {
-        //
+        $role = Role::findOrFail($id);
+        $role->delete();
+        return response()->json(['message' => 'Role deleted successfully'], 200);
     }
+
+    public function updateStatus(Request $request, $id){
+        $role = Role::findOrFail($id);
+        $role->status = $request->status;
+        $role->save();
+
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+
 }
+

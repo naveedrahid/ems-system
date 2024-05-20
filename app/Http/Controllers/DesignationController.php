@@ -16,7 +16,7 @@ class DesignationController extends Controller
      */
     public function index()
     {
-        $designations = Designation::all();
+        $designations = Designation::with('department')->get();
         return view('designation.index', compact('designations'));
     }
 

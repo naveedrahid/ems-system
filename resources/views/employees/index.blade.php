@@ -7,10 +7,10 @@
     <div class="box">
         <div class="box-header with-border">
             @if (Auth::user()->id == 1 || Auth::user()->id == 2)
-            <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
-                <a href="{{ route('employees.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
-            </h3>
+                <h3 class="box-title">
+                    <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
+                    <a href="{{ route('employees.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                </h3>
             @endif
             <div class="box-tools">
                 <div class="input-group input-group-sm" style="width: 250px;">
@@ -44,7 +44,21 @@
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>
-                                    <img class="profile-user-img img-responsive img-circle" src="{{asset('upload/' . optional($employee->employee)->employee_img )}}" alt="" style="width:60px;height:60px;margin:unset;">
+                                    {{-- <img class="profile-user-img img-responsive img-circle"
+                                        src="{{ asset('upload/' . optional($employee->employee)->employee_img) }}"
+                                        alt="" style="width:60px;height:60px;margin:unset;"> --}}
+                                    @if (empty($employee->employee->employee_img))
+                                        @if ($employee->gender === 'male')
+                                            <img src="{{ asset('admin/images/male.jpg') }}" width="60" height="60"
+                                                alt="User Image">
+                                        @elseif ($employee->gender === 'female')
+                                            <img src="{{ asset('admin/images/female.png') }}" width="60" height="60"
+                                                alt="User Image">
+                                        @endif
+                                    @else
+                                        <img src="{{ asset('upload/' . optional($employee->employee)->employee_img) }}"
+                                            width="60" height="60" alt="User Image">
+                                    @endif
                                 </td>
                                 <td>
                                     {{ $employee->name }}
