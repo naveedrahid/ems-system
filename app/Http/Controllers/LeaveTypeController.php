@@ -79,7 +79,7 @@ class LeaveTypeController extends Controller
     public function update(Request $request, LeaveType $leaveType)
     {
         $validate = $request->validate([
-            'name' => 'required|unique:leave_types,name',
+            'name' => 'required',
             'description' => 'nullable',
             'default_balance' => 'required|numeric',
             'status' => 'required|in:active,deactive',
