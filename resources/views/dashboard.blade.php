@@ -4,7 +4,7 @@
     Dashboard
 @endsection
 @section('page-content')
-    <div class="row">
+    <div class="row" style="margin-bottom:30px;">
         <div class="col-md-8">
             <div>
                 <h1>{{ auth()->user()->name }} |
@@ -106,24 +106,94 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="small-box bg-aqua py-4 px-3">
+                        <div class="inner">
+                            @php
+                                $totalLeaves = 0;
+                                foreach ($leaveTypes as $leaveType) {
+                                    $totalLeaves += $leaveType->default_balance;
+                                }
+                            @endphp
+                            <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
+                            @foreach ($leaveTypes as $leaveType)
+                                <p class="m-0">
+                                    {{ $leaveType->name }} - {{ $leaveType->default_balance }}
+                                </p>
+                            @endforeach
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="small-box bg-red py-4 px-3">
+                        <div class="inner">
+                            @php
+                                $totalAvaile = 0;
+                                foreach ($leaveTypes as $leaveType) {
+                                    $totalAvaile += $availedLeaves->get($leaveType->id, 0);
+                                }
+                            @endphp
+                            <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
+                            @foreach ($leaveTypes as $leaveType)
+                            <p class="m-0">{{ strtoupper($leaveType->name) }} -
+                                    {{ $availedLeaves->get($leaveType->id, 0) }}</p>
+                            @endforeach
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="small-box bg-green py-4 px-3">
+                        <div class="inner">
+                            @php
+                                $totalRemaining = 0;
+                                foreach ($leaveTypes as $leaveType) {
+                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
+                                    $totalRemaining += $remainingLeaveCount;
+                                }
+                            @endphp
+
+                            <h4><strong>Remaining Leave: {{ $totalRemaining }}</strong></h4>
+
+                            @foreach ($leaveTypes as $leaveType)
+                                @php
+                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
+                                @endphp
+                                <p class="m-0">{{ strtoupper($leaveType->name) }} -
+                                    {{ $remainingLeaveCount }}</p>
+                            @endforeach
+                        </div>
+
+                        <div class="icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="box box-danger">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Latest Employee</h3>
+                            <h3 class="box-title">Team {{ $departmentName }}</h3>
                         </div>
                         <div class="box-body no-padding">
                             <ul class="users-list clearfix">
                                 @foreach ($employeesByDepartment as $employee)
                                     <li>
                                         @if (!$employee->employee_img && $employee->gender === 'male')
-                                            <img src="{{ asset('admin/images/male.jpg') }}" width="50" height="50"
+                                            <img src="{{ asset('admin/images/male.jpg') }}" width="80" height="80"
                                                 alt="User Image">
                                         @elseif(!$employee->employee_img && $employee->gender === 'female')
-                                            <img src="{{ asset('admin/images/female.png') }}" width="50" height="50"
+                                            <img src="{{ asset('admin/images/female.png') }}" width="80" height="80"
                                                 alt="User Image">
                                         @else
-                                            <img src="{{ asset('upload/' . $employee->employee_img) }}" width="50"
-                                                height="50" alt="User Image">
+                                            <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
+                                                height="80" alt="User Image">
                                         @endif
                                         <a class="users-list-name" href="javascript:;">{{ $employee->user->name }}</a>
                                         <span class="users-list-date">{{ $departmentName }}</span>
@@ -286,7 +356,7 @@
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="box box-danger">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Latest Employee</h3>
+                            <h3 class="box-title">Team {{ $departmentName }}</h3>
                         </div>
                         <div class="box-body no-padding">
                             <ul class="users-list clearfix">

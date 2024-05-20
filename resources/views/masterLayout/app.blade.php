@@ -8,14 +8,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    {{-- <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}"> --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/dist/css/AdminLTE.min.css') }}">
     @stack('css')
     <link rel="stylesheet" href="{{ asset('admin/dist/css/skins/_all-skins.min.css') }}">
@@ -47,13 +45,6 @@
                                 @endif
                                 <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
-                            <div class="treeview btnLogoutWrapRigth">
-                                <form action="{{ route('logoutUser') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btnLogout"><i
-                                            class="fa-solid fa-arrow-right-from-bracket"></i></button>
-                                </form>
-                            </div>
                             <ul class="dropdown-menu">
                                 <li class="user-header">
                                     <img src="{{ asset('admin/images/face8.jpg') }}" class="img-circle"
@@ -71,6 +62,15 @@
                                     </div>
                                 </li>
                             </ul>
+                        </li>
+                        <li class="dropdown user user-menu">
+                            <div class="treeview btnLogoutWrapRigth">
+                                <form action="{{ route('logoutUser') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btnLogout"><i
+                                            class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                                </form>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -313,7 +313,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class="">
-                                    <a href="#"><i class="fa fa-circle-o"></i>Leave Policy</a>
+                                    <a href="{{ asset('admin/document/Leave-Policy-Permanent-Employees-2022.pdf') }}" target="_blank"><i class="fa fa-circle-o"></i>Leave Policy</a>
                                 </li>
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Medical Policy</a>

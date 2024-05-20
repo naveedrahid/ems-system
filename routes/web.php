@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -154,4 +155,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');
+    Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
 });

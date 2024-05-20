@@ -1,0 +1,1 @@
+<img src="{{asset('admin/documnet/Leave-Policy-Permanent-Employees-2022.pdf')}}">
