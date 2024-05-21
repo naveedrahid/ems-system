@@ -9,7 +9,7 @@
             <div>
                 <h1>{{ auth()->user()->name }} |
                     <small>
-                        Employees in {{ $departmentName }} Department
+                        in {{ $departmentName }} Department
                     </small>
                 </h1>
 

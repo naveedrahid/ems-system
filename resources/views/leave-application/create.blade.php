@@ -51,11 +51,8 @@
     </div>
 @endsection
 @endsection
-@push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-@endpush
+
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
     $(function() {
         $('#daterange').daterangepicker({

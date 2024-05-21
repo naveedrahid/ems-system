@@ -13,8 +13,23 @@ class AttendanceController extends Controller
     public function AttendanceShow(){
         $users = User::with('role')->get();
         $attendance = Attendance::all();
-        return view('attendance.attendance', compact('users', 'attendance'));
+    
+        // Get the current month and year
+        $currentMonth = date('m');
+        $currentYear = date('Y');
+    
+        return view('attendance.attendance', compact('users', 'attendance', 'currentMonth', 'currentYear'));
     }
+
+    public function dailyReport() {
+        $users = User::with('role')->get();
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $attendance = Attendance::whereDate('attendance_date', $currentDate)->get();
+        $authUserRoleId = auth()->user()->role_id;
+        $authUserId = auth()->user()->id;
+        return view('attendance.daily-report', compact('users', 'attendance', 'authUserRoleId', 'authUserId'));
+    }
+    
 
     public function checkInuser(Request $request)
     {
@@ -72,7 +87,4 @@ class AttendanceController extends Controller
     
         return response()->json(['message' => 'Check out successfully']);
     }
-    
-    
-
 }

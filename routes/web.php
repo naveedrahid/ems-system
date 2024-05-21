@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveApplicationController;
@@ -132,15 +133,27 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
         ->parameters([
             'leave-applications' => 'id'
         ])->names([
-            // 'index' => 'leave_application.index',
-            // 'create' => 'leave_application.create',
             'edit' => 'leave_application.edit',
-            // 'store' => 'leave_application.store',
             'update' => 'leave_application.update',
             'destroy' => 'leave_application.destroy',
         ])->except([
             'show',
         ]);
+
+    Route::resource('holidays', HolidayController::class)
+        ->parameters([
+            'holidays' => 'holiday'
+        ])->names([
+            'index' => 'holidays.index',
+            'create' => 'holidays.create',
+            'edit' => 'holidays.edit',
+            'store' => 'holidays.store',
+            'update' => 'holidays.update',
+            'destroy' => 'holidays.destroy',
+        ])->except([
+            'show',
+        ]);
+        Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -151,6 +164,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
+    Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');

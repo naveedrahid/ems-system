@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/dist/css/AdminLTE.min.css') }}">
     @stack('css')
@@ -41,7 +43,8 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 @if (optional(auth()->user()->employee)->employee_img)
                                     <img src="{{ asset('upload/' . optional(auth()->user()->employee)->employee_img) }}"
-                                        alt="Employee Image" class="profile-user-img img-responsive img-circle user-image">
+                                        alt="Employee Image"
+                                        class="profile-user-img img-responsive img-circle user-image">
                                 @endif
                                 <span class="hidden-xs"> Hello, {{ auth()->user()->name }}</span>
                             </a>
@@ -58,19 +61,13 @@
                                         <a href="#" class="btn btn-default btn-flat">Profile</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                        <form action="{{ route('logoutUser') }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-default btn-flat">Sign Out</button>
+                                        </form>
                                     </div>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="dropdown user user-menu">
-                            <div class="treeview btnLogoutWrapRigth">
-                                <form action="{{ route('logoutUser') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btnLogout"><i
-                                            class="fa-solid fa-arrow-right-from-bracket"></i></button>
-                                </form>
-                            </div>
                         </li>
                     </ul>
                 </div>
@@ -100,7 +97,6 @@
 
                     @if (Auth::user())
                         @if (Auth::user()->id == 1)
-
                             <li class="treeview">
                                 <a href="javascript:;">
                                     <i class="fa fa-users"></i> <span>Department</span>
@@ -149,8 +145,7 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i
-                                                class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Shift</a>
                                     </li>
@@ -169,8 +164,7 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i
-                                                class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Complaint</a>
                                     </li>
@@ -189,8 +183,7 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i
-                                                class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Award</a>
                                     </li>
@@ -209,8 +202,7 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i
-                                                class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Notice</a>
                                     </li>
@@ -229,8 +221,7 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i
-                                                class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
                                             Create Payslips</a>
                                     </li>
                                     <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
@@ -271,16 +262,19 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class="">
-                                    <a href="{{route('leave_application.create')}}"><i class="fa fa-circle-o"></i>Request A Leave</a>
+                                    <a href="{{ route('leave_application.create') }}"><i
+                                            class="fa fa-circle-o"></i>Request A Leave</a>
                                 </li>
                                 <li class="">
-                                    <a href="{{route('leave_application.index')}}"><i class="fa fa-circle-o"></i>All Leave</a>
+                                    <a href="{{ route('leave_application.index') }}"><i
+                                            class="fa fa-circle-o"></i>All Leave</a>
                                 </li>
                                 <li class="">
-                                    <a href="{{route('leave_types.index')}}"><i class="fa fa-circle-o"></i>Leave Types</a>
+                                    <a href="{{ route('leave_types.index') }}"><i class="fa fa-circle-o"></i>Leave
+                                        Types</a>
                                 </li>
                                 <li class="">
-                                    <a href="#"><i class="fa fa-circle-o"></i>Holidays</a>
+                                    <a href="{{route('holidays.index')}}"><i class="fa fa-circle-o"></i>Holidays</a>
                                 </li>
                             </ul>
                         </li>
@@ -302,6 +296,11 @@
                                         Report
                                     </a>
                                 </li>
+                                <li class="">
+                                    <a href="{{ route('daily.report') }}"><i class="fa fa-circle-o"></i>
+                                        Daily Report
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="treeview">
@@ -313,7 +312,8 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class="">
-                                    <a href="{{ asset('admin/document/Leave-Policy-Permanent-Employees-2022.pdf') }}" target="_blank"><i class="fa fa-circle-o"></i>Leave Policy</a>
+                                    <a href="{{ asset('admin/document/Leave-Policy-Permanent-Employees-2022.pdf') }}"
+                                        target="_blank"><i class="fa fa-circle-o"></i>Leave Policy</a>
                                 </li>
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Medical Policy</a>
@@ -335,12 +335,12 @@
                                     <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
                                 </li>
                                 @if (Auth::user()->id == 1)
-                                <li class="">
-                                    <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
-                                </li>
-                                <li class="active">
-                                    <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
-                                </li>
+                                    <li class="">
+                                        <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
+                                    </li>
                                 @endif
                                 <li class="">
                                     <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
@@ -360,12 +360,12 @@
         </aside>
         @yield('main')
         <div class="content-wrapper">
-        <section class="content-header">
-            <h1>
-                @yield('page-title')
-            </h1>
-        </section>
-        <section class="content">
+            <section class="content-header">
+                <h1>
+                    @yield('page-title')
+                </h1>
+            </section>
+            <section class="content">
                 @yield('page-content')
             </section>
         </div>
@@ -385,6 +385,8 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="admin/js/chartJs.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
         <script src="{{ asset('admin/js/customAjax.js') }}"></script>
         {{-- <script src="{{ asset('admin/plugins/chartjs/Chart.min.js') }}"></script> --}}
         <script src="{{ asset('admin/dist/js/app.min.js') }}"></script>

@@ -5,27 +5,11 @@
 @endsection
 @section('page-content')
     <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">
-                @if (Auth::user()->id < 3)
-                    <a class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
-                @endif
-            </h3>
-            <div class="box-tools">
-                <div class="input-group input-group-sm" style="width: 250px;">
-                    <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="box-body">
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="6%">ID</th>
+                        <th width="10%">ID</th>
                         <th width="20%">Name</th>
                         <th width="20%">Date</th>
                         <th width="10%">Check In</th>
@@ -36,59 +20,71 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (auth()->user()->id == 1 || auth()->user()->id == 2)
-                        @foreach ($attendance as $result)
-                            <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
-                                <td>#{{ $result->id }}</td>
-                                <td>
-                                    @foreach ($users as $user)
-                                        @if ($result->user_id == $user->id)
-                                            {{ $user->name }}
-                                        @endif
-                                    @endforeach
-                                </td>
-                                <td>{{ $result->attendance_date }}</td>
-                                <td>{{ $result->check_in }}</td>
-                                <td>{{ $result->check_out }}</td>
-                                <td>
-                                    @if ($result->check_out !== null)
-                                        {{ showEmployeeTime($result->check_in, $result->check_out) }}
+                    @php
+                        $currentMonthDates = collect();
+                        $startDate = Carbon\Carbon::createFromDate($currentYear, $currentMonth, 1);
+                        $endDate = $startDate->copy()->endOfMonth();
+
+                        $currentMonthDates = $currentMonthDates->merge($startDate->toPeriod($endDate, '1 day'));
+                    @endphp
+
+                    @foreach ($currentMonthDates as $date)
+                        @php
+                            $formattedDate = $date->format('Y-m-d');
+                            $displayDate = $date->format('l - M - Y');
+                            $attendanceData = $attendance->where('attendance_date', $formattedDate)->first();
+                            $weekend = \Carbon\Carbon::parse($date)->isWeekend();
+                            $timeNow = \Carbon\Carbon::now();
+
+                        @endphp
+                        <tr>
+                            <td>
+                                @foreach ($users as $user)
+                                    @if (optional($attendanceData)->user_id == $user->id)
+                                        #{{ $user->id }}
                                     @endif
-                                </td>
-                                <td>{{ $result->total_overtime }}</td>
-                                <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
-                            </tr>
-                        @endforeach
-                    @else
-                        @foreach ($attendance as $result)
-                            @if ($result->user_id == auth()->user()->id)
-                                <tr>
-                                    <td><input type="checkbox" name="" id="" class="checkSingle"></td>
-                                    <td>{{ $result->id }}</td>
-                                    <td>
-                                        @foreach ($users as $user)
-                                            @if ($user->id == auth()->user()->id)
-                                                {{ $user->name }}
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td>{{ $result->attendance_date }}</td>
-                                    <td>{{ $result->check_in }}</td>
-                                    <td>{{ $result->check_out }}</td>
-                                    <td>
-                                        @if ($result->check_out !== null)
-                                            {{ showEmployeeTime($result->check_in, $result->check_out) }}
-                                        @endif
-                                    </td>
-                                    <td>{{ $result->total_overtime }}</td>
-                                    <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
-                                </tr>
-                            @endif
-                        @endforeach
-                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($users as $user)
+                                    @if (optional($attendanceData)->user_id == $user->id)
+                                        {{ $user->name }}
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                <span class="currentDate">{{ $displayDate }}</span>
+                            </td>
+                            <td>
+                                @if (optional($attendanceData)->check_in)
+                                    {{ \Carbon\Carbon::parse(optional($attendanceData)->check_in)->format('g:i A') }}
+                                @endif
+                            </td>
+                            <td>
+                                @if (optional($attendanceData)->check_out)
+                                    {{ \Carbon\Carbon::parse(optional($attendanceData)->check_out)->format('g:i A') }}
+                                @endif
+                            </td>
+                            <td>
+                                @if ($attendanceData && $attendanceData->check_out)
+                                    {{ showEmployeeTime($attendanceData->check_in, $attendanceData->check_out) }}
+                                @endif
+                            </td>
+                            <td>{{ optional($attendanceData)->total_overtime }}</td>
+                            <td>
+                                @if ($weekend)
+                                    <span class="btn btn-danger btn-xs">Holiday</span>
+                                @elseif(optional($attendanceData)->status)
+                                    <span class="btn btn-primary btn-xs">
+                                        {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
+
         </div>
         <div class="box-footer clearfix">
             <div class="row">
