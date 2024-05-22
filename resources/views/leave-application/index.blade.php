@@ -8,7 +8,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">
                 <a href="{{ route('leave_application.create') }}" class="btn btn-block btn-primary">
-                    Reques a leave
+                    Request a leave
                 </a>
             </h3>
         </div>

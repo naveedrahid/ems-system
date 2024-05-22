@@ -69,7 +69,9 @@
                                     -
                                 @endif
                             </td>
-                            <td>{{ optional($attendanceData)->total_overtime }}</td>
+                            <td>
+                                {{ optional($attendanceData)->total_overtime }}
+                            </td>
                             <td>
                                 @if ($weekend)
                                     <span class="btn btn-danger btn-xs">Holiday</span>
