@@ -1,7 +1,7 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    Daily Attendance Report
+    Daily Attendance
 @endsection
 @section('page-content')
     <div class="box">

@@ -11,7 +11,7 @@ class AttendanceController extends Controller
 {
 
     public function AttendanceShow(){
-        $users = User::with('role')->get();
+        $users = User::Where('id', auth()->user()->id)->get();
         // $attendance = Attendance::all();
         $attendance = Attendance::Where('user_id', auth()->user()->id)->get();
     

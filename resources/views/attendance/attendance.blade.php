@@ -1,7 +1,7 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    Employee Attendance
+    Current Month Attendance
 @endsection
 @section('page-content')
     <div class="box">
@@ -9,7 +9,6 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="10%">ID</th>
                         <th width="20%">Name</th>
                         <th width="20%">Date</th>
                         <th width="10%">Check In</th>
@@ -31,7 +30,7 @@
                     @foreach ($currentMonthDates as $date)
                         @php
                             $formattedDate = $date->format('Y-m-d');
-                            $displayDate = $date->format('l - M - Y');
+                            $displayDate = $date->format('l - d M, Y');
                             $attendanceData = $attendance->where('attendance_date', $formattedDate)->first();
                             $weekend = \Carbon\Carbon::parse($date)->isWeekend();
                             $timeNow = \Carbon\Carbon::now();
@@ -39,18 +38,12 @@
                         @endphp
                         <tr>
                             <td>
-                                @foreach ($users as $user)
-                                    @if (optional($attendanceData)->user_id == $user->id)
-                                        #{{ $user->id }}
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td>
-                                @foreach ($users as $user)
+                                <!-- @foreach ($users as $user)
                                     @if (optional($attendanceData)->user_id == $user->id)
                                         {{ $user->name }}
                                     @endif
-                                @endforeach
+                                @endforeach -->
+                                {{Auth::user()->name}}
                             </td>
                             <td>
                                 <span class="currentDate">{{ $displayDate }}</span>
@@ -58,6 +51,8 @@
                             <td>
                                 @if (optional($attendanceData)->check_in)
                                     {{ \Carbon\Carbon::parse(optional($attendanceData)->check_in)->format('g:i A') }}
+                                @else
+                                    -
                                 @endif
                             </td>
                             <td>

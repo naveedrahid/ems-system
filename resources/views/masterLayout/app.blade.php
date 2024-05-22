@@ -287,18 +287,12 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class="">
-                                    <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
-                                        Attendance
-                                    </a>
-                                </li>
-                                <li class="">
-                                    <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> View
-                                        Report
-                                    </a>
-                                </li>
-                                <li class="">
                                     <a href="{{ route('daily.report') }}"><i class="fa fa-circle-o"></i>
-                                        Daily Report
+                                        Daily Attendance
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> Month Wise Attendance
                                     </a>
                                 </li>
                             </ul>
