@@ -444,15 +444,15 @@ a:focus {
 }
 
 @media (max-width:991px) {
-				.navbar-collapse.pull-left {
-								float: none !important
-				}
-				.navbar-collapse.pull-left+.navbar-custom-menu {
-								display: block;
-								position: absolute;
-								top: 0;
-								right: 40px
-				}
+	.navbar-collapse.pull-left {
+					float: none !important
+	}
+	.navbar-collapse.pull-left+.navbar-custom-menu {
+					display: block;
+					position: absolute;
+					top: 0;
+					right: 40px
+	}
 }
 
 .main-sidebar,
@@ -5695,4 +5695,8 @@ table.text-center th {
 	color: #fff;
     background-color: #008d4c;
     border-color: #008d4c;
-} 
+}
+
+.pull-left.image {
+	height: 40px;
+}

@@ -12,7 +12,8 @@ class AttendanceController extends Controller
 
     public function AttendanceShow(){
         $users = User::with('role')->get();
-        $attendance = Attendance::all();
+        // $attendance = Attendance::all();
+        $attendance = Attendance::Where('user_id', auth()->user()->id)->get();
     
         // Get the current month and year
         $currentMonth = date('m');
