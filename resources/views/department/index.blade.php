@@ -24,7 +24,6 @@
                 <thead style="background-color: #F8F8F8;">
                     <tr>
                         <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="16%">ID</th>
                         <th width="40%">Department Name</th>
                         <th width="20%">Status</th>
                         <th width="20%">Manage</th>
@@ -35,7 +34,6 @@
                         @foreach ($departments as $department)
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
-                                <td>{{ $department->id }}</td>
                                 <td>{{ $department->department_name }}</td>
                                 <td>
                                     @if ($department->status !== 'active')
