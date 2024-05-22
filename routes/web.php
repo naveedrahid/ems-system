@@ -161,10 +161,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [HomeController::class, 'index'])->name('admin');
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
 
-    Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
+    Route::get('/attendance/month-report', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
-    Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
+    Route::get('/attendance', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');

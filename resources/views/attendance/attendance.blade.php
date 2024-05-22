@@ -58,11 +58,15 @@
                             <td>
                                 @if (optional($attendanceData)->check_out)
                                     {{ \Carbon\Carbon::parse(optional($attendanceData)->check_out)->format('g:i A') }}
+                                @else
+                                    -
                                 @endif
                             </td>
                             <td>
                                 @if ($attendanceData && $attendanceData->check_out)
                                     {{ showEmployeeTime($attendanceData->check_in, $attendanceData->check_out) }}
+                                @else
+                                    -
                                 @endif
                             </td>
                             <td>{{ optional($attendanceData)->total_overtime }}</td>
