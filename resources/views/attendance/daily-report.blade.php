@@ -10,7 +10,6 @@
                 <thead style="background-color: #F8F8F8;">
                     <tr>
                         <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="6%">ID</th>
                         <th width="20%">Name</th>
                         <th width="20%">Date</th>
                         <th width="10%">Check In</th>
@@ -25,7 +24,7 @@
                         @foreach ($attendance as $result)
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
-                                <td>#{{ $result->id }}</td>
+                
                                 <td>
                                     @foreach ($users as $user)
                                         @if ($result->user_id == $user->id)
