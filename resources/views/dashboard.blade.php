@@ -9,7 +9,7 @@
             <div>
                 <h1>{{ auth()->user()->name }} |
                     <small>
-                        {{ $departmentName }} Department
+                        {{ $designation }} - {{ $departmentName }} Department
                     </small>
                 </h1>
 
@@ -18,7 +18,10 @@
         <div class="col-md-4">
             <div class="text-right">
                 <div>
-                    <h4><span>Today: {{ date('d M, Y') }}</span></h4>
+                    @php
+                        $currentDayName = Carbon\Carbon::now()->format('l');
+                    @endphp
+                    <h4><span>Today: {{$currentDayName}} , {{ date('d M, Y') }}</span></h4>
                 </div>
                 <div>
                     <ul class="p-0 list-unstyled mb-3">

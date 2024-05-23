@@ -286,6 +286,48 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Policy Documents</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="{{ asset('admin/document/Leave-Policy-Permanent-Employees-2022.pdf') }}"
+                                            target="_blank"><i class="fa fa-circle-o"></i>Leave Policy</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Medical Policy</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Employee Policy</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Account Setting</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
+                                    </li>
+                                    <li class="active">
+                                        <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
+                                    </li>
+                                </ul>
+                            </li>
                         @else
                             <li class="treeview">
                                 <a href="javascript:;">
@@ -382,14 +424,6 @@
                                     <li class="">
                                         <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
                                     </li>
-                                    @if (Auth::user()->id == 1)
-                                        <li class="">
-                                            <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
-                                        </li>
-                                        <li class="active">
-                                            <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
-                                        </li>
-                                    @endif
                                     <li class="">
                                         <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
                                     </li>
