@@ -48,7 +48,7 @@
                                     <label class="form-label">Status: <span class="text text-red">*</span></label>
                                     <select name="status" id="status" class="form-control form-select select2"
                                         style="width: 100%;">
-                                        <option value="">Select Role</option>
+                                        <option value="">Select Status</option>
                                         @foreach (['active', 'deactive'] as $status)
                                             <option value="{{ $status }}"
                                                 {{ old('status') == $status ? 'selected' : '' }}>
@@ -82,7 +82,7 @@
                                     <label class="form-label">Gender: <span class="text text-red">*</span></label>
                                     <select name="gender" id="gender" class="form-control form-select select2"
                                         style="width: 100%;">
-                                        <option value="">Select Role</option>
+                                        <option value="">Select Gender</option>
                                         @foreach (['male', 'female'] as $status)
                                             <option value="{{ $status }}"
                                                 {{ old('status') == $status ? 'selected' : '' }}>
@@ -94,9 +94,9 @@
                                     <label class="form-label">Role: <span class="text text-red">*</span></label>
                                     <select name="user_role" id="author_feature" class="form-control form-select select2"
                                         style="width: 100%;">
-                                        @if (isset($role))
-                                            <option value="{{ $role->id }}" selected>{{ $role->name }}</option>
-                                        @endif
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3 form-group">

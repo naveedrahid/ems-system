@@ -200,3 +200,6 @@ img.imgLoader {
 .p-relative{
     position: relative;
 }
+.users-list>li img{
+    height: unset !important;
+}

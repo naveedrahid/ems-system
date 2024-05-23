@@ -19,8 +19,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $employees = User::with('employee')->get();
-        // $roleId = Role::find($role_id);
+        $employees = User::whereIn('role_id', [1, 2])->with('employee')->get();
         return view('users.users', compact('employees'));
     }
 
@@ -31,10 +30,15 @@ class UserController extends Controller
      */
     public function create()
     {
-        $role = Role::where('name', 'employee')->first();
+        $currentUser = auth()->user();
+        if ($currentUser->role_id == 1) {
+            $roles = Role::all();
+        }else{
+            $roles = Role::where('name', 'employee')->first();
+        }
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
-        return view('employees.create', compact('departments', 'designations', 'role'));
+        return view('employees.create', compact('departments', 'designations', 'roles'));
     }
 
     public function getDesignations($departmentId)

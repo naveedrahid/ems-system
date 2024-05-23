@@ -9,7 +9,7 @@
             <div>
                 <h1>{{ auth()->user()->name }} |
                     <small>
-                        in {{ $departmentName }} Department
+                        {{ $departmentName }} Department
                     </small>
                 </h1>
 
@@ -74,8 +74,8 @@
                     <div class="info-box">
                         <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Books</span>
-                            <span class="info-box-number">90</span>
+                            <span class="info-box-text">Total Employees</span>
+                            <span class="info-box-number">{{$activeEmployeeCount}}</span>   
                         </div>
                     </div>
                 </div>
@@ -83,8 +83,10 @@
                     <div class="info-box">
                         <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Authors</span>
-                            <span class="info-box-number">41,410</span>
+                            <span class="info-box-text">Total Leave Requests</span>
+                            @if ($leaveTypes->isNotEmpty())
+                                <span class="info-box-number">{{$leaveTypes->sum('default_balance')}}</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -138,7 +140,7 @@
                             @endphp
                             <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
                             @foreach ($leaveTypes as $leaveType)
-                            <p class="m-0">{{ strtoupper($leaveType->name) }} -
+                                <p class="m-0">{{ strtoupper($leaveType->name) }} -
                                     {{ $availedLeaves->get($leaveType->id, 0) }}</p>
                             @endforeach
                         </div>
@@ -184,22 +186,24 @@
                         <div class="box-body no-padding">
                             <ul class="users-list clearfix">
                                 @foreach ($employeesByDepartment as $employee)
-                                    <li>
-                                        @if (!$employee->employee_img && $employee->gender === 'male')
-                                            <img src="{{ asset('admin/images/male.jpg') }}" width="80" height="80"
-                                                alt="User Image">
-                                        @elseif(!$employee->employee_img && $employee->gender === 'female')
-                                            <img src="{{ asset('admin/images/female.png') }}" width="80" height="80"
-                                                alt="User Image">
-                                        @else
-                                            <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
-                                                height="80" alt="User Image">
-                                        @endif
-                                        <a class="users-list-name" href="javascript:;">{{ $employee->user->name }}</a>
-                                        <span class="users-list-date">{{ $departmentName }}</span>
-                                        <span
-                                            class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
-                                    </li>
+                                    @if ($employee->user_id !== auth()->id())
+                                        <li>
+                                            @if (!$employee->employee_img && $employee->gender === 'male')
+                                                <img src="{{ asset('admin/images/male.jpg') }}" width="80"
+                                                    height="80" alt="User Image">
+                                            @elseif(!$employee->employee_img && $employee->gender === 'female')
+                                                <img src="{{ asset('admin/images/female.png') }}" width="80"
+                                                    height="80" alt="User Image">
+                                            @else
+                                                <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
+                                                    height="80" alt="User Image">
+                                            @endif
+                                            <a class="users-list-name" href="javascript:;">{{ $employee->user->name }}</a>
+                                            <span class="users-list-date">{{ $departmentName }}</span>
+                                            <span
+                                                class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>
@@ -223,22 +227,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
+                                        @if ($holidays->isNotEmpty())
+                                            @foreach ($holidays as $holiday)
+                                                <tr>
+                                                    <td>{{ $holiday->name }}</td>
+                                                    <td><span class="label label-success">{{ $holiday->date }}</span></td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -255,27 +251,23 @@
                                 <table class="table no-margin">
                                     <thead>
                                         <tr>
-                                            <th>Holidays</th>
-                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Birthday Date</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
+                                        @if ($userBirthdays->isNotEmpty())
+                                            @foreach ($userBirthdays as $user)
+                                                @if ($user->employee && $user->employee->date_of_birth)
+                                                    <tr>
+                                                        <td>{{ $user->name }}</td>
+                                                        <td><span
+                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M Y') }}</span>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -353,6 +345,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="box box-danger">
                         <div class="box-header with-border">
@@ -360,24 +354,29 @@
                         </div>
                         <div class="box-body no-padding">
                             <ul class="users-list clearfix">
-                                @foreach ($employeesByDepartment as $employee)
-                                    <li>
-                                        @if (!$employee->employee_img && $employee->gender === 'male')
-                                            <img src="{{ asset('admin/images/male.jpg') }}" width="80"
-                                                height="80" alt="User Image">
-                                        @elseif(!$employee->employee_img && $employee->gender === 'female')
-                                            <img src="{{ asset('admin/images/female.png') }}" width="80"
-                                                height="80" alt="User Image">
-                                        @else
-                                            <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
-                                                height="80" alt="User Image">
+                                <ul class="users-list clearfix">
+                                    @foreach ($employeesByDepartment as $employee)
+                                        @if ($employee->user_id !== auth()->id())
+                                            <li>
+                                                @if (!$employee->employee_img && $employee->gender === 'male')
+                                                    <img src="{{ asset('admin/images/male.jpg') }}" width="80"
+                                                        height="80" alt="User Image">
+                                                @elseif(!$employee->employee_img && $employee->gender === 'female')
+                                                    <img src="{{ asset('admin/images/female.png') }}" width="80"
+                                                        height="80" alt="User Image">
+                                                @else
+                                                    <img src="{{ asset('upload/' . $employee->employee_img) }}"
+                                                        width="80" height="80" alt="User Image">
+                                                @endif
+                                                <a class="users-list-name"
+                                                    href="javascript:;">{{ $employee->user->name }}</a>
+                                                <span class="users-list-date">{{ $departmentName }}</span>
+                                                <span
+                                                    class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
+                                            </li>
                                         @endif
-                                        <a class="users-list-name" href="javascript:;">{{ $employee->user->name }}</a>
-                                        <span class="users-list-date">{{ $departmentName }}</span>
-                                        <span
-                                            class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
-                                    </li>
-                                @endforeach
+                                    @endforeach
+                                </ul>
                             </ul>
                         </div>
                         <div class="box-footer text-center">
@@ -400,22 +399,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
+                                        @if ($holidays->isNotEmpty())
+                                            @foreach ($holidays as $holiday)
+                                                <tr>
+                                                    <td>{{ $holiday->name }}</td>
+                                                    <td><span class="label label-success">{{ $holiday->date }}</span></td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -432,27 +423,23 @@
                                 <table class="table no-margin">
                                     <thead>
                                         <tr>
-                                            <th>Holidays</th>
-                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Birthday Date</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Call of Duty IV</td>
-                                            <td><span class="label label-success">Shipped</span></td>
-                                        </tr>
+                                        @if ($userBirthdays->isNotEmpty())
+                                            @foreach ($userBirthdays as $user)
+                                                @if ($user->employee && $user->employee->date_of_birth)
+                                                    <tr>
+                                                        <td>{{ $user->name }}</td>
+                                                        <td><span
+                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M Y') }}</span>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

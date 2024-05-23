@@ -25,7 +25,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Employee::class);
     }
-
+    public function isAdmin() {
+        return $this->role_id === 1 || $this->role_id === 2;
+    }
     /**
      * The attributes that are mass assignable.
      *

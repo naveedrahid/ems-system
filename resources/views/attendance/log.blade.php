@@ -1,15 +1,29 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    Daily Attendance
+    Employee Attendance
 @endsection
 @section('page-content')
     <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">
+                <a class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+            </h3>
+            <div class="box-tools">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="box-body">
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
                         <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
+                        <th width="6%">ID</th>
                         <th width="20%">Name</th>
                         <th width="20%">Date</th>
                         <th width="10%">Check In</th>
@@ -20,10 +34,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if ($users)
+                    @if ($attendance)
                         @foreach ($attendance as $result)
                             <tr>
                                 <td><input type="checkbox" name="" id="" class="checkSingle"></td>
+                                <td>#{{ $result->id }}</td>
                                 <td>
                                     @foreach ($users as $user)
                                         @if ($result->user_id == $user->id)
@@ -32,11 +47,11 @@
                                     @endforeach
                                 </td>
                                 <td>{{ $result->attendance_date }}</td>
-                                <td>{{ \Carbon\Carbon::parse(optional($result)->check_in)->format('g:i A') }}</td>
                                 <td>
-                                    @if ($result->check_out !== null)
-                                        {{ \Carbon\Carbon::parse(optional($result)->check_out)->format('g:i A') }}
-                                    @endif
+                                    {{ \Carbon\Carbon::parse( $result->check_in)->format('g:i A') }}
+                                </td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse( $result->check_out)->format('g:i A') }}
                                 </td>
                                 <td>
                                     @if ($result->check_out !== null)
@@ -49,9 +64,9 @@
                         @endforeach
                     @endif
                 </tbody>
-                
             </table>
         </div>
+
     </div>
 @endsection
 @endsection

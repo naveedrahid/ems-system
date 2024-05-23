@@ -1,23 +1,28 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    Manage Designation
+    Manage Holidays
 @endsection
 @section('page-content')
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
-                <a href="{{ route('holidays.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
-            </h3>
-            <div class="box-tools">
-                <div class="input-group input-group-sm" style="width: 250px;">
-                    <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+            @php
+                 $user = auth()->user();
+            @endphp
+            @if (isAdmin($user))
+                <h3 class="box-title">
+                    <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
+                    <a href="{{ route('holidays.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                </h3>
+                <div class="box-tools">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
         <div class="box-body">
             <table class="table table-bordered">

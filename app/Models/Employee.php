@@ -15,6 +15,10 @@ class Employee extends Model
 
     protected $guarded = [];
 
+    protected $dates = [
+        'date_of_birth',
+    ];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -29,5 +33,4 @@ class Employee extends Model
     {
         return $this->belongsTo(Designation::class);
     }
-
 }

@@ -27,10 +27,15 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        $role = Role::where('name', 'employee')->first();
+        $currentUser = auth()->user();
+        if ($currentUser->role_id == 1) {
+            $roles = Role::all();
+        }else{
+            $roles = Role::where('name', 'employee')->get();
+        }
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
-        return view('employees.create', compact('departments', 'designations', 'role'));
+        return view('employees.create', compact('departments', 'designations', 'roles'));
     }
 
 

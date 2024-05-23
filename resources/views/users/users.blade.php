@@ -32,8 +32,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if ($employees->whereIn('id', [1, 2])->count() > 0)
-                        @foreach ($employees->whereIn('id', [1, 2]) as $employee)
+                    @if ($employees->count() > 0)
+                        @foreach ($employees as $employee)
                             {{-- @if (count($employees) > 0)
                                 @foreach ($employees as $employee) --}}
                             <tr>
@@ -63,27 +63,6 @@
                     @endif
                 </tbody>
             </table>
-        </div>
-        <div class="box-footer clearfix">
-            <div class="row">
-                <div class="col-sm-6">
-                    <span style="display:block;font-size:15px;line-height:34px;margin:20px 0;">
-                        Showing 100 to 500 of 1000 entries
-                    </span>
-                </div>
-                <div class="col-sm-6 text-right">
-                    <ul class="pagination">
-                        <li class="paginate_button previous"><a href="#">Previous</a></li>
-                        <li class="paginate_button active"><a href="#">1</a></li>
-                        <li class="paginate_button "><a href="#">2</a></li>
-                        <li class="paginate_button "><a href="#">3</a></li>
-                        <li class="paginate_button "><a href="#">4</a></li>
-                        <li class="paginate_button "><a href="#">5</a></li>
-                        <li class="paginate_button "><a href="#">6</a></li>
-                        <li class="paginate_button next"><a href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
 @endsection

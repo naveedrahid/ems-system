@@ -1,6 +1,37 @@
 <?php
 
+use App\Models\User;
 use Carbon\Carbon;
+
+if (! function_exists('isAdmin')) {
+    function isAdmin($user) {
+        return $user->role_id === 1 || $user->role_id === 2;
+    }
+}
+
+if (!function_exists('getUpcomingBirthdays')) {
+    function getUpcomingBirthdays() {
+        $currentDate = Carbon::now();
+        $currentMonth = $currentDate->month;
+        $currentDay = $currentDate->day;
+
+        $userBirthdays = User::orderBy('id', 'DESC')->whereHas('employee', function ($query) use ($currentMonth, $currentDay) {
+            $query->whereMonth('date_of_birth', $currentMonth)
+                  ->whereDay('date_of_birth', '>=', $currentDay)
+                  ->orWhere(function ($query) use ($currentMonth) {
+                      $query->whereMonth('date_of_birth', '>', $currentMonth);
+                  });
+        })->with('employee')->get();
+
+        $upcomingBirthdays = $userBirthdays->filter(function ($user) use ($currentMonth, $currentDay) {
+            $dob = Carbon::parse($user->employee->date_of_birth);
+            return $dob->month > $currentMonth || ($dob->month == $currentMonth && $dob->day >= $currentDay);
+        });
+
+        return $upcomingBirthdays;
+    }
+}
+
 
 // if (!function_exists('get_total_leave_balance')) {
 //     function get_total_leave_balance($start_date, $end_date)
