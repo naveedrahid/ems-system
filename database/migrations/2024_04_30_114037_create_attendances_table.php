@@ -18,9 +18,11 @@ class CreateAttendancesTable extends Migration
             $table->foreignId('user_id');
             $table->date('attendance_date');
             $table->time('check_in')->nullable();
+            $table->string('check_in_status')->nullable();
             $table->time('check_out')->nullable();
+            $table->string('check_out_status')->nullable();
             $table->string('total_overtime')->nullable();
-            $table->enum('status', ['present', 'early_out', 'late', 'ot'])->default('present');
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

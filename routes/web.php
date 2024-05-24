@@ -72,6 +72,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
     Route::put('/role-status/{id}', [RoleController::class, 'updateStatus'])->name('role.status');
     Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
+    Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+    Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
 
     // Department Routes
     Route::resource('department', DepartmentController::class)->parameters([
@@ -165,6 +167,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
+    Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     // Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceShow'])->name('attendance.filter');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
@@ -173,3 +176,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
 });
+ 

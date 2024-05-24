@@ -7,7 +7,7 @@
     <div class="box">
         <div class="box-header with-border">
             @php
-                 $user = auth()->user();
+                $user = auth()->user();
             @endphp
             @if (isAdmin($user))
                 <h3 class="box-title">
@@ -51,21 +51,27 @@
                                 <td>
                                     {{ $holiday->holiday_type }}
                                 </td>
-                                <td>
-                                    <button
-                                        class="p-relative holiday-toggle btn btn-{{ $holiday->status === 'active' ? 'info' : 'danger' }} btn-sm"
-                                        data-id="{{ $holiday->id }}" data-status="{{ $holiday->status }}">
-                                        <i class="fa fa-thumbs-{{ $holiday->status === 'active' ? 'up' : 'down' }}"></i>
-                                        <img src="{{ asset('admin/images/loader.gif') }}" class="imgLoader" width="20"
-                                            height="20" alt="Loading...">
-                                    </button>
-                                    <a href="{{ route('holidays.edit', $holiday) }}" class="btn btn-info btn-flat btn-sm">
-                                        <i class="fa fa-edit"></i></a>
-                                    <button class="delete-holiday btn btn-danger btn-flat btn-sm"
-                                        data-holiday-id="{{ $holiday->id }}"
-                                        data-delete-route="{{ route('holidays.destroy', ':holiday') }}"><i
-                                            class="fa-regular fa-trash-can"></i></button>
-                                </td>
+                                @php
+                                    $user = auth()->user();
+                                @endphp
+                                @if (isAdmin($user))
+                                    <td>
+                                        <button
+                                            class="p-relative holiday-toggle btn btn-{{ $holiday->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                            data-id="{{ $holiday->id }}" data-status="{{ $holiday->status }}">
+                                            <i class="fa fa-thumbs-{{ $holiday->status === 'active' ? 'up' : 'down' }}"></i>
+                                            <img src="{{ asset('admin/images/loader.gif') }}" class="imgLoader"
+                                                width="20" height="20" alt="Loading...">
+                                        </button>
+                                        <a href="{{ route('holidays.edit', $holiday) }}"
+                                            class="btn btn-info btn-flat btn-sm">
+                                            <i class="fa fa-edit"></i></a>
+                                        <button class="delete-holiday btn btn-danger btn-flat btn-sm"
+                                            data-holiday-id="{{ $holiday->id }}"
+                                            data-delete-route="{{ route('holidays.destroy', ':holiday') }}"><i
+                                                class="fa-regular fa-trash-can"></i></button>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     @endif

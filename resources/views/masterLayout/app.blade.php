@@ -99,7 +99,7 @@
                         <a href="{{ route('home') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                     </li>
 
-                        @if (Auth::user())
+                    @if (Auth::user())
                         @php
                             $user = auth()->user();
                         @endphp
@@ -256,8 +256,29 @@
                                         </a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('attendance.log') }}"><i class="fa fa-circle-o"></i>Attendance Log</a>
+                                        <a href="{{ route('attendance.log') }}"><i
+                                                class="fa fa-circle-o"></i>Attendance Log</a>
                                     </li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Employees</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="active"><a href="{{ route('employees.create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add New
+                                            Employee</a>
+                                    </li>
+                                    <li class=""><a href="{{ route('employees.view') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            View
+                                            Employees
+                                        </a></li>
                                 </ul>
                             </li>
                             <li class="treeview">
@@ -277,7 +298,8 @@
                                                 class="fa fa-circle-o"></i>All Leave</a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('leave_types.index') }}"><i class="fa fa-circle-o"></i>Leave
+                                        <a href="{{ route('leave_types.index') }}"><i
+                                                class="fa fa-circle-o"></i>Leave
                                             Types</a>
                                     </li>
                                     <li class="">

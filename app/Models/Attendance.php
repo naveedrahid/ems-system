@@ -10,6 +10,6 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'attendance_date', 'check_in', 'check_out', 'status', 'total_overtime',
+        'user_id', 'attendance_date', 'check_in', 'check_in_status' , 'check_out', 'check_out_status' , 'status', 'total_overtime',
     ];
 }

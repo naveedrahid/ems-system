@@ -3,24 +3,26 @@
 use App\Models\User;
 use Carbon\Carbon;
 
-if (! function_exists('isAdmin')) {
-    function isAdmin($user) {
+if (!function_exists('isAdmin')) {
+    function isAdmin($user)
+    {
         return $user->role_id === 1 || $user->role_id === 2;
     }
 }
 
 if (!function_exists('getUpcomingBirthdays')) {
-    function getUpcomingBirthdays() {
+    function getUpcomingBirthdays()
+    {
         $currentDate = Carbon::now();
         $currentMonth = $currentDate->month;
         $currentDay = $currentDate->day;
 
         $userBirthdays = User::orderBy('id', 'DESC')->whereHas('employee', function ($query) use ($currentMonth, $currentDay) {
             $query->whereMonth('date_of_birth', $currentMonth)
-                  ->whereDay('date_of_birth', '>=', $currentDay)
-                  ->orWhere(function ($query) use ($currentMonth) {
-                      $query->whereMonth('date_of_birth', '>', $currentMonth);
-                  });
+                ->whereDay('date_of_birth', '>=', $currentDay)
+                ->orWhere(function ($query) use ($currentMonth) {
+                    $query->whereMonth('date_of_birth', '>', $currentMonth);
+                });
         })->with('employee')->get();
 
         $upcomingBirthdays = $userBirthdays->filter(function ($user) use ($currentMonth, $currentDay) {
@@ -31,6 +33,26 @@ if (!function_exists('getUpcomingBirthdays')) {
         return $upcomingBirthdays;
     }
 }
+
+if (!function_exists('calculateOvertime')) {
+    function calculateOvertime($check_in, $check_out)
+    {
+        $checkInTime = \Carbon\Carbon::parse($check_in);
+        $checkOutTime = \Carbon\Carbon::parse($check_out);
+        $totalMinutes = $checkOutTime->diffInMinutes($checkInTime);
+        $standardMinutes = 9 * 60; // 9 hours in minutes
+
+        if ($totalMinutes > $standardMinutes) {
+            $overtimeMinutes = $totalMinutes - $standardMinutes;
+            $overtimeHours = floor($overtimeMinutes / 60);
+            $overtimeRemainingMinutes = $overtimeMinutes % 60;
+            return sprintf('%d:%d', $overtimeHours, $overtimeRemainingMinutes);
+        }
+
+        return '-';
+    }
+}
+
 
 
 // if (!function_exists('get_total_leave_balance')) {

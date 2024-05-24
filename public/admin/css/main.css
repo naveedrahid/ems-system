@@ -203,3 +203,9 @@ img.imgLoader {
 .users-list>li img{
     height: unset !important;
 }
+button.btn.btn-app.btnPdf i {
+    font-size: 30px;
+}
+.btnGroup {
+    display: flex;
+}
