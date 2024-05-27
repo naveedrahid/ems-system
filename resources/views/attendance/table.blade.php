@@ -45,13 +45,13 @@
 <table class="table table-bordered">
     <thead style="background-color: #F8F8F8;">
         <tr>
-            <th width="10%"><strong>Employee Name</strong></th>
+            <th width="10%"><strong>Name</strong></th>
             <th width="15%"><strong>Date</strong> </th>
             <th width="10%"><strong>Check In</strong></th>
             <th width="10%"><strong>In Status</strong></th>
             <th width="10%"><strong>Check Out</strong></th>
             <th width="10%"><strong>Out Status</strong></th>
-            <th width="10%"><strong>Total Hours</strong></th>
+            <th width="10%"><strong>Hours</strong></th>
             <th width="5%"><strong>OT</strong></th>
             <th width="5%"><strong>status</strong></th>
         </tr>

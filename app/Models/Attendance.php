@@ -12,4 +12,9 @@ class Attendance extends Model
     protected $fillable = [
         'user_id', 'attendance_date', 'check_in', 'check_in_status' , 'check_out', 'check_out_status' , 'status', 'total_overtime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

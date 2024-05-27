@@ -22,22 +22,22 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="6%">ID</th>
-                        <th width="20%">Name</th>
-                        <th width="20%">Date</th>
+                        <th width="5%">ID</th>
+                        <th width="10%">Employee Name</th>
+                        <th width="10%">Date</th>
                         <th width="10%">Check In</th>
+                        <th width="10%">Check In Status</th>
                         <th width="10%">Check Out</th>
+                        <th width="10%">Check Out Status</th>
                         <th width="10%">Total Hours</th>
-                        <th width="10%">Over Time</th>
-                        <th width="10%">status</th>
+                        <th width="5%">OT</th>
+                        <th width="5%">status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if ($attendance)
                         @foreach ($attendance as $result)
                             <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>#{{ $result->id }}</td>
                                 <td>
                                     @foreach ($users as $user)
@@ -48,10 +48,26 @@
                                 </td>
                                 <td>{{ $result->attendance_date }}</td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse( $result->check_in)->format('g:i A') }}
+                                    {{ \Carbon\Carbon::parse($result->check_in)->format('g:i A') }}
                                 </td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse( $result->check_out)->format('g:i A') }}
+                                    @if ($result->check_in_status == 'Late In')
+                                        <span class="btn btn-danger btn-xs">{{ $result->check_in_status ?? '' }}</span>
+                                    @else
+                                        <span class="btn btn-success btn-xs">{{ $result->check_in_status ?? '' }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($result->check_out)
+                                        {{ \Carbon\Carbon::parse($result->check_out)->format('g:i A') }}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($result->check_out_status == 'Early Out')
+                                        <span class="btn btn-danger btn-xs">{{ $result->check_out_status ?? '' }}</span>
+                                    @elseif($result->check_out_status == 'Late Out')
+                                        <span class="btn btn-success btn-xs">{{ $result->check_out_status ?? '' }}</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if ($result->check_out !== null)
@@ -66,7 +82,6 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 @endsection
 @endsection

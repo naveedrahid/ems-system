@@ -75,6 +75,10 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
 
+    Route::get('/attendance/report', [AttendanceController::class, 'showAttendanceReport'])->name('attendance.report');
+    Route::post('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
+
+
     // Department Routes
     Route::resource('department', DepartmentController::class)->parameters([
         'department' => 'id'
@@ -155,11 +159,11 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
         ])->except([
             'show',
         ]);
-        Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
+    Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 });
 
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/', [HomeController::class, 'dashboard'])->name('home');
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
 
@@ -176,4 +180,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
 });
- 
