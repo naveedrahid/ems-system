@@ -34,25 +34,18 @@ if (!function_exists('getUpcomingBirthdays')) {
     }
 }
 
-if (!function_exists('calculateOvertime')) {
-    function calculateOvertime($check_in, $check_out)
-    {
-        $checkInTime = \Carbon\Carbon::parse($check_in);
-        $checkOutTime = \Carbon\Carbon::parse($check_out);
-        $totalMinutes = $checkOutTime->diffInMinutes($checkInTime);
-        $standardMinutes = 9 * 60; // 9 hours in minutes
+function calculateOvertime($check_out)
+{
+    $checkOutTime = Carbon::parse($check_out);
+    $startTime = Carbon::createFromTime(17, 20, 0);
 
-        if ($totalMinutes > $standardMinutes) {
-            $overtimeMinutes = $totalMinutes - $standardMinutes;
-            $overtimeHours = floor($overtimeMinutes / 60);
-            $overtimeRemainingMinutes = $overtimeMinutes % 60;
-            return sprintf('%d:%d', $overtimeHours, $overtimeRemainingMinutes);
-        }
-
-        return '-';
+    if ($checkOutTime->greaterThan($startTime)) {
+        $overtime = $checkOutTime->diff($startTime);
+        return $overtime->h . " :" . $overtime->i;
+    } else {
+        return "-";
     }
 }
-
 
 
 // if (!function_exists('get_total_leave_balance')) {

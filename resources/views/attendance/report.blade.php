@@ -44,21 +44,20 @@
         <table class="table table-bordered">
             <thead style="background-color: #F8F8F8;">
                 <tr>
-                    <th width="5%">ID</th>
-                    <th width="10%">Name</th>
-                    <th width="10%">Date</th>
+                    <th width="15%">Name</th>
+                    <th width="15%">Date</th>
                     <th width="10%">Check In</th>
                     <th width="10%">In Status</th>
                     <th width="10%">Check Out</th>
                     <th width="10%">Out Status</th>
-                    <th width="10%">Hours</th>
+                    <th width="5%">Hours</th>
                     <th width="5%">OT</th>
                     <th width="5%">Status</th>
                 </tr>
             </thead>
             <tbody id="attendanceTable"></tbody>
         </table>
-        
+
     </div>
 @endsection
 @endsection
@@ -102,6 +101,7 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
+                    department_id: $('#department').val(),
                     user_id: userId,
                     month: month,
                     year: year
@@ -110,57 +110,56 @@
                     const attendanceTable = $('#attendanceTable');
                     attendanceTable.empty();
 
-                    // Loop through each day of the month
-                    for (const day in data.days) {
-                        const rowData = data.days[day];
-                        let rowClass = '';
-                        if (rowData.isHoliday) {
-                            rowClass = 'bg-danger'; // Use your preferred styling for holidays
-                        }
+                    data.days.forEach(day => {
+                        const rowClass = day.isWeekend ? 'bg-danger' : '';
+                        const attendanceData = day.attendanceData || {};
+                        const checkInTime = attendanceData.check_in ? moment(
+                            attendanceData.check_in, 'HH:mm:ss').format(
+                            'h:mm A') : '-';
+                        const checkOutTime = attendanceData.check_out ? moment(
+                            attendanceData.check_out, 'HH:mm:ss').format(
+                            'h:mm A') : '-';
+                        const totalOvertime = attendanceData.total_overtime !==
+                            null ? attendanceData.total_overtime : '-';
 
-                        // Filter attendance records for the current day
-                        const dayAttendance = data.attendance.filter(record => record.attendance_date === rowData.date);
-
-                        let attendanceRow = `
-                            <tr class="${rowClass}">
-                                <td>${rowData.date}</td>
-                                <td>${rowData.attendanceStatus}</td>
-                            </tr>
-                        `;
-
-                        // If there are attendance records for the day, add them to the row
-                        if (dayAttendance.length > 0) {
-                            dayAttendance.forEach(attendance => {
-                                const userName = attendance.user ? attendance.user.name : 'Unknown User';
-                                const totalHours = attendance.total_hours !== null ? attendance.total_hours : '-';
-                                attendanceRow += `
-                                    <tr>
-                                        <td></td> <!-- Empty cell for alignment -->
-                                        <td>${userName}</td>
-                                        <td>${attendance.attendance_date}</td>
-                                        <td>${attendance.check_in ? attendance.check_in : '-'}</td>
-                                        <td>${attendance.check_in_status ? attendance.check_in_status : '-'}</td>
-                                        <td>${attendance.check_out ? attendance.check_out : '-'}</td>
-                                        <td>${attendance.check_out_status ? attendance.check_out_status : '-'}</td>
-                                        <td>${totalHours}</td>
-                                        <td>${attendance.total_overtime}</td>
-                                        <td><span class="btn btn-primary btn-xs">${attendance.status ? attendance.status : '-'}</span></td>
-                                    </tr>
-                                `;
-                            });
-                        } else {
-                            attendanceRow += `
-                                <tr>
-                                    <td>No attendance records found for this date.</td>
-                                </tr>
-                            `;
-                        }
-
-                        attendanceTable.append(attendanceRow);
-                    }
+                        const userName = attendanceData.user ? attendanceData.user
+                            .name : '';
+                        const dayRow = `
+                        <tr class="${rowClass}">
+                            <td>${ userName}</td>
+                            <td><span class="currentDate">${day.displayDate}</span></td>
+                            <td>${checkInTime}</td>
+                            <td>${attendanceData.check_in_status ? (attendanceData.check_in_status === 'Late In' ? '<span class="btn btn-danger btn-xs">' + attendanceData.check_in_status + '</span>' : '<span class="btn btn-success btn-xs">' + attendanceData.check_in_status + '</span>') : '-'}</td>
+                            <td>${checkOutTime}</td>
+                            <td>${attendanceData.check_out_status ? (attendanceData.check_out_status === 'Early Out' ? '<span class="btn btn-danger btn-xs">' + attendanceData.check_out_status + '</span>' : '<span class="btn btn-success btn-xs">' + attendanceData.check_out_status + '</span>') : '-'}</td>
+                            <td>${attendanceData.check_out ? showEmployeeTime(attendanceData.check_in, attendanceData.check_out) : '-'}</td>
+                            <td>${totalOvertime ? totalOvertime : '-'}</td>
+                            <td>${day.date && moment(day.date).isAfter(moment()) ? '-' : attendanceData.status ? '<span style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white;">' + textFormating(attendanceData.status) + '</span>' : '<span style="padding: 3px 5px;border-radius: 3px;background-color: #dd4b39;color:#fff;">Absent</span>'}</td>
+                        </tr>
+                    `;
+                        attendanceTable.append(dayRow);
+                    });
                 }
             });
         });
+
+        function showEmployeeTime(checkIn, checkOut) {
+            const checkInTime = moment(checkIn, 'HH:mm:ss');
+            const checkOutTime = moment(checkOut, 'HH:mm:ss');
+            const duration = moment.duration(checkOutTime.diff(checkInTime));
+            return `${duration.hours()}h ${duration.minutes()}m`;
+        }
+
+        function textFormating(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        function calculateOvertime(checkIn, checkOut) {
+            const start = moment(checkIn);
+            const end = moment(checkOut);
+            const totalHours = moment.duration(end.diff(start)).asHours();
+            return totalHours > 8 ? (totalHours - 8).toFixed(2) : '0.00';
+        }
     });
 </script>
 @endpush

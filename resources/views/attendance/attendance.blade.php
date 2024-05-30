@@ -47,6 +47,7 @@
                             $attendanceData = $attendance->where('attendance_date', $formattedDate)->first();
                             $weekend = \Carbon\Carbon::parse($date)->isWeekend();
                             $timeNow = \Carbon\Carbon::now();
+                            $isFutureDate = \Carbon\Carbon::parse($date)->isFuture();
                         @endphp
                         <tr>
                             <td>{{ Auth::user()->name }}</td>
@@ -62,7 +63,7 @@
                                 @if (optional($attendanceData)->check_in_status == 'Late In')
                                     <span
                                         class="btn btn-danger btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
-                                @elseif(optional($attendanceData)->check_in_status == 'Early In')
+                                @elseif(optional($attendanceData)->check_in_status == 'Early In' || optional($attendanceData)->check_in_status == 'In')
                                     <span
                                         class="btn btn-success btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
                                 @endif
@@ -92,19 +93,21 @@
                             </td>
                             <td>
                                 @if ($attendanceData && $attendanceData->check_out)
-                                    {{ calculateOvertime($attendanceData->check_in, $attendanceData->check_out) }}
+                                    {{ calculateOvertime($attendanceData->check_out) }}
                                 @else
                                     -
                                 @endif
                             </td>
                             <td>
-                                @if ($weekend)
+                                @if ($isFutureDate)
+                                    
+                                @elseif ($weekend)
                                     <span class="btn btn-warning btn-xs">Holiday</span>
-                                @elseif(optional($attendanceData)->status)
+                                @elseif (optional($attendanceData)->status)
                                     <span class="btn btn-primary btn-xs">
                                         {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}
                                     </span>
-                                @elseif(!$attendanceData && !$weekend)
+                                @elseif (!$attendanceData && !$weekend)
                                     <span class="btn btn-danger btn-xs">Absent</span>
                                 @endif
                             </td>

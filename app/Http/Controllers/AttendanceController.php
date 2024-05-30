@@ -29,99 +29,46 @@ class AttendanceController extends Controller
         $userId = $request->input('user_id');
         $month = $request->input('month');
         $year = $request->input('year');
-    
-        $employees = Employee::where('department_id', $departmentId)->get();
-        $userIds = $employees->pluck('user_id');
-    
+
+        $employeesQuery = Employee::query();
+        if ($departmentId) {
+            $employeesQuery->where('department_id', $departmentId);
+        }
         if ($userId) {
-            $userIds = collect([$userId]);
+            $employeesQuery->where('user_id', $userId);
         }
-    
-        $startDate = Carbon::createFromFormat('Y-m-d', "{$year}-{$month}-01");
+        $employees = $employeesQuery->with('user')->get();
+        $userIds = $employees->pluck('user_id');
+
+        $startDate = Carbon::createFromDate($year, $month, 1);
         $endDate = $startDate->copy()->endOfMonth();
-        $currentDate = now()->format('Y-m-d');
-    
-        $days = [];
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
-            $days[$date->format('Y-m-d')] = [
-                'date' => $date->format('Y-m-d'),
-                'dayOfWeek' => $date->format('N'),
-                'isHoliday' => in_array($date->dayOfWeek, [6, 7]),
-                'attendanceStatus' => '',
-            ];
-        }
-    
+
         $attendanceRecords = Attendance::whereIn('user_id', $userIds)
             ->whereYear('attendance_date', $year)
             ->whereMonth('attendance_date', $month)
+            ->with('user')
             ->get();
-    
-        foreach ($days as $day => &$data) {
-            if ($data['isHoliday']) {
-                $data['attendanceStatus'] = 'Holiday';
-            } elseif ($day <= $currentDate) {
-                $attendanceCount = $attendanceRecords->where('attendance_date', $day)->count();
-                if ($attendanceCount == 0) {
-                    $data['attendanceStatus'] = 'Absent';
-                } else {
-                    $data['attendanceStatus'] = 'Present';
-                }
-            }
+
+        $days = [];
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $formattedDate = $date->format('Y-m-d');
+            $isWeekend = $date->isWeekend();
+            $attendanceData = $attendanceRecords->where('attendance_date', $formattedDate)->first();
+
+            $days[] = [
+                'date' => $formattedDate,
+                'displayDate' => $date->format('l - d M, Y'),
+                'isWeekend' => $isWeekend,
+                'attendanceData' => $attendanceData,
+                'user' => $attendanceData ? $attendanceData->user : null,
+                'check_in' => $attendanceData ? $attendanceData->check_in : null,
+                'check_out' => $attendanceData ? $attendanceData->check_out : null,
+                'total_overtime' => $attendanceData ? $attendanceData->total_overtime : null
+            ];
         }
-    
-        return response()->json(['days' => $days, 'attendance' => $attendanceRecords]);
+
+        return response()->json(['days' => $days, 'employees' => $employees]);
     }
-    
-
-
-
-    // public function filterAttendanceReport(Request $request)
-    // {
-    //     $attendance = Attendance::where('user_id', $request->user_id)
-    //         ->whereYear('attendance_date', $request->year)
-    //         ->whereMonth('attendance_date', $request->month)
-    //         ->with('user')
-    //         ->get();
-
-    //     $currentMonthDates = collect();
-    //     $startDate = Carbon::createFromDate($request->year, $request->month, 1);
-    //     $endDate = $startDate->copy()->endOfMonth();
-    //     $currentMonthDates = $currentMonthDates->merge($startDate->toPeriod($endDate, '1 day'));
-
-    //     $weekendDates = $currentMonthDates->filter(function ($date) {
-    //         return $date->isWeekend();
-    //     })->pluck('date')->toArray();
-
-    //     $otherHolidays = Holiday::whereRaw("YEAR(date) = ? AND MONTH(date) = ?", [$request->year, $request->month])
-    //         ->whereNotIn(DB::raw("DATE(date)"), $weekendDates)
-    //         ->pluck('date')
-    //         ->toArray();
-
-    //     $holidays = array_merge($weekendDates, $otherHolidays);
-
-    //     $attendanceDataForMonth = [];
-
-    //     foreach ($currentMonthDates as $date) {
-    //         $formattedDate = $date->format('Y-m-d');
-    //         $attendanceData = $attendance->where('attendance_date', $formattedDate)->first();
-
-    //         if ($attendanceData) {
-    //             $attendanceDataForMonth[] = $attendanceData;
-    //         } else {
-    //             $isHoliday = in_array($formattedDate, $holidays);
-    //             $attendanceDataForMonth[] = [
-    //                 'attendance_date' => $formattedDate,
-    //                 'status' => $isHoliday ? 'Holiday' : 'Absent',
-    //                 'total_hours' => null,
-    //                 'user' => null, // Assuming you want to include user information for each date
-    //             ];
-    //         }
-    //     }
-
-    //     return response()->json(['attendance' => $attendanceDataForMonth]);
-    // }
-
-
 
     public function attendanceLog()
     {
@@ -183,11 +130,13 @@ class AttendanceController extends Controller
         }
 
         $checkInStatus = null;
-        $letInTime = Carbon::createFromTime(8, 30);
+        $letInTime = Carbon::createFromTime(8, 20);
         $earlyInTime = Carbon::createFromTime(8, 0);
 
         if ($currentTime->greaterThan($letInTime)) {
             $checkInStatus = 'Late In';
+        } elseif ($currentTime->greaterThan($earlyInTime) && $currentTime->lessThan($letInTime)) {
+            $checkInStatus = 'In';
         } elseif ($currentTime->lessThan($earlyInTime)) {
             $checkInStatus = 'Early In';
         }
@@ -215,13 +164,13 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'You have already checked out.']);
         }
 
-        $officeClosingTime = Carbon::createFromTime(17, 0, 0);
+        $officeClosingTime = Carbon::createFromTime(17, 20, 0);
         $checkOutTime = now();
         $checkOutStatus = $checkOutTime <= $officeClosingTime ? 'Early Out' : 'Late Out';
         $totalOvertime = null;
 
         if ($checkOutStatus === 'Late Out') {
-            $officeClosingDateTime = Carbon::createFromTime(17, 0, 0);
+            $officeClosingDateTime = Carbon::createFromTime(17, 20, 0);
             $checkOutDateTime = Carbon::parse($date . ' ' . $time);
             $overtime = $checkOutDateTime->diff($officeClosingDateTime)->format('%H:%I');
             $totalOvertime = $overtime;
@@ -255,9 +204,9 @@ class AttendanceController extends Controller
             'check_out' => 'required',
         ]);
 
-        $letInTime = Carbon::createFromTime(8, 30);
+        $letInTime = Carbon::createFromTime(8, 20);
         // $earlyInTime = Carbon::createFromTime(8, 0);
-        $officeClosingTime = Carbon::createFromTime(17, 0);
+        $officeClosingTime = Carbon::createFromTime(17, 20);
 
         $checkInTime = Carbon::parse($request->check_in);
         $checkOutTime = Carbon::parse($request->check_out);

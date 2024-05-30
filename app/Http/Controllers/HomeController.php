@@ -78,7 +78,7 @@ class HomeController extends Controller
 
         $activeEmployees = User::where('status', 'active')->get();
         $activeEmployeeCount = $activeEmployees->count();
-
+        
         return view('dashboard', compact(
             'designation',
             'departmentName',
