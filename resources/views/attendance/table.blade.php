@@ -59,7 +59,7 @@
 <body>
     <div class="logo">
         <h1 style="text-align: center;">{{ auth()->user()->name }}</h1>
-        <h4 style="text-align: center;">Month Of {{date('M Y')}}</h4>
+        o<h4 style="text-align: center;">Attendance Report Month of {{date('M Y')}}</h4>
     </div>
     <table class="table table-bordered">
         <thead style="background-color: #F8F8F8;">
