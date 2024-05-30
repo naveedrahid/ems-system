@@ -152,7 +152,7 @@
                             <td>${ userName}</td>
                             <td><span class="currentDate">${day.displayDate}</span></td>
                             <td>${checkInTime}</td>
-                            <td>${attendanceData.check_in_status ? (attendanceData.check_in_status === 'Late In' ? '<span class="btn btn-warning btn-xs">' + attendanceData.check_in_status + '</span>' : '<span class="btn btn-primary btn-xs">' + attendanceData.check_in_status + '</span>') : '-'}</td>
+                            <td>${checkInStatusHtml}</td>
                             <td>${checkOutTime}</td>
                             <td>${checkOutStatusHtml}</td>
                             <td>${attendanceData.check_out ? showEmployeeTime(attendanceData.check_in, attendanceData.check_out) : '-'}</td>
