@@ -85,6 +85,9 @@
                                 @elseif(optional($attendanceData)->check_out_status == 'Late Out')
                                     <span
                                         class="btn bg-navy btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
+                                @elseif(optional($attendanceData)->check_out_status == 'Out')
+                                    <span
+                                        class="btn bg-primary btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
                                 @endif
                             </td>
                             <td>
