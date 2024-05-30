@@ -62,10 +62,13 @@
                             <td>
                                 @if (optional($attendanceData)->check_in_status == 'Late In')
                                     <span
-                                        class="btn btn-danger btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
-                                @elseif(optional($attendanceData)->check_in_status == 'Early In' || optional($attendanceData)->check_in_status == 'In')
+                                        class="btn btn-warning btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
+                                @elseif(optional($attendanceData)->check_in_status == 'Early In')
                                     <span
-                                        class="btn btn-success btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
+                                        class="btn btn-info btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
+                                @elseif(optional($attendanceData)->check_in_status == 'In')
+                                    <span
+                                        class="btn btn-primary btn-xs">{{ optional($attendanceData)->check_in_status }}</span>
                                 @endif
                             </td>
                             <td>
@@ -78,10 +81,10 @@
                             <td>
                                 @if (optional($attendanceData)->check_out_status == 'Early Out')
                                     <span
-                                        class="btn btn-danger btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
+                                        class="btn bg-orange btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
                                 @elseif(optional($attendanceData)->check_out_status == 'Late Out')
                                     <span
-                                        class="btn btn-success btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
+                                        class="btn bg-navy btn-xs">{{ optional($attendanceData)->check_out_status }}</span>
                                 @endif
                             </td>
                             <td>
@@ -100,11 +103,10 @@
                             </td>
                             <td>
                                 @if ($isFutureDate)
-                                    
                                 @elseif ($weekend)
                                     <span class="btn btn-warning btn-xs">Holiday</span>
                                 @elseif (optional($attendanceData)->status)
-                                    <span class="btn btn-primary btn-xs">
+                                    <span class="btn btn-success btn-xs">
                                         {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}
                                     </span>
                                 @elseif (!$attendanceData && !$weekend)
