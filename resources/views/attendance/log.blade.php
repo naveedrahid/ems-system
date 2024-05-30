@@ -22,8 +22,7 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="5%">ID</th>
-                        <th width="10%">Employee Name</th>
+                        <th width="15%">Employee Name</th>
                         <th width="10%">Date</th>
                         <th width="10%">Check In</th>
                         <th width="10%">Check In Status</th>
@@ -38,7 +37,6 @@
                     @if ($attendance)
                         @foreach ($attendance as $result)
                             <tr>
-                                <td>#{{ $result->id }}</td>
                                 <td>
                                     @foreach ($users as $user)
                                         @if ($result->user_id == $user->id)
@@ -52,9 +50,11 @@
                                 </td>
                                 <td>
                                     @if ($result->check_in_status == 'Late In')
-                                        <span class="btn btn-danger btn-xs">{{ $result->check_in_status ?? '' }}</span>
+                                        <span class="btn btn-danger btn-xs">{{ $result->check_in_status }}</span>
+                                    @elseif($result->check_in_status == 'Early In')
+                                        <span class="btn btn-success btn-xs">{{ $result->check_in_status }}</span>
                                     @else
-                                        <span class="btn btn-success btn-xs">{{ $result->check_in_status ?? '' }}</span>
+                                        <span class="btn btn-success btn-xs">{{ $result->check_in_status }}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -74,8 +74,18 @@
                                         {{ showEmployeeTime($result->check_in, $result->check_out) }}
                                     @endif
                                 </td>
-                                <td>{{ $result->total_overtime }}</td>
-                                <td><span class="btn btn-primary btn-xs">{{ textFormating($result->status) }}</span></td>
+                                <td>
+                                    @if ($result->check_out)
+                                        {{ calculateOvertime($result->check_out) }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($result->status)
+                                        <span class="btn btn-primary btn-xs">{{ $result->status }}</span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     @endif

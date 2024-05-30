@@ -79,6 +79,7 @@ class HomeController extends Controller
         $activeEmployees = User::where('status', 'active')->get();
         $activeEmployeeCount = $activeEmployees->count();
         
+        $leaveQuery = LeaveApplication::all();
         return view('dashboard', compact(
             'designation',
             'departmentName',
@@ -88,7 +89,8 @@ class HomeController extends Controller
             'remainingLeaves',
             'userBirthdays',
             'holidays',
-            'activeEmployeeCount'
+            'activeEmployeeCount',
+            'leaveQuery'
         ));
     }
 

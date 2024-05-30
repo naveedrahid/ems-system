@@ -111,7 +111,6 @@
                     attendanceTable.empty();
 
                     data.days.forEach(day => {
-                        const rowClass = day.isWeekend ? 'bg-danger' : '';
                         const attendanceData = day.attendanceData || {};
                         const checkInTime = attendanceData.check_in ? moment(
                             attendanceData.check_in, 'HH:mm:ss').format(
@@ -121,20 +120,44 @@
                             'h:mm A') : '-';
                         const totalOvertime = attendanceData.total_overtime !==
                             null ? attendanceData.total_overtime : '-';
-
+                        const isWeekend = moment(day.date).day() === 6 || moment(day
+                            .date).day() === 0;
                         const userName = attendanceData.user ? attendanceData.user
                             .name : '';
+
+                        const checkInStatusHtml = attendanceData.check_in_status ? (
+                            attendanceData.check_in_status === 'Late In' ?
+                            '<span class="btn btn-warning btn-xs">' +
+                            attendanceData.check_in_status + '</span>' :
+                            attendanceData.check_in_status === 'Early In' ?
+                            '<span class="btn btn-info btn-xs">' +
+                            attendanceData.check_in_status + '</span>' :
+                            '<span class="btn btn-primary btn-xs">' +
+                            attendanceData.check_in_status + '</span>'
+                        ) : '-';
+
+                        const checkOutStatusHtml = attendanceData.check_out_status ? (
+                            attendanceData.check_out_status === 'Early Out' ?
+                            '<span class="btn bg-orange btn-xs">' +
+                            attendanceData.check_out_status + '</span>' :
+                            attendanceData.check_out_status === 'Late Out' ?
+                            '<span class="btn bg-navy btn-xs">' +
+                            attendanceData.check_out_status + '</span>' :
+                            '<span class="btn btn-primary btn-xs">' +
+                            attendanceData.check_out_status + '</span>'
+                        ) : '-';
+
                         const dayRow = `
-                        <tr class="${rowClass}">
+                        <tr>
                             <td>${ userName}</td>
                             <td><span class="currentDate">${day.displayDate}</span></td>
                             <td>${checkInTime}</td>
-                            <td>${attendanceData.check_in_status ? (attendanceData.check_in_status === 'Late In' ? '<span class="btn btn-danger btn-xs">' + attendanceData.check_in_status + '</span>' : '<span class="btn btn-success btn-xs">' + attendanceData.check_in_status + '</span>') : '-'}</td>
+                            <td>${attendanceData.check_in_status ? (attendanceData.check_in_status === 'Late In' ? '<span class="btn btn-warning btn-xs">' + attendanceData.check_in_status + '</span>' : '<span class="btn btn-primary btn-xs">' + attendanceData.check_in_status + '</span>') : '-'}</td>
                             <td>${checkOutTime}</td>
-                            <td>${attendanceData.check_out_status ? (attendanceData.check_out_status === 'Early Out' ? '<span class="btn btn-danger btn-xs">' + attendanceData.check_out_status + '</span>' : '<span class="btn btn-success btn-xs">' + attendanceData.check_out_status + '</span>') : '-'}</td>
+                            <td>${checkOutStatusHtml}</td>
                             <td>${attendanceData.check_out ? showEmployeeTime(attendanceData.check_in, attendanceData.check_out) : '-'}</td>
                             <td>${totalOvertime ? totalOvertime : '-'}</td>
-                            <td>${day.date && moment(day.date).isAfter(moment()) ? '-' : attendanceData.status ? '<span style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white;">' + textFormating(attendanceData.status) + '</span>' : '<span style="padding: 3px 5px;border-radius: 3px;background-color: #dd4b39;color:#fff;">Absent</span>'}</td>
+                            <td>${isWeekend ? '<span class="btn btn-warning btn-xs">Holiday</span>' : (day.date && moment(day.date).isAfter(moment()) ? '-' : attendanceData.status ? '<span class="btn btn-success btn-xs">' + textFormating(attendanceData.status) + '</span>' : '<span class="btn btn-danger btn-xs">Absent</span>')}</td>
                         </tr>
                     `;
                         attendanceTable.append(dayRow);

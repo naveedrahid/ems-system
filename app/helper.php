@@ -41,7 +41,7 @@ function calculateOvertime($check_out)
 
     if ($checkOutTime->greaterThan($startTime)) {
         $overtime = $checkOutTime->diff($startTime);
-        return $overtime->h . " :" . $overtime->i;
+        return $overtime->h . "h : " . $overtime->i . "m";
     } else {
         return "-";
     }

@@ -21,7 +21,7 @@
                     @php
                         $currentDayName = Carbon\Carbon::now()->format('l');
                     @endphp
-                    <h4><span>Today: {{$currentDayName}} , {{ date('d M, Y') }}</span></h4>
+                    <h4><span>Today: {{ $currentDayName }} , {{ date('d M, Y') }}</span></h4>
                 </div>
                 <div>
                     <ul class="p-0 list-unstyled mb-3">
@@ -70,15 +70,18 @@
             </div>
         </div>
     </div>
+    @php
+        $user = auth()->user();
+    @endphp
     @if (Auth::user())
-        @if (Auth::user()->id == 1)
+        @if (isAdmin($user))
             <div class="row">
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box">
                         <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">Total Employees</span>
-                            <span class="info-box-number">{{$activeEmployeeCount}}</span>   
+                            <span class="info-box-number">{{ $activeEmployeeCount }}</span>
                         </div>
                     </div>
                 </div>
@@ -87,8 +90,10 @@
                         <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">Total Leave Requests</span>
-                            @if ($leaveTypes->isNotEmpty())
-                                <span class="info-box-number">{{$leaveTypes->sum('default_balance')}}</span>
+                            @if ($leaveQuery)
+                                <span class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
+                            @else
+                                <span class="info-box-number">0</span>
                             @endif
                         </div>
                     </div>
@@ -97,8 +102,13 @@
                     <div class="info-box">
                         <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Total Categories</span>
-                            <span class="info-box-number">760</span>
+                            <span class="info-box-text">Total Approved Request</span>
+                            @if ($leaveQuery)
+                                <span
+                                    class="info-box-number">{{ $leaveQuery->where('status', 'Approved')->count() }}</span>
+                            @else
+                                <span class="info-box-number">0</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -106,8 +116,12 @@
                     <div class="info-box">
                         <span class="info-box-icon bg-yellow"><i class="fa fa-user"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">Team Members</span>
-                            <span class="info-box-number">2,000</span>
+                            <span class="info-box-text">Total Pending Request</span>
+                            @if ($leaveQuery)
+                                <span class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
+                            @else
+                                <span class="info-box-number">0</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -232,10 +246,22 @@
                                     <tbody>
                                         @if ($holidays->isNotEmpty())
                                             @foreach ($holidays as $holiday)
-                                                <tr>
+                                                @php
+                                                    $dateRange = $holiday->date;
+                                                    [$startDate, $endDate] = explode(' - ', $dateRange);
+                                                @endphp
+
+                                                @if ($startDate == $endDate)
+                                                    <span>{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }}</span><br>
+                                                @else
+                                                    <span>{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }} -
+                                                        {{ \Carbon\Carbon::parse($endDate)->format('Y-m-d') }}</span><br>
+                                                @endif
+
+                                                {{-- <tr>
                                                     <td>{{ $holiday->name }}</td>
                                                     <td><span class="label label-success">{{ $holiday->date }}</span></td>
-                                                </tr>
+                                                </tr> --}}
                                             @endforeach
                                         @endif
                                     </tbody>
