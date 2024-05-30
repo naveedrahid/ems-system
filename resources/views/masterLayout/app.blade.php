@@ -259,6 +259,14 @@
                                         <a href="{{ route('attendance.log') }}"><i
                                                 class="fa fa-circle-o"></i>Attendance Log</a>
                                     </li>
+                                    <li class="">
+                                        <a href="{{ route('attendance.report') }}"><i
+                                                class="fa fa-circle-o"></i>Attendance Report</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="{{ route('attendance.create') }}"><i
+                                                class="fa fa-circle-o"></i>Add Attendance</a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="treeview">
