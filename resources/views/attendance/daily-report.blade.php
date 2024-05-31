@@ -9,7 +9,6 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
                         <th width="10%">Employee Name</th>
                         <th width="15%">Date</th>
                         <th width="10%">Check In</th>
@@ -25,7 +24,6 @@
                     @if ($users)
                         @foreach ($attendance as $result)
                             <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>
                                     @foreach ($users as $user)
                                         @if ($result->user_id == $user->id)
@@ -37,9 +35,11 @@
                                 <td>{{ \Carbon\Carbon::parse(optional($result)->check_in)->format('g:i A') }}</td>
                                 <td>
                                     @if (optional($result)->check_in_status == 'Late In')
-                                        <span class="btn btn-danger btn-xs">{{ optional($result)->check_in_status }}</span>
+                                        <span class="btn btn-warning btn-xs">{{ optional($result)->check_in_status }}</span>
                                     @elseif(optional($result)->check_in_status == 'Early In' || optional($result)->check_in_status == 'In')
-                                        <span class="btn btn-success btn-xs">{{ optional($result)->check_in_status }}</span>
+                                        <span class="btn btn-info btn-xs">{{ optional($result)->check_in_status }}</span>
+                                    @elseif(optional($result)->check_in_status == 'Early In' || optional($result)->check_in_status == 'In')
+                                        <span class="btn btn-primary btn-xs">{{ optional($result)->check_in_status }}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -49,10 +49,13 @@
                                 </td>
                                 <td>
                                     @if (optional($result)->check_out_status == 'Early Out')
-                                        <span class="btn btn-danger btn-xs">{{ optional($result)->check_out_status }}</span>
+                                        <span class="btn btn-orange btn-xs">{{ optional($result)->check_out_status }}</span>
                                     @elseif(optional($result)->check_out_status == 'Late Out')
                                         <span
-                                            class="btn btn-success btn-xs">{{ optional($result)->check_out_status }}</span>
+                                            class="btn btn-navy btn-xs">{{ optional($result)->check_out_status }}</span>
+                                    @elseif(optional($result)->check_out_status == 'Out')
+                                        <span
+                                            class="btn btn-primary btn-xs">{{ optional($result)->check_out_status }}</span>
                                     @endif
                                 </td>
                                 <td>

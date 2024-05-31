@@ -91,7 +91,25 @@
 
         $('#filterForm').submit(function(event) {
             event.preventDefault();
+
             const userId = $('#user').val();
+            const monthYearVal = $('#monthYearPicker').val();
+            const departmentId = $('#department').val();
+            
+            if (!departmentId) {
+                alert('Please select a department.');
+                return;
+            }
+            if (!userId) {
+                alert('Please select a User Name.');
+                return;
+            }
+            if (!monthYearVal) {
+                alert('Please select a month and year.');
+                return;
+            }
+
+
             const monthYear = $('#monthYearPicker').val().split('/');
             const month = monthYear[0];
             const year = monthYear[1];
@@ -136,16 +154,17 @@
                             attendanceData.check_in_status + '</span>'
                         ) : '-';
 
-                        const checkOutStatusHtml = attendanceData.check_out_status ? (
-                            attendanceData.check_out_status === 'Early Out' ?
-                            '<span class="btn bg-orange btn-xs">' +
-                            attendanceData.check_out_status + '</span>' :
-                            attendanceData.check_out_status === 'Late Out' ?
-                            '<span class="btn bg-navy btn-xs">' +
-                            attendanceData.check_out_status + '</span>' :
-                            '<span class="btn btn-primary btn-xs">' +
-                            attendanceData.check_out_status + '</span>'
-                        ) : '-';
+                        const checkOutStatusHtml = attendanceData.check_out_status ?
+                            (
+                                attendanceData.check_out_status === 'Early Out' ?
+                                '<span class="btn bg-orange btn-xs">' +
+                                attendanceData.check_out_status + '</span>' :
+                                attendanceData.check_out_status === 'Late Out' ?
+                                '<span class="btn bg-navy btn-xs">' +
+                                attendanceData.check_out_status + '</span>' :
+                                '<span class="btn btn-primary btn-xs">' +
+                                attendanceData.check_out_status + '</span>'
+                            ) : '-';
 
                         const dayRow = `
                         <tr>

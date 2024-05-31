@@ -27,6 +27,7 @@
 </head>
 
 <body class="hold-transition sidebar-mini skin-blue-light">
+
     <div class="wrapper">
         <header class="main-header">
             <a href="{{ url('/') }}" class="logo">
@@ -264,8 +265,8 @@
                                                 class="fa fa-circle-o"></i>Attendance Report</a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('attendance.create') }}"><i
-                                                class="fa fa-circle-o"></i>Add Attendance</a>
+                                        <a href="{{ route('attendance.create') }}"><i class="fa fa-circle-o"></i>Add
+                                            Attendance</a>
                                     </li>
                                 </ul>
                             </li>
@@ -412,8 +413,12 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
+                                        <a href="{{ route('attendance.filter') }}"><i class="fa fa-circle-o"></i>Attendance
+                                            Filter</a>
+                                    </li>
+                                    <li class="">
                                         <a href="{{ route('daily.report') }}"><i class="fa fa-circle-o"></i>
-                                            Daily Attendance
+                                            Daily Attendance 
                                         </a>
                                     </li>
                                     <li class="">

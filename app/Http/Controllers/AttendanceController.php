@@ -11,7 +11,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -68,6 +67,38 @@ class AttendanceController extends Controller
         }
 
         return response()->json(['days' => $days, 'employees' => $employees]);
+    }
+
+    public function AttendanceWithFilter(Request $request)
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+
+        $attendance = collect();
+
+        $month = $request->input('month', date('m'));
+        $year = $request->input('year', date('Y'));
+
+        if ($request->has('month') && $request->has('year')) {
+            $attendance = Attendance::where('user_id', auth()->user()->id)
+                ->whereYear('attendance_date', $year)
+                ->whereMonth('attendance_date', $month)
+                ->get();
+        }
+
+        if ($request->ajax()) {
+            $html = view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year'))->render();
+
+            if ($attendance->isEmpty()) {
+                $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'html' => $html,
+            ]);
+        }
+
+        return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year'));
     }
 
     public function attendanceLog()
@@ -164,11 +195,19 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'You have already checked out.']);
         }
 
-        $officeClosingTime = Carbon::createFromTime(17, 20, 0);
         $checkOutTime = now();
-        $checkOutStatus = $checkOutTime <= $officeClosingTime ? 'Early Out' : 'Late Out';
-        $totalOvertime = null;
+        $earlyCheckOutTime = Carbon::createFromTime(17, 0, 0);
+        $lateCheckOutTime = Carbon::createFromTime(17, 20, 0);
 
+        if ($checkOutTime->between($earlyCheckOutTime, $lateCheckOutTime)) {
+            $checkOutStatus = 'Out';
+        } elseif ($checkOutTime->lessThanOrEqualTo($earlyCheckOutTime)) {
+            $checkOutStatus = 'Early Out';
+        } else {
+            $checkOutStatus = 'Late Out';
+        }
+
+        $totalOvertime = null;
         if ($checkOutStatus === 'Late Out') {
             $officeClosingDateTime = Carbon::createFromTime(17, 20, 0);
             $checkOutDateTime = Carbon::parse($date . ' ' . $time);
@@ -188,6 +227,7 @@ class AttendanceController extends Controller
 
         return response()->json(['message' => 'Check out successfully']);
     }
+
 
     public function create()
     {

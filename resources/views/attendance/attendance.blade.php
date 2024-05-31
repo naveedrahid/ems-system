@@ -9,9 +9,9 @@
             <div class="btnGroup">
                 <form action="{{ route('download-pdf') }}" method="GET" class="mt-3">
                     @csrf
-                    <button type="submit" class="btn btn-app btnPdf"><i class="fa-solid fa-file-pdf"></i></button>
+                    <button type="submit" class="btn btn-info btnPdf mb-3"><i class="fa-solid fa-file-pdf"></i></button>
+                    <div>&nbsp;</div>
                 </form>
-                <button id="printButton" class="btn btn-app btnPdf"><i class="fa-solid fa-print"></i></button>
             </div>
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
@@ -124,10 +124,3 @@
     </div>
 @endsection
 @endsection
-@push('js')
-<script>
-    document.getElementById('printButton').addEventListener('click', function() {
-        window.print();
-    });
-</script>
-@endpush

@@ -36,6 +36,11 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::put('/user-status/{id}', [UserController::class, 'updateStatus'])->name('users.status');
     Route::put('/users/update/{id}', [UserController::class, 'update'])->name('users.update');
 
+    Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
+    Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+    Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
+    Route::get('/attendance/report', [AttendanceController::class, 'showAttendanceReport'])->name('attendance.report');
+    Route::post('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
     Route::get('/role', [RoleController::class, 'index'])->name('roles');
     Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
     Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
@@ -43,12 +48,6 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::put('/role/{id}/update', [RoleController::class, 'update'])->name('role_update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
     Route::put('/role-status/{id}', [RoleController::class, 'updateStatus'])->name('role.status');
-    Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
-    Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
-    Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
-
-    Route::get('/attendance/report', [AttendanceController::class, 'showAttendanceReport'])->name('attendance.report');
-    Route::post('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
 
 
     // Department Routes
@@ -144,7 +143,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
-    // Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceShow'])->name('attendance.filter');
+    Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
