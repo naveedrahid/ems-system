@@ -45,7 +45,7 @@ class HomeController extends Controller
 
         //get use upcomming holidays
         $holidayDate = Carbon::now()->format('Y-m-d');
-        $holidays = Holiday::orderBy('id', 'ASC')->get()->filter(function ($holiday) use ($holidayDate) {
+        $holidays = Holiday::orderBy('date', 'ASC')->get()->filter(function ($holiday) use ($holidayDate) {
             $startDate = explode(' - ', $holiday->date)[0];
             return $startDate >= $holidayDate;
         });
@@ -78,7 +78,7 @@ class HomeController extends Controller
 
         $activeEmployees = User::where('status', 'active')->get();
         $activeEmployeeCount = $activeEmployees->count();
-        
+    
         $leaveQuery = LeaveApplication::all();
         return view('dashboard', compact(
             'designation',

@@ -136,9 +136,9 @@
                             @endphp
                             <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
                             @foreach ($leaveTypes as $leaveType)
-                                <p class="m-0">
-                                    {{ $leaveType->name }} - {{ $leaveType->default_balance }}
-                                </p>
+                               <p class="m-0">
+                                   {{ $leaveType->name }} - {{ $leaveType->default_balance }}
+                               </p>
                             @endforeach
                         </div>
                         <div class="icon">
@@ -252,16 +252,24 @@
                                                 @endphp
 
                                                 @if ($startDate == $endDate)
-                                                    <span>{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }}</span><br>
+                                                    <tr>
+                                                        <td>{{ $holiday->name }}</td>
+                                                        <td><span
+                                                                class="label label-success">{{ \Carbon\Carbon::parse($startDate)->format('d  M') }}</span>
+                                                        </td>
+                                                    </tr>
                                                 @else
-                                                    <span>{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }} -
-                                                        {{ \Carbon\Carbon::parse($endDate)->format('Y-m-d') }}</span><br>
+                                                    <tr>
+                                                        <td>{{ $holiday->name }}</td>
+                                                        <td>
+                                                            <span class="label label-success">
+                                                                {{ \Carbon\Carbon::parse($startDate)->format('d M') }}
+                                                                -
+                                                                {{ \Carbon\Carbon::parse($endDate)->format('d M') }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 @endif
-
-                                                {{-- <tr>
-                                                    <td>{{ $holiday->name }}</td>
-                                                    <td><span class="label label-success">{{ $holiday->date }}</span></td>
-                                                </tr> --}}
                                             @endforeach
                                         @endif
                                     </tbody>
@@ -291,7 +299,7 @@
                                                     <tr>
                                                         <td>{{ $user->name }}</td>
                                                         <td><span
-                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M Y') }}</span>
+                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M') }}</span>
                                                         </td>
                                                     </tr>
                                                 @endif
@@ -317,9 +325,9 @@
                             @endphp
                             <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
                             @foreach ($leaveTypes as $leaveType)
-                                <p class="m-0">
+                                <span class="info-box-text">
                                     {{ $leaveType->name }} - {{ $leaveType->default_balance }}
-                                </p>
+                                </span>
                             @endforeach
                         </div>
                         <div class="icon">
@@ -430,10 +438,30 @@
                                     <tbody>
                                         @if ($holidays->isNotEmpty())
                                             @foreach ($holidays as $holiday)
-                                                <tr>
-                                                    <td>{{ $holiday->name }}</td>
-                                                    <td><span class="label label-success">{{ $holiday->date }}</span></td>
-                                                </tr>
+                                                @php
+                                                    $dateRange = $holiday->date;
+                                                    [$startDate, $endDate] = explode(' - ', $dateRange);
+                                                @endphp
+
+                                                @if ($startDate == $endDate)
+                                                    <tr>
+                                                        <td>{{ $holiday->name }}</td>
+                                                        <td><span
+                                                                class="label label-success">{{ \Carbon\Carbon::parse($startDate)->format('d  M') }}</span>
+                                                        </td>
+                                                    </tr>
+                                                @else
+                                                    <tr>
+                                                        <td>{{ $holiday->name }}</td>
+                                                        <td>
+                                                            <span class="label label-success">
+                                                                {{ \Carbon\Carbon::parse($startDate)->format('d M') }}
+                                                                -
+                                                                {{ \Carbon\Carbon::parse($endDate)->format('d M') }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                @endif
                                             @endforeach
                                         @endif
                                     </tbody>
@@ -463,7 +491,7 @@
                                                     <tr>
                                                         <td>{{ $user->name }}</td>
                                                         <td><span
-                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M Y') }}</span>
+                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M') }}</span>
                                                         </td>
                                                     </tr>
                                                 @endif
