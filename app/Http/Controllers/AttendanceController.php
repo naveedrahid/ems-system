@@ -71,35 +71,33 @@ class AttendanceController extends Controller
 
     public function AttendanceWithFilter(Request $request)
     {
-        $user = User::where('id', auth()->user()->id)->first();
-
-        $attendance = collect();
-
-        $month = $request->input('month', date('m'));
-        $year = $request->input('year', date('Y'));
+        $user = User::where('id', auth()->user()->id)->get();
+        $attendanceQuery = Attendance::where('user_id', auth()->user()->id);
 
         if ($request->has('month') && $request->has('year')) {
-            $attendance = Attendance::where('user_id', auth()->user()->id)
-                ->whereYear('attendance_date', $year)
-                ->whereMonth('attendance_date', $month)
-                ->get();
+            $month = $request->input('month');
+            $year = $request->input('year');
+            $attendanceQuery->whereYear('attendance_date', $year)->whereMonth('attendance_date', $month);
+        } else {
+            $month = date('m');
+            $year = date('Y');
         }
 
-        if ($request->ajax()) {
-            $html = view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year'))->render();
+        $attendance = $attendanceQuery->get();
 
+        if ($request->ajax()) {
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
             }
-
             return response()->json([
                 'status' => 'success',
-                'html' => $html,
+                'html' => view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year'))->render(),
             ]);
         }
 
         return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year'));
     }
+
 
     public function attendanceLog()
     {
