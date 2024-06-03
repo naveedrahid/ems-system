@@ -16,18 +16,35 @@ class AttendanceController extends Controller
 {
     public function showAttendanceReport()
     {
+        $holidays = Holiday::all();
         $departments = Department::all();
         $employees = Employee::with('user')->get();
         $users = User::all();
-        return view('attendance.report', compact('departments', 'employees', 'users'));
+        return view('attendance.report', compact('departments', 'employees', 'users', 'holidays'));
     }
 
     public function filterAttendanceReport(Request $request)
     {
-        $departmentId = $request->input('department_id');
-        $userId = $request->input('user_id');
-        $month = $request->input('month');
-        $year = $request->input('year');
+        $holidays = Holiday::all();
+        $employees = Employee::with('user')->get();
+        $departments = Department::all();
+        $users = User::all();
+
+        $attendance = collect();
+        $month = date('m');
+        $year = date('Y');
+
+        if ($request->has('department_id')) {
+            $departmentId = $request->input('department_id');
+        } else {
+            $departmentId = null;
+        }
+
+        if ($request->has('user_id')) {
+            $userId = $request->input('user_id');
+        } else {
+            $userId = null;
+        }
 
         $employeesQuery = Employee::query();
         if ($departmentId) {
@@ -39,38 +56,34 @@ class AttendanceController extends Controller
         $employees = $employeesQuery->with('user')->get();
         $userIds = $employees->pluck('user_id');
 
-        $startDate = Carbon::createFromDate($year, $month, 1);
-        $endDate = $startDate->copy()->endOfMonth();
-
-        $attendanceRecords = Attendance::whereIn('user_id', $userIds)
-            ->whereYear('attendance_date', $year)
-            ->whereMonth('attendance_date', $month)
-            ->with('user')
-            ->get();
-
-        $days = [];
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
-            $formattedDate = $date->format('Y-m-d');
-            $isWeekend = $date->isWeekend();
-            $attendanceData = $attendanceRecords->where('attendance_date', $formattedDate)->first();
-
-            $days[] = [
-                'date' => $formattedDate,
-                'displayDate' => $date->format('l - d M, Y'),
-                'isWeekend' => $isWeekend,
-                'attendanceData' => $attendanceData,
-                'user' => $attendanceData ? $attendanceData->user : null,
-                'check_in' => $attendanceData ? $attendanceData->check_in : null,
-                'check_out' => $attendanceData ? $attendanceData->check_out : null,
-                'total_overtime' => $attendanceData ? $attendanceData->total_overtime : null
-            ];
+        if ($request->has('month') && $request->has('year')) {
+            $month = $request->input('month');
+            $year = $request->input('year');
+            $attendance = Attendance::whereIn('user_id', $userIds)
+                ->whereYear('attendance_date', $year)
+                ->whereMonth('attendance_date', $month)
+                ->get();
         }
 
-        return response()->json(['days' => $days, 'employees' => $employees]);
+        if ($request->ajax()) {
+            $html = view('attendance.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+
+            if ($attendance->isEmpty()) {
+                $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'html' => $html,
+            ]);
+        }
+
+        return view('attendance.report', compact('departments', 'employees', 'users', 'attendance', 'month', 'year'));
     }
 
     public function AttendanceWithFilter(Request $request)
     {
+        $holidays = Holiday::all();
         $user = User::where('id', auth()->user()->id)->get();
         $attendanceQuery = Attendance::where('user_id', auth()->user()->id);
 
@@ -86,16 +99,19 @@ class AttendanceController extends Controller
         $attendance = $attendanceQuery->get();
 
         if ($request->ajax()) {
+            $html = view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year', 'holidays'))->render();
+
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
             }
+
             return response()->json([
                 'status' => 'success',
-                'html' => view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year'))->render(),
+                'html' => $html,
             ]);
         }
 
-        return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year'));
+        return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year', 'holidays'));
     }
 
 
@@ -108,12 +124,13 @@ class AttendanceController extends Controller
 
     public function AttendanceShow()
     {
+        $holidays = Holiday::all();
         $users = User::where('id', auth()->user()->id)->get();
         $attendance = Attendance::where('user_id', auth()->user()->id)->get();
         $currentMonth = date('m');
         $currentYear = date('Y');
 
-        return view('attendance.attendance', compact('users', 'attendance', 'currentMonth', 'currentYear'));
+        return view('attendance.attendance', compact('users', 'attendance', 'currentMonth', 'currentYear', 'holidays'));
     }
 
     public function downloadPdf()

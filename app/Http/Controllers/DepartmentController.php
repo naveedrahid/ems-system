@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class DepartmentController extends Controller
 {
@@ -27,15 +25,12 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-        return view('department.create');
+        $department = new Department();
+        $formMethod = 'POST';
+        $route = route('department.store');
+        return view('department.form', compact('department', 'formMethod', 'route'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -43,12 +38,9 @@ class DepartmentController extends Controller
             'status' => 'required|in:active,deactive',
         ]);
 
-        Department::create([
-            'department_name' => $request->department_name,
-            'status' => $request->status,
-        ]);
+        Department::create($request->all());
 
-        return response()->json(['message' => 'Role created successfully'], 200);
+        return response()->json(['message' => 'Department created successfully'], 200);
     }
 
 
@@ -69,40 +61,24 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function edit(Department $department, $id)
+    public function edit(Department $department)
     {
-        $department = Department::find($id);
-        return view('department.edit', compact('department'));
+        // $department = Department::find($id);
+        $formMethod = 'PUT';
+        $route = route('department.update', $department->id);
+        return view('department.form', compact('department', 'formMethod', 'route'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, Department $department)
     {
-
-        // Log::info('Updating department with ID ' . $department->id . ' to name: ' . $request->department_name . ', status: ' . $request->status);
-
-        // $validatedData = $request->validate([
-        //     'department_name' => 'required|string|max:255',
-        //     'status' => 'required|string|in:active,inactive',
-        // ]);
-
-        $department = Department::where('id', $id)->first();
-        // dd($id, $request->toArray(), $department->toArray());
-
-        $department->update([
-            'department_name' => $request->department_name,
-            'status' => $request->status,
+        $request->validate([
+            'department_name' => 'required',
+            'status' => 'required|in:active,deactive',
         ]);
 
-        // Log::info('Department updated successfully');
+        $department->update($request->all());
 
-        return response()->json(['message' => 'Department updated successfully']);
+        return response()->json(['message' => 'Department updated successfully'], 200);
     }
 
 
@@ -112,9 +88,9 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Department $department)
     {
-        $department = Department::findOrFail($id);
+        // $department = Department::findOrFail($id);
         $department->delete();
         return response()->json(['success' => 'Department deleted successfully'], 200);
     }

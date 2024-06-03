@@ -10,6 +10,23 @@ if (!function_exists('isAdmin')) {
     }
 }
 
+// check holiday 
+
+if (!function_exists('checkHoliday')) {
+    function checkHoliday($date, $holidays)
+    {
+        foreach ($holidays as $holiday) {
+            list($start, $end) = explode(' - ', $holiday->date);
+            if ($date >= $start && $date <= $end) {
+                return $holiday->name;
+            }
+        }
+        return null;
+    }
+}
+
+// show user upcoming birthday
+
 if (!function_exists('getUpcomingBirthdays')) {
     function getUpcomingBirthdays()
     {
@@ -33,6 +50,8 @@ if (!function_exists('getUpcomingBirthdays')) {
         return $upcomingBirthdays;
     }
 }
+
+// Calculate Over Time
 
 function calculateOvertime($check_out)
 {

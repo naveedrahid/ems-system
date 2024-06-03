@@ -25,10 +25,13 @@ class DesignationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create() 
     {
+        $designation = new Designation();
+        $formMethod = 'POST';
+        $route = route('designation.store');
         $departments = Department::pluck('department_name', 'id');
-        return view('designation.create', compact('departments'));
+        return view('designation.form', compact('departments', 'designation', 'formMethod', 'route'));
     }
 
     /**
@@ -39,21 +42,17 @@ class DesignationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'department_id' => 'required',
             'designation_name' => 'required',
-            'status' => 'required',
+            'status' => 'required', 
         ]);
 
-        if ($validator->fails()) {
-            return $this->sendErrorResponse($validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->sendErrorResponse($validator->errors());
+        // }
 
-        Designation::create([
-            'department_id' => $request->department_id,
-            'designation_name' => $request->designation_name,
-            'status' => $request->status,
-        ]);
+        Designation::create($request->all());
         return response()->json(['message' => 'Role created successfully'], 200);
     }
 
@@ -74,11 +73,12 @@ class DesignationController extends Controller
      * @param  \App\Models\Designation  $designation
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request, Designation $designation)
     {
-        $designation = Designation::findOrFail($id);
+        $formMethod = 'PUT';
+        $route = route('designation.update', $designation->id);
         $departments = Department::pluck('department_name', 'id');
-        return view('designation.edit', compact('designation', 'departments'));
+        return view('designation.form', compact('designation', 'departments', 'formMethod', 'route'));
     }    
 
     /**
@@ -89,17 +89,15 @@ class DesignationController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Designation $designation)
     {
-        $designation = Designation::findOrFail($id);
-    
-        $validatedData = $request->validate([
+        $request->validate([
             'department_id' => 'required',
             'designation_name' => 'required',
             'status' => 'required',
         ]);
     
-        $designation->update($validatedData);
+        $designation->update($request->all());
         return response()->json(['message' => 'Designation updated successfully'], 200);
     }
 

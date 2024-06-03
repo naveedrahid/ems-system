@@ -8,7 +8,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">
                 <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
-                <a href="{{ route('departmentCreate') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                <a href="{{ route('department.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
             </h3>
             <div class="box-tools">
                 <div class="input-group input-group-sm" style="width: 250px;">
@@ -43,8 +43,12 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('departmentEdit', ['id' => $department->id]) }}" class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
-                                    <button class="delete-department btn btn-danger btn-flat btn-sm" data-department-id="{{ $department->id }}" data-delete-route="{{ route('departmentDestroy', ':id') }}"><i class="fa-regular fa-trash-can"></i></button>
+                                    <a href="{{ route('department.edit', $department) }}"
+                                        class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
+                                    <button class="delete-department btn btn-danger btn-flat btn-sm"
+                                        data-department-id="{{ $department->id }}"
+                                        data-delete-route="{{ route('department.destroy', ':id') }}"><i
+                                            class="fa-regular fa-trash-can"></i></button>
                                 </td>
                             </tr>
                         @endforeach
@@ -60,3 +64,55 @@
     </div>
 @endsection
 @endsection
+@push('js')
+<script>
+    $(document).ready(function() {
+        // Destroy Department
+        $('.delete-department').on('click', function(e) {
+            e.preventDefault();
+            const departmentId = $(this).data('department-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', departmentId);
+
+            const $clickedElement = $(this);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this department!',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const token = $('meta[name="csrf-token"]').attr('content');
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: deleteRoute,
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        }
+                    }).then(function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                        $clickedElement.closest('tr').remove();
+                    }).catch(function(xhr) {
+                        console.error(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to delete Department.',
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>
+@endpush

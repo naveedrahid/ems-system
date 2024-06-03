@@ -39,8 +39,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
-    Route::get('/attendance/report', [AttendanceController::class, 'showAttendanceReport'])->name('attendance.report');
-    Route::post('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
+    Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
+    // Route::get('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
     Route::get('/role', [RoleController::class, 'index'])->name('roles');
     Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
     Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
@@ -49,32 +49,9 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
     Route::put('/role-status/{id}', [RoleController::class, 'updateStatus'])->name('role.status');
 
-
-    // Department Routes
-    Route::resource('department', DepartmentController::class)->parameters([
-        'department' => 'id'
-    ])->names([
-        'index' => 'departmentView',
-        'create' => 'departmentCreate',
-        'store' => 'departmentStore',
-        'edit' => 'departmentEdit',
-        'update' => 'departmentUpdate',
-        'destroy' => 'departmentDestroy',
-    ])->except([
-        'show'
-    ]);
-    Route::resource('designation', DesignationController::class)->parameters([
-        'designation' => 'id'
-    ])->names([
-        'index' => 'designation.view',
-        'create' => 'designation.create',
-        'store' => 'designation.store',
-        'edit' => 'designation.edit',
-        'update' => 'designation.update',
-        'destroy' => 'designation.destroy',
-    ])->except([
-        'show'
-    ]);
+    Route::resource('department', DepartmentController::class)->except(['show']);
+    
+    Route::resource('designation', DesignationController::class)->except(['show']);
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
     Route::resource('employees', EmployeeController::class)->parameters([

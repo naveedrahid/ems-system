@@ -48,6 +48,7 @@
                             $weekend = \Carbon\Carbon::parse($date)->isWeekend();
                             $timeNow = \Carbon\Carbon::now();
                             $isFutureDate = \Carbon\Carbon::parse($date)->isFuture();
+                            $holidayName = checkHoliday($formattedDate, $holidays);
                         @endphp
                         <tr>
                             <td>{{ Auth::user()->name }}</td>
@@ -108,6 +109,8 @@
                                 @if ($isFutureDate)
                                 @elseif ($weekend)
                                     <span class="btn btn-warning btn-xs">Holiday</span>
+                                @elseif ($holidayName)
+                                    <span class="btn btn-warning btn-xs">{{ $holidayName }}</span>
                                 @elseif (optional($attendanceData)->status)
                                     <span class="btn btn-success btn-xs">
                                         {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}

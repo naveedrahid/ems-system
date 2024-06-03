@@ -45,7 +45,7 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <a href="{{ route('designation.edit', ['id' => $designation->id]) }}"
+                                    <a href="{{ route('designation.edit', $designation) }}"
                                         class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                     <button class="delete-designation btn btn-danger btn-flat btn-sm"
                                         data-designation-id="{{ $designation->id }}"

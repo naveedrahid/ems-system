@@ -114,12 +114,12 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
-                                        <a href="{{ route('departmentView') }}"><i class="fa fa-circle-o"></i> View
+                                        <a href="{{ route('department.index') }}"><i class="fa fa-circle-o"></i> View
                                             Department
                                         </a>
                                     </li>
                                     <li class="active">
-                                        <a href="{{ route('departmentCreate') }}"><i class="fa fa-circle-o"></i>
+                                        <a href="{{ route('department.create') }}"><i class="fa fa-circle-o"></i>
                                             Add Department
                                         </a>
                                     </li>
@@ -134,7 +134,7 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="active">
-                                        <a href="{{ route('designation.view') }}"><i class="fa fa-circle-o"></i> View
+                                        <a href="{{ route('designation.index') }}"><i class="fa fa-circle-o"></i> View
                                             Desgination
                                         </a>
                                     </li>
