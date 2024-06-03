@@ -374,6 +374,6 @@ class AttendanceController extends Controller
             'status' => 'Present',
         ]);
 
-        return redirect()->route('attendance')->with('success', 'Attendance created Successfully');
+        return redirect()->route('attendance.create')->with('success', 'Attendance created Successfully');
     }
 }
