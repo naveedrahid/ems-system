@@ -126,8 +126,8 @@ class AttendanceController extends Controller
         $styles = view('attendance.partial.pdfFilterStyle', compact('imageHtml', 'month', 'year'))->render();
 
         $pdfContent = '';
-        if (view()->exists('attendance.attendanceTable')) {
-            $pdfContent = view('attendance.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+        if (view()->exists('attendance.adminFilter.attendanceTable')) {
+            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
         }
 
         $pdfContentWithLogo = $styles . $pdfContent;
