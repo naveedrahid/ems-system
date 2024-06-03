@@ -1,15 +1,15 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th width="13%">Name</th>
+            <th width="15%">Name</th>
             <th width="20%">Date</th>
             <th width="9%">Check In</th>
-            <th width="8%">In Status</th>
+            <th width="8%">In</th>
             <th width="9%">Check Out</th>
-            <th width="8%">Out Status</th>
+            <th width="8%">Out</th>
             <th width="9%">Total Hours</th>
-            <th width="10%">OT</th>
-            <th width="14%">Status</th>
+            {{-- <th width="10%">OT</th> --}}
+            <th width="10%">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -81,28 +81,28 @@
                             -
                         @endif
                     </td>
-                    <td>
+                    {{-- <td>
                         @if ($attendanceData && $attendanceData->check_out)
                             {{ calculateOvertime($attendanceData->check_out) }}
                         @else
                             -
                         @endif
-                    </td>
+                    </td> --}}
                     <td>
                         @if ($isFutureDate)
                         @elseif ($weekend)
                             <span
-                                style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white;">Holiday</span>
+                                style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">Holiday</span>
                         @elseif ($holidayName)
                             <span
-                                style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white;">{{ $holidayName }}</span>
+                                style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">{{ $holidayName }}</span>
                         @elseif (optional($attendanceData)->status)
-                            <span style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white;">
+                            <span style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">
                                 {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}
                             </span>
                         @elseif (!$attendanceData && !$weekend)
                             <span
-                                style="padding: 3px 5px;border-radius: 3px;background-color: #dd4b39;color:#fff;">Absent</span>
+                                style="padding:3px 3px;border-radius: 3px;background-color: #dd4b39;color:#fff;font-size: 11px;line-height: 1.5;">Absent</span>
                         @endif
                     </td>
                 </tr>
