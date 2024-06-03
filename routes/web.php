@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
+    Route::get('/attendance/report/download', [AttendanceController::class, 'downloadAttendanceReport'])->name('attendance.report.download');
     // Route::get('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
     Route::get('/role', [RoleController::class, 'index'])->name('roles');
     Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
@@ -121,6 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
+    Route::get('/attendance/filter/download', [AttendanceController::class, 'downloadAttendanceWithFilter'])->name('attendance.filter.download');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');

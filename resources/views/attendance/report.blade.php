@@ -8,7 +8,7 @@
         <div class="box-body">
             <form id="adminAttendanceFilterForm" action="{{ route('attendance.report') }}" method="GET">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="department">Department</label>
                             <select name="department_id" id="department" class="form-control">
@@ -19,7 +19,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4" id="userContainer" style="display: none;">
+                    <div class="col-md-3" id="userContainer" style="display: none;">
                         <div class="form-group">
                             <label for="user">User</label>
                             <select name="user_id" id="user" class="form-control">
@@ -41,10 +41,13 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary mt-4" id="filterButton">Filter</button>
+                        <button type="submit" class="btn btn-primary btn-block mt-4" id="filterButton">Filter</button>
                     </div>
                 </div>
             </form>
+            <a id="downloadLink" href="#" class="btn btn-primary btn btn-info btnPdf" style="display:none;">
+                <i class="fa-solid fa-file-pdf"></i>
+            </a>
             <div id="loading" style="display: none;">Loading...</div>
             <div id="attendanceTable"></div>
 
@@ -119,6 +122,8 @@
                             $('#attendanceTable').html(response.html);
                             Swal.fire("Success", "Attendance data fetched successfully.",
                                 "success");
+                            $('#downloadLink').attr('href', response.download_url);
+                            $('#downloadLink').show();
                         } else {
                             Swal.fire("Failed", "An error occurred while fetching the data.",
                                 "error");
@@ -140,6 +145,19 @@
 
 @push('css')
     <style>
+        a#downloadLink {
+            margin: 20px 0px;
+        }
+
+        form#adminAttendanceFilterForm .row {
+            align-items: end;
+            display: flex;
+        }
+
+        form#adminAttendanceFilterForm .row .form-group {
+            margin: 0;
+        }
+
         #loading {
             position: fixed;
             inset: 0;

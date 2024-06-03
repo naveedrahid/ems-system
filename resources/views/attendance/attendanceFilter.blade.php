@@ -6,7 +6,7 @@
 @section('page-content')
     <div class="box">
         <div class="box-body">
-            <form id="attendanceFilterForm" method="GET">
+            <form id="attendanceFilterForm" action="{{route('attendance.filter')}}" method="GET">
                 <div class="row">
                     <div class="col-md-3">
                         <label for="name">Name</label>
@@ -23,9 +23,12 @@
                     </div>
                 </div>
             </form>
+            <a id="downloadLink" href="#" class="btn btn-primary btn btn-info btnPdf" style="display:none;">
+                <i class="fa-solid fa-file-pdf"></i>
+            </a>
             <div id="loading" style="display: none;">Loading...</div>
             <div id="attendanceTable">
-                @include('attendance.attendanceTable', [
+                @include('attendance.employeeFilter.attendanceTable', [
                     'attendance' => $attendance,
                     'month' => $month,
                     'year' => $year,
@@ -33,78 +36,75 @@
             </div>
         </div>
     </div>
-    </div>
 @endsection
 @push('js')
-    <script>
-        $(document).ready(function() {
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
+<script>
+    $(document).ready(function() {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
 
-            $('#monthYear').datepicker({
-                format: "mm/yyyy",
-                startView: "months",
-                minViewMode: "months",
-                useCurrent: false,
-                autoclose: true,
-                endDate: currentDate,
-                beforeShowMonth: function(date) {
-                    if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
-                        return false;
+        $('#monthYear').datepicker({
+            format: "mm/yyyy",
+            startView: "months",
+            minViewMode: "months",
+            useCurrent: false,
+            autoclose: true,
+            endDate: currentDate,
+            beforeShowMonth: function(date) {
+                if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+                    return false;
+                }
+            },
+        }).on('changeDate', function(e) {
+            const month = e.date.getMonth() + 1;
+            const year = e.date.getFullYear();
+            $('input[name="month"]').val(month);
+            $('input[name="year"]').val(year);
+        });
+
+        $('#attendanceFilterForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const monthYearVal = $('#monthYear').val();
+
+            if (!monthYearVal) {
+                Swal.fire("Validation Error", "Month and Year are required.", "warning");
+                return;
+            }
+
+            const form = $(this);
+            const url = form.attr('action');
+            const data = form.serialize();
+
+            $('#loading').show();
+            $('#filterButton').prop('disabled', true);
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: data,
+                success: function(response) {
+                    $('#loading').hide();
+                    $('#filterButton').prop('disabled', false);
+                    if (response.status === 'success') {
+                        $('#attendanceTable').html(response.html);
+                        $('#downloadLink').attr('href', response.download_url);
+                        $('#downloadLink').show();
+                        Swal.fire("Success", "Attendance data fetched successfully.", "success");
+                    } else {
+                        Swal.fire("Failed", "An error occurred while fetching the data.", "error");
                     }
                 },
-            }).on('changeDate', function(e) {
-                const month = e.date.getMonth() + 1;
-                const year = e.date.getFullYear();
-                $('input[name="month"]').val(month);
-                $('input[name="year"]').val(year);
-            });
-
-            $('#attendanceFilterForm').on('submit', function(e) {
-                e.preventDefault();
-
-                const monthYearVal = $('#monthYear').val();
-
-                if (!monthYearVal) {
-                    Swal.fire("Validation Error", "Month and Year are required.", "warning");
-                    return;
+                error: function(error) {
+                    $('#loading').hide();
+                    $('#filterButton').prop('disabled', false);
+                    Swal.fire("Failed", "An error occurred while fetching the data.", "error");
                 }
-
-                const form = $(this);
-                const url = form.attr('action');
-                const data = form.serialize();
-
-                $('#loading').show();
-                $('#filterButton').prop('disabled', true);
-
-                $.ajax({
-                    type: 'GET',
-                    url: url,
-                    data: data,
-                    success: function(response) {
-                        // $('#attendanceTable').html(response);
-                        $('#loading').hide();
-                        $('#filterButton').prop('disabled', false);
-                        if (response.status === 'success') {
-                            $('#attendanceTable').html(response.html);
-                            Swal.fire("Success", "Attendance data fetched successfully.",
-                                "success");
-                        } else {
-                            Swal.fire("Failed", "An error occurred while fetching the data.",
-                                "error");
-                        }
-                    },
-                    error: function(error) {
-                        $('#loading').hide();
-                        $('#filterButton').prop('disabled', false);
-                        Swal.fire("Failed", "An error occurred while fetching the data.",
-                            "error");
-                    }
-                });
             });
         });
-    </script>
+    });
+</script>
 @endpush
 @push('css')
     <style>

@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Holiday;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -66,7 +69,7 @@ class AttendanceController extends Controller
         }
 
         if ($request->ajax()) {
-            $html = view('attendance.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
@@ -75,10 +78,64 @@ class AttendanceController extends Controller
             return response()->json([
                 'status' => 'success',
                 'html' => $html,
+                'download_url' => route('attendance.report.download', [
+                    'department_id' => $departmentId,
+                    'user_id' => $userId,
+                    'month' => $month,
+                    'year' => $year,
+                ]),
             ]);
         }
 
-        return view('attendance.report', compact('departments', 'employees', 'users', 'attendance', 'month', 'year'));
+        return view('attendance.report', compact('departments', 'employees', 'users', 'attendance', 'month', 'year', 'departmentId', 'userId'));
+    }
+
+    public function downloadAttendanceReport(Request $request)
+    {
+        $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id');
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $users = User::all();
+        $holidays = Holiday::all();
+
+        $employeesQuery = Employee::query();
+        if ($departmentId) {
+            $employeesQuery->where('department_id', $departmentId);
+        }
+        if ($userId) {
+            $employeesQuery->where('user_id', $userId);
+        }
+        $employees = $employeesQuery->with('user')->get();
+        $userIds = $employees->pluck('user_id');
+
+        $attendance = Attendance::whereIn('user_id', $userIds)
+            ->whereYear('attendance_date', $year)
+            ->whereMonth('attendance_date', $month)
+            ->get();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $imagePath = public_path('admin/images/Pixelz360.png');
+        $image = base64_encode(file_get_contents($imagePath));
+        $imageHtml = '<img src="data:image/png;base64,' . $image . '" width="100" height="100"/>';
+
+        $styles = view('attendance.partial.pdfFilterStyle', compact('imageHtml', 'month', 'year'))->render();
+
+        $pdfContent = '';
+        if (view()->exists('attendance.attendanceTable')) {
+            $pdfContent = view('attendance.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+        }
+
+        $pdfContentWithLogo = $styles . $pdfContent;
+
+        $dompdf->loadHtml($pdfContentWithLogo);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('attendance_report.pdf', ['Attachment' => true]);
     }
 
     public function AttendanceWithFilter(Request $request)
@@ -99,21 +156,50 @@ class AttendanceController extends Controller
         $attendance = $attendanceQuery->get();
 
         if ($request->ajax()) {
-            $html = view('attendance.attendanceTable', compact('user', 'attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.adminFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
             }
-
+            $downloadUrl = route('attendance.filter', ['download' => 'pdf', 'month' => $month, 'year' => $year]);
             return response()->json([
                 'status' => 'success',
                 'html' => $html,
+                'download_url' => $downloadUrl,
             ]);
+        }
+
+        // Handle PDF download
+        if ($request->has('download') && $request->input('download') == 'pdf') {
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isPhpEnabled', true);
+            $dompdf = new Dompdf($options);
+
+            // Generate the image HTML
+            $imagePath = public_path('admin/images/Pixelz360.png');
+            $image = base64_encode(file_get_contents($imagePath));
+            $imageHtml = '<img src="data:image/png;base64,' . $image . '" width="200" height="200"/>';
+
+            $styles = view('attendance.partial.pdfFilterStyle', compact('month', 'year', 'imageHtml'))->render();
+            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
+
+            $pdfContentWithLogo = $styles . $html;
+
+            $dompdf->loadHtml($pdfContentWithLogo);
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            return $dompdf->stream('employee_attendance_report.pdf', ['Attachment' => true]);
         }
 
         return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year', 'holidays'));
     }
 
+    public function downloadAttendanceWithFilter(Request $request)
+    {
+        //
+    }
 
     public function attendanceLog()
     {
