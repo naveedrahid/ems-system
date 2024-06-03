@@ -196,11 +196,6 @@ class AttendanceController extends Controller
         return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year', 'holidays'));
     }
 
-    public function downloadAttendanceWithFilter(Request $request)
-    {
-        //
-    }
-
     public function attendanceLog()
     {
         $users = User::with('role')->get();

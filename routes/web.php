@@ -122,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
-    Route::get('/attendance/filter/download', [AttendanceController::class, 'downloadAttendanceWithFilter'])->name('attendance.filter.download');
+    // Route::get('/attendance/filter/download', [AttendanceController::class, 'downloadAttendanceWithFilter'])->name('attendance.filter.download');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
