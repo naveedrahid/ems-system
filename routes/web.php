@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +55,12 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     
     Route::resource('designation', DesignationController::class)->except(['show']);
 
+    Route::resource('holidays', HolidayController::class)->except(['index','show']);
+    Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
+
+    Route::resource('notices', NoticeController::class)->except(['show']);
+    Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
+
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
     Route::resource('employees', EmployeeController::class)->parameters([
         'employees' => 'id'
@@ -94,27 +101,11 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
             'destroy' => 'leave_application.destroy',
         ])->except([
             'show',
-        ]);
-
-    Route::resource('holidays', HolidayController::class)
-        ->parameters([
-            'holidays' => 'holiday'
-        ])->names([
-            'create' => 'holidays.create',
-            'edit' => 'holidays.edit',
-            'store' => 'holidays.store',
-            'update' => 'holidays.update',
-            'destroy' => 'holidays.destroy',
-        ])->except([
-            'index',
-            'show',
-        ]);
-    Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
-    
+        ]);    
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [HomeController::class, 'dashboard'])->name('home');
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
     Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');

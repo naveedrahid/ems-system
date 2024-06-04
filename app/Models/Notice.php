@@ -5,16 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Holiday extends Model
+class Notice extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = ['id'];
 
     public static function getStatusOptions(){
         return [
-            'Religious' => 'Religious',
-            'National Holidays' => 'National Holidays',
+            'active' => 'Active',
+            'deactive' => 'Deactive',
         ];
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }    
 }

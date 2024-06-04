@@ -76,7 +76,40 @@
     @if (Auth::user())
         @if (isAdmin($user))
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="col-md-8  col-sm-12 col-xs-12">
+                    <div class="small-box bg-green py-4 px-3">
+                        @if ($notices)
+                            @foreach ($notices as $notice)
+                                <ul class="timeline">
+                                    <li class="time-label">
+                                        <span class="bg-red">
+                                            10 Feb. 2014
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-envelope bg-blue"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fa fa-clock"></i> 12:05</span>
+
+                                            <h3 class="timeline-header">
+                                                <a href="#"><strong>{{strtoupper($notice->notice_type)}}</strong></a>
+                                            {{$notice->name}}
+                                            </h3>
+
+                                            <div class="timeline-body">
+                                               {!! $notice->description !!}
+                                            </div>
+                                            <div class="timeline-footer">
+                                                <a class="btn btn-primary btn-xs">...</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12 col-xs-12">
                     <div class="info-box">
                         <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
                         <div class="info-box-content">
@@ -84,21 +117,17 @@
                             <span class="info-box-number">{{ $activeEmployeeCount }}</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box">
                         <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">Total Leave Requests</span>
                             @if ($leaveQuery)
-                                <span class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
+                                <span class="info-box-number">{{ $leaveQuery->count() }}</span>
                             @else
                                 <span class="info-box-number">0</span>
                             @endif
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box">
                         <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
                         <div class="info-box-content">
@@ -111,8 +140,6 @@
                             @endif
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box">
                         <span class="info-box-icon bg-yellow"><i class="fa fa-user"></i></span>
                         <div class="info-box-content">
@@ -124,7 +151,10 @@
                             @endif
                         </div>
                     </div>
+
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="small-box bg-aqua py-4 px-3">
                         <div class="inner">
@@ -136,9 +166,9 @@
                             @endphp
                             <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
                             @foreach ($leaveTypes as $leaveType)
-                               <p class="m-0">
-                                   {{ $leaveType->name }} - {{ $leaveType->default_balance }}
-                               </p>
+                                <p class="m-0">
+                                    {{ $leaveType->name }} - {{ $leaveType->default_balance }}
+                                </p>
                             @endforeach
                         </div>
                         <div class="icon">
@@ -215,7 +245,8 @@
                                                 <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
                                                     height="80" alt="User Image">
                                             @endif
-                                            <a class="users-list-name" href="javascript:;">{{ $employee->user->name }}</a>
+                                            <a class="users-list-name"
+                                                href="javascript:;">{{ $employee->user->name }}</a>
                                             <span class="users-list-date">{{ $departmentName }}</span>
                                             <span
                                                 class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>

@@ -82,6 +82,7 @@
                     @endif
                 </tbody>
             </table>
+            {{ $leaveApplications->links('pagination::bootstrap-4') }}
         </div>
     </div>
 @endsection

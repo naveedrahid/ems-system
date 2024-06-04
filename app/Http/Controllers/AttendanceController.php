@@ -199,7 +199,7 @@ class AttendanceController extends Controller
     public function attendanceLog()
     {
         $users = User::with('role')->get();
-        $attendance = Attendance::all();
+        $attendance = Attendance::paginate(10);
         return view('attendance.log', compact('users', 'attendance'));
     }
 

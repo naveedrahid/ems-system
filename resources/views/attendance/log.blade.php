@@ -4,6 +4,7 @@
     Employee Attendance
 @endsection
 @section('page-content')
+
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
@@ -91,7 +92,10 @@
                     @endif
                 </tbody>
             </table>
+            <div class="d-flex justify-content-center">
+                {{ $attendance->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 @endsection
-@endsection
+@endsection                         

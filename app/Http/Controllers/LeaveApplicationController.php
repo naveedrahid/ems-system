@@ -25,10 +25,10 @@ class LeaveApplicationController extends Controller
         if ($user->role_id === 3) {
             $leaveApplications = LeaveApplication::where('employee_id', $user->id)
                 ->with(['leaveType', 'user'])
-                ->get();
+                ->paginate(10);
         } else {
             $leaveApplications = LeaveApplication::with(['leaveType', 'user'])
-                ->get();
+                ->paginate(10);
         }
         return view('leave-application.index', compact('leaveApplications', 'userId', 'roleId'));
     }
@@ -133,12 +133,12 @@ class LeaveApplicationController extends Controller
             'start_date' => 'sometimes|nullable|date_format:Y-m-d',
             'end_date' => 'sometimes|nullable|date_format:Y-m-d',
         ]);
-    
+
         $leaveApplication = LeaveApplication::find($id);
         if (!$leaveApplication) {
             return redirect()->back()->withErrors(['error' => 'Leave Application not found.']);
         }
-    
+
         $imageName = $leaveApplication->leave_image;
         if ($request->hasFile('leave_image')) {
             if ($leaveApplication->leave_image) {
@@ -150,15 +150,15 @@ class LeaveApplicationController extends Controller
             $imageName = time() . '.' . $request->file('leave_image')->getClientOriginalExtension();
             $request->file('leave_image')->move(public_path('upload'), $imageName);
         }
-    
+
         $start_date = $leaveApplication->start_date;
         $end_date = $leaveApplication->end_date;
         $total_days = $leaveApplication->total_leave;
-    
+
         if ($request->start_date && $request->end_date) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-    
+
             $start_date_parsed = Carbon::createFromFormat('Y-m-d', $start_date);
             $end_date_parsed = Carbon::createFromFormat('Y-m-d', $end_date);
             $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
@@ -169,7 +169,7 @@ class LeaveApplicationController extends Controller
                 }
             }
         }
-    
+
         $data = [
             'leave_type_id' => $request->leave_type_id,
             'start_date' => $start_date,
@@ -179,12 +179,12 @@ class LeaveApplicationController extends Controller
             'status' => $request->status,
             'total_leave' => $total_days,
         ];
-    
+
         $leaveApplication->update($data);
-    
+
         return response()->json(['message' => 'Leave application Updated successfully']);
     }
-    
+
 
     /**
      * Remove the specified resource from storage.

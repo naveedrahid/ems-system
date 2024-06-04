@@ -20,8 +20,8 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-            ->with('employee.department', 'employee.designation')
-            ->get(['users.*', 'employees.employee_img', 'employees.gender']);
+        ->with('employee.department', 'employee.designation')
+        ->paginate(10, ['users.*', 'employees.employee_img', 'employees.gender']);
         return view('employees.index', compact('employees'));
     }
 

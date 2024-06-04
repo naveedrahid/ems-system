@@ -1,7 +1,7 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    <h2>{{ $department->exists ? 'Edit Department' : 'Create Department' }}</h2>
+    <h1>{{ $department->exists ? 'Edit Department' : 'Create Department' }}</h1>
 @endsection
 @section('page-content')
     <div class="box box-primary">

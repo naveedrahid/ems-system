@@ -25,7 +25,10 @@ class HolidayController extends Controller
      */
     public function create(Holiday $holiday)
     {
-        return view('holidays.create', compact('holiday'));
+        $holiday = new Holiday();
+        $route = route('holidays.store');
+        $formMethod = 'POST';
+        return view('holidays.form', compact('holiday', 'route', 'formMethod'));
     }
 
     /**
@@ -41,7 +44,7 @@ class HolidayController extends Controller
             'description' => 'nullable',
             'status' => 'in:active,deactive|default:deactive',
             'date' => 'required',
-            'holiday_type'=> 'required|:in' . implode(',', Holiday::getStatusOptions()),
+            'holiday_type'=> 'required|:in' . implode(',', array_keys(Holiday::getStatusOptions())),
         ]);
 
         Holiday::create($validate);
@@ -68,7 +71,9 @@ class HolidayController extends Controller
     public function edit(Holiday $holiday)
     {
         $holiday->date_range = $holiday->date ?: 'Invalid date - Invalid date';
-        return view('holidays.edit', compact('holiday'));
+        $route = route('holidays.update', $holiday->id);
+        $formMethod = 'PUT';
+        return view('holidays.form', compact('holiday', 'route', 'formMethod'));
     }
 
     /**
@@ -80,15 +85,15 @@ class HolidayController extends Controller
      */
     public function update(Request $request, Holiday $holiday)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => 'required',
             'description' => 'nullable|string|max:255',
             'date' => 'required',
             'status' => 'nullable',
-            'holiday_type' => 'required|in:' . implode(',', Holiday::getStatusOptions()),
+            'holiday_type' => 'required|in:' . implode(',', array_keys(Holiday::getStatusOptions())),
         ]);
     
-        $holiday->update($validatedData);
+        $holiday->update($request->all());
     
         return response()->json(['message' => 'Holiday Updated Successfully']);
     }    

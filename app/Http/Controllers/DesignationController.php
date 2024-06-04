@@ -122,6 +122,4 @@ class DesignationController extends Controller
     
         return response()->json(['message' => 'Status updated successfully'], 200);
     }
-    
-
 }

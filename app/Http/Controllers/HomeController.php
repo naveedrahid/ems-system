@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Holiday;
 use App\Models\LeaveApplication;
 use App\Models\LeaveType;
+use App\Models\Notice;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -80,6 +81,8 @@ class HomeController extends Controller
         $activeEmployeeCount = $activeEmployees->count();
     
         $leaveQuery = LeaveApplication::all();
+        $notices = Notice::orderBy('id', 'DESC')->get();
+
         return view('dashboard', compact(
             'designation',
             'departmentName',
@@ -90,7 +93,8 @@ class HomeController extends Controller
             'userBirthdays',
             'holidays',
             'activeEmployeeCount',
-            'leaveQuery'
+            'leaveQuery',
+            'notices'
         ));
     }
 
