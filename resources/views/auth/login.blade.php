@@ -10,7 +10,7 @@
                 <form method="POST" action="{{ route('login') }}" class="pt-3">
                     @csrf
                     <div class="form-group">
-                        <label for="email" class="form-check-label">{{ __('Email Address123') }}</label>
+                        <label for="email" class="form-check-label">{{ __('Email Address') }}</label>
                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         @error('email')
                             <span class="invalid-feedback" role="alert">

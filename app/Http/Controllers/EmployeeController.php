@@ -28,7 +28,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        if ($currentUser->role_id == 1) {
+        if ($currentUser->role_id === 1) {
             $roles = Role::all();
         }else{
             $roles = Role::where('name', 'employee')->get();

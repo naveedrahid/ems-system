@@ -34,7 +34,17 @@
                     $holidayName = checkHoliday($formattedDate, $holidays);
                 @endphp
                 <tr>
-                    <td>{{ Auth::user()->name }}</td>
+                    @foreach ($employees as $employee)
+                        <td>
+                            @php
+                                $attendanceData = $attendance
+                                    ->where('attendance_date', $formattedDate)
+                                    ->where('user_id', $employee->user_id)
+                                    ->first();
+                            @endphp
+                            {{ $employee->user->name ?? 'Unknown' }}
+                        </td>
+                    @endforeach
                     <td><span class="currentDate">{{ $displayDate }}</span></td>
                     <td>
                         @if (optional($attendanceData)->check_in)
@@ -97,7 +107,8 @@
                             <span
                                 style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">{{ $holidayName }}</span>
                         @elseif (optional($attendanceData)->status)
-                            <span style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">
+                            <span
+                                style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">
                                 {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}
                             </span>
                         @elseif (!$attendanceData && !$weekend)

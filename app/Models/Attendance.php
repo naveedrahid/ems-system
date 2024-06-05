@@ -16,7 +16,7 @@ class Attendance extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
+    }    
 
     public function employee()
     {
@@ -27,5 +27,4 @@ class Attendance extends Model
     {
         return $this->user ? $this->user->name : 'No Name';
     }
-
 }

@@ -105,7 +105,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
+    Route::get('/', [HomeController::class, 'dashboard'])->name('home');
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
     Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');

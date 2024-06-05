@@ -99,7 +99,6 @@
                     <li class="treeview">
                         <a href="{{ route('home') }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                     </li>
-
                     @if (Auth::user())
                         @php
                             $user = auth()->user();
@@ -247,6 +246,10 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
+                                        <a href="{{ route('attendance.create') }}"><i class="fa fa-circle-o"></i>Add
+                                            Attendance</a>
+                                    </li>
+                                    <li class="">
                                         <a href="{{ route('daily.report') }}"><i class="fa fa-circle-o"></i>
                                             Daily Attendance
                                         </a>
@@ -263,10 +266,6 @@
                                     <li class="">
                                         <a href="{{ route('attendance.report') }}"><i
                                                 class="fa fa-circle-o"></i>Attendance Report</a>
-                                    </li>
-                                    <li class="">
-                                        <a href="{{ route('attendance.create') }}"><i class="fa fa-circle-o"></i>Add
-                                            Attendance</a>
                                     </li>
                                 </ul>
                             </li>
@@ -348,12 +347,14 @@
                                     <li class="">
                                         <a href="#"><i class="fa fa-circle-o"></i>Profile</a>
                                     </li>
-                                    <li class="">
-                                        <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
-                                    </li>
-                                    <li class="active">
-                                        <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
-                                    </li>
+                                    @if (auth()->user()->role_id == 1)
+                                        <li class="">
+                                            <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
+                                        </li>
+                                        <li class="active">
+                                            <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
+                                        </li>
+                                    @endif
                                     <li class="">
                                         <a href="#"><i class="fa fa-circle-o"></i>Change Password</a>
                                     </li>
@@ -422,9 +423,7 @@
                                         </a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i> Month Wise
-                                            Attendance
-                                        </a>
+                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i>Current Month Attedance</a>
                                     </li>
                                 </ul>
                             </li>

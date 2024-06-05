@@ -9,11 +9,11 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Holiday;
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmployeeAttendanceMail;
 
 class AttendanceController extends Controller
 {
@@ -69,7 +69,7 @@ class AttendanceController extends Controller
         }
 
         if ($request->ajax()) {
-            $html = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.adminFilter.attendanceTable', compact('users','employees', 'attendance', 'month', 'year', 'holidays'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
@@ -127,7 +127,7 @@ class AttendanceController extends Controller
 
         $pdfContent = '';
         if (view()->exists('attendance.adminFilter.attendanceTable')) {
-            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays'))->render();
+            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays','employees'))->render();
         }
 
         $pdfContentWithLogo = $styles . $pdfContent;
@@ -275,6 +275,11 @@ class AttendanceController extends Controller
             'status' => 'present',
             'check_in_status' => $checkInStatus,
         ]);
+
+        $user = User::find($userId);
+
+        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString()));
+
         return response()->json(['message' => 'Check in successfully']);
     }
 
