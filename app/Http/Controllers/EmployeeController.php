@@ -26,8 +26,8 @@ class EmployeeController extends Controller
     public function getData()
     {
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-            ->with('employee.department', 'employee.designation')
-            ->select(['users.*', 'employees.employee_img', 'employees.gender']);
+        ->with('employee.department', 'employee.designation')
+        ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id']);
 
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) {
@@ -47,7 +47,7 @@ class EmployeeController extends Controller
                 }
             })
             ->editColumn('name', function ($employee) {
-                return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->id]) . '">
+                return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->employee_id]) . '">
                 <i class="fa fa-building-columns"></i></a>';
             })
             ->editColumn('department', function ($employee) {
@@ -76,7 +76,6 @@ class EmployeeController extends Controller
         $designations = Designation::pluck('designation_name', 'id');
         return view('employees.create', compact('departments', 'designations', 'roles'));
     }
-
 
     public function getDesignations($departmentId)
     {
