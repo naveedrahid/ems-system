@@ -56,6 +56,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-3 form-group">
+                                    <label for="employee_type_id">Employee Type</label>
+                                    <select name="employee_type_id" id="employee_type_id"
+                                        class="form-control form-select select2">
+                                        <option value="">Select Employee Type</option>
+                                        @foreach ($employeeTypes as $employeeType)
+                                            <option value="{{ $employeeType->id }}">{{ $employeeType->type }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3 form-group">
@@ -65,10 +75,11 @@
                                 </div>
                                 <div class="mb-3 form-group">
                                     <label class="form-label">Department Name: <span class="text text-red">*</span></label>
-                                    <select name="department_id" id="department_id" class="form-control form-select select2" style="width: 100%;">
+                                    <select name="department_id" id="department_id" class="form-control form-select select2"
+                                        style="width: 100%;">
                                         <option value="">Select Department</option>
                                         @foreach ($departments as $id => $departmentName)
-                                        <option value="{{ $id }}">{{ $departmentName }}</option>
+                                            <option value="{{ $id }}">{{ $departmentName }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -131,3 +142,73 @@
     </div>
 @endsection
 @endsection
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('#addEmployee').submit(function(e) {
+            e.preventDefault();
+
+            const user_name = $('input[name="user_name"]').val().trim();
+            const fater_name = $('input[name="fater_name"]').val().trim();
+            const user_email = $('input[name="user_email"]').val().trim();
+            const city = $('input[name="city"]').val().trim();
+            const phone_number = $('input[name="phone_number"]').val().trim();
+            const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
+            const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
+            const gender = $('select[name="gender"]').val().trim();
+            const date_of_birth = $('input[name="date_of_birth"]').val().trim();
+            const joining_date = $('input[name="joining_date"]').val().trim();
+            const address = $('input[name="address"]').val().trim();
+            const user_role = $('select[name="user_role"]').val().trim();
+            const status = $('select[name="status"]').val().trim();
+            const department_id = $('select[name="department_id"]').val().trim();
+            const designation_id = $('select[name="designation_id"]').val().trim();
+            const employee_type_id = $('select[name="employee_type_id"]').val().trim();
+
+            emergency_person_name
+            if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number ==
+                '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' ||
+                date_of_birth == '' || joining_date == '' || address == '' || user_role == '' ||
+                status == '' || department_id == '' || designation_id == '' || employee_type_id == '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'All Fields cannot be empty.',
+                });
+                return;
+            }
+
+            const formData = new FormData(this);
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                })
+                .then(function(response) {
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                    });
+                    $('#addEmployee')[0].reset();
+                })
+                .catch(function(xhr) {
+                    console.error(xhr);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to create Employee.',
+                    });
+                });
+        });
+    });
+</script>
+@endpush

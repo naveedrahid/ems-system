@@ -13,6 +13,7 @@ use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ShiftController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +79,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 
     Route::resource('leave-types', LeaveTypeController::class);
+
+    Route::resource('shifts', ShiftController::class);
     
     Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
 

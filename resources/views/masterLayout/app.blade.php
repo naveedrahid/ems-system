@@ -18,7 +18,8 @@
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <!-- Include DataTables Styling -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
 
@@ -156,11 +157,13 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="{{ route('shifts.create') }}"><i
+                                                class="fa fa-circle-o"></i>
                                             Add New
                                             Shift</a>
                                     </li>
-                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="{{ route('shifts.index') }}"><i
+                                                class="fa fa-circle-o"></i>
                                             View
                                             Shift
                                         </a></li>
@@ -290,6 +293,11 @@
                                                 class="fa fa-circle-o"></i>
                                             View
                                             Employees
+                                        </a></li>
+                                    <li class=""><a href="{{ route('bank-details.index') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            View
+                                            bank details
                                         </a></li>
                                 </ul>
                             </li>

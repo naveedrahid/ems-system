@@ -9,11 +9,11 @@ class Employee extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'user_id', 'date_of_birth', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img', 'gender',
-    // ];
+    protected $fillable = [
+        'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
+    ];
 
-    protected $guarded = [];
+    // protected $guarded = ['id'];
 
     protected $dates = [
         'date_of_birth',
@@ -32,5 +32,8 @@ class Employee extends Model
     public function designation()
     {
         return $this->belongsTo(Designation::class);
+    }
+    public function employeeType() {
+        return $this->belongsTo(EmployeeType::class);
     }
 }

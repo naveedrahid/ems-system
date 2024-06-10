@@ -18,6 +18,7 @@ class CreateEmployeesTable extends Migration
             $table->foreignId('user_id');
             $table->foreignId('department_id');
             $table->foreignId('designation_id');
+            $table->foreignId('employee_type_id');
             $table->date('date_of_birth');
             $table->date('joining_date');
             $table->string('fater_name');

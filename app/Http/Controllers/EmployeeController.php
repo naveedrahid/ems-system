@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
+use App\Models\EmployeeType;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -25,9 +26,13 @@ class EmployeeController extends Controller
 
     public function getData()
     {
+        // $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
+        // ->with('employee.department', 'employee.designation')
+        // ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id']);
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-        ->with('employee.department', 'employee.designation')
-        ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id']);
+        ->with('employee.department', 'employee.designation', 'employee.employeeType')
+        ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
+        ->get();
 
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) {
@@ -56,13 +61,12 @@ class EmployeeController extends Controller
             ->editColumn('designation', function ($employee) {
                 return optional($employee->employee->designation)->designation_name ?: 'No Designation';
             })
-            ->editColumn('status', function ($employee) {
-                return '<button class="employee-toggle btn btn-' . ($employee->status === 'active' ? 'info' : 'danger') . ' btn-sm" data-id="' . $employee->id . '" data-status="' . $employee->status . '"><i class="fa fa-thumbs-' . ($employee->status === 'active' ? 'up' : 'down') . '"></i></button>';
-            })
-            ->rawColumns(['employee_img', 'name', 'action', 'status'])
+            ->editColumn('employee_type_id', function ($employee) {
+                return optional($employee->employee->employeeType)->type ?? '';
+            })            
+            ->rawColumns(['employee_img', 'name', 'employee_type_id','action', 'status'])
             ->make(true);
     }
-
 
     public function create()
     {
@@ -74,7 +78,8 @@ class EmployeeController extends Controller
         }
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
-        return view('employees.create', compact('departments', 'designations', 'roles'));
+        $employeeTypes = EmployeeType::all();
+        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes'));
     }
 
     public function getDesignations($departmentId)
@@ -109,6 +114,7 @@ class EmployeeController extends Controller
             'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
+            'employee_type_id' => 'required'
         ]);
 
         $user = User::create([
@@ -145,10 +151,10 @@ class EmployeeController extends Controller
             'designation_id' => $request->designation_id,
             'employee_img' => $imageName,
             'gender' => $request->gender,
+            'employee_type_id' => $request->employee_type_id,
         ]);
 
         return response()->json(['message' => 'Employee Created successfully created']);
-        // return redirect()->route('employees.view')->with('message', 'Employee Created successfully created');
     }
 
     public function edit(Request $request, $id)
