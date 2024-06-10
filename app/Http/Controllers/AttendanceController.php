@@ -156,7 +156,7 @@ class AttendanceController extends Controller
         $attendance = $attendanceQuery->get();
 
         if ($request->ajax()) {
-            $html = view('attendance.adminFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
@@ -257,12 +257,12 @@ class AttendanceController extends Controller
         }
 
         $checkInStatus = null;
-        $letInTime = Carbon::createFromTime(8, 20);
+        $lateInTime = Carbon::createFromTime(8, 20);
         $earlyInTime = Carbon::createFromTime(8, 0);
 
-        if ($currentTime->greaterThan($letInTime)) {
+        if ($currentTime->greaterThan($lateInTime)) {
             $checkInStatus = 'Late In';
-        } elseif ($currentTime->greaterThan($earlyInTime) && $currentTime->lessThan($letInTime)) {
+        } elseif ($currentTime->greaterThan($earlyInTime) && $currentTime->lessThan($lateInTime)) {
             $checkInStatus = 'In';
         } elseif ($currentTime->lessThan($earlyInTime)) {
             $checkInStatus = 'Early In';
@@ -335,7 +335,7 @@ class AttendanceController extends Controller
         $userNames = User::all();
         return view('attendance.create', compact('userNames'));
     }
-
+ 
     public function store(Request $request)
     {
         $request->validate([

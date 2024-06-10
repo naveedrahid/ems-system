@@ -16,8 +16,7 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="16%">Employee Name</th>
+                        <th width="20%">Employee Name</th>
                         <th width="10%">Leave Type</th>
                         <th width="10%">Start Date</th>
                         <th width="10%">End Date</th>
@@ -35,7 +34,6 @@
                         @foreach ($leaveApplications as $leaveApplication)
                             @if ($roleId === 1 || $roleId === 2 || $leaveApplication->user->id === $userId)
                                 <tr>
-                                    <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                     <td>{{ $leaveApplication->user->name }}</td>
                                     <td>{{ $leaveApplication->leaveType->name }}</td>
                                     <td>{{ $leaveApplication->start_date }}</td>
@@ -68,11 +66,11 @@
                                     </td>
                                     @if (Auth::user()->id < 3)
                                         <td>
-                                            <a href="{{ route('leave_application.edit', $leaveApplication) }}"
+                                            <a href="{{ route('leave-applications.edit', $leaveApplication) }}"
                                                 class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                             <button class="delete-leave-application btn btn-danger btn-flat btn-sm"
                                                 data-leave-app-id="{{ $leaveApplication->id }}"
-                                                data-delete-route="{{ route('leave_application.destroy', ':id') }}"><i
+                                                data-delete-route="{{ route('leave-applications.destroy', ':id') }}"><i
                                                     class="fa-regular fa-trash-can"></i></button>
                                         </td>
                                     @endif

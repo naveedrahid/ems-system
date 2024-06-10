@@ -17,7 +17,8 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.4",
         "laravelcollective/html": "^6.4",
-        "tinymce/tinymce": "^7.1"
+        "tinymce/tinymce": "^7.1",
+        "yajra/laravel-datatables-oracle": "9.19"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

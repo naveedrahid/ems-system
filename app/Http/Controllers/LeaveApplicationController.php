@@ -38,10 +38,13 @@ class LeaveApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(LeaveApplication  $leave_application)
     {
-        $leaveTypes = LeaveType::all();
-        return view('leave-application.create', compact('leaveTypes'));
+        $leave_application = new LeaveApplication();
+        $route = route('leave_application.store');
+        $formMethod = 'POST';
+        $leaveTypes = LeaveType::pluck('name', 'id')->toArray();
+        return view('leave-application.form', compact('leave_application', 'route','formMethod', 'leaveTypes'));
     }
 
     /**
@@ -94,10 +97,10 @@ class LeaveApplicationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LeaveApplication  $leaveApplication
+     * @param  \App\Models\LeaveApplication  $leave_application
      * @return \Illuminate\Http\Response
      */
-    public function show(LeaveApplication $leaveApplication)
+    public function show(LeaveApplication $leave_application)
     {
         //
     }
@@ -105,44 +108,47 @@ class LeaveApplicationController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LeaveApplication  $leaveApplication
+     * @param  \App\Models\LeaveApplication  $leave_application
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request, LeaveApplication $leave_application)
     {
-        $leaveApplication = LeaveApplication::findOrFail($id);
-        $leaveTypes = LeaveType::all();
+        $route = route('leave-applications.update', $leave_application->id);
+        $formMethod = 'PUT';
+        $leaveTypes = LeaveType::pluck('name', 'id')->toArray();
         $statusOptions = LeaveApplication::getStatusOptions();
-        return view('leave-application.edit', compact('leaveApplication', 'leaveTypes', 'statusOptions'));
+        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'statusOptions'));
     }
+    
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\LeaveApplication  $leaveApplication
+     * @param  \App\Models\LeaveApplication  $leave_application
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, LeaveApplication $leave_application)
     {
+        $statusOptions = array_keys(LeaveApplication::getStatusOptions());
+        // dd($statusOptions, $request->status);
         $request->validate([
             'employee_id' => 'nullable',
             'leave_type_id' => 'required',
             'reason' => 'required',
-            'status' => 'required|in:' . implode(',', LeaveApplication::getStatusOptions()),
+            'status' => 'required|in:' . implode(',', $statusOptions),
             'start_date' => 'sometimes|nullable|date_format:Y-m-d',
             'end_date' => 'sometimes|nullable|date_format:Y-m-d',
         ]);
 
-        $leaveApplication = LeaveApplication::find($id);
-        if (!$leaveApplication) {
+        if (!$leave_application) {
             return redirect()->back()->withErrors(['error' => 'Leave Application not found.']);
         }
 
-        $imageName = $leaveApplication->leave_image;
+        $imageName = $leave_application->leave_image;
         if ($request->hasFile('leave_image')) {
-            if ($leaveApplication->leave_image) {
-                $imagePath = public_path('upload') . '/' . $leaveApplication->leave_image;
+            if ($leave_application->leave_image) {
+                $imagePath = public_path('upload') . '/' . $leave_application->leave_image;
                 if (file_exists($imagePath)) {
                     unlink($imagePath);
                 }
@@ -151,9 +157,9 @@ class LeaveApplicationController extends Controller
             $request->file('leave_image')->move(public_path('upload'), $imageName);
         }
 
-        $start_date = $leaveApplication->start_date;
-        $end_date = $leaveApplication->end_date;
-        $total_days = $leaveApplication->total_leave;
+        $start_date = $leave_application->start_date;
+        $end_date = $leave_application->end_date;
+        $total_days = $leave_application->total_leave;
 
         if ($request->start_date && $request->end_date) {
             $start_date = $request->start_date;
@@ -180,7 +186,7 @@ class LeaveApplicationController extends Controller
             'total_leave' => $total_days,
         ];
 
-        $leaveApplication->update($data);
+        $leave_application->update($data);
 
         return response()->json(['message' => 'Leave application Updated successfully']);
     }
@@ -189,21 +195,19 @@ class LeaveApplicationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\LeaveApplication  $leaveApplication
+     * @param  \App\Models\LeaveApplication  $leave_application
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(LeaveApplication  $leave_application)
     {
-        $leaveApplication = LeaveApplication::findOrFail($id);
-
-        if ($leaveApplication->leave_image) {
-            $imagePath = public_path('upload') . '/' . $leaveApplication->leave_image;
+        if ($leave_application->leave_image) {
+            $imagePath = public_path('upload') . '/' . $leave_application->leave_image;
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
         }
 
-        $leaveApplication->delete();
+        $leave_application->delete();
 
         return response()->json(['success' => 'Leave Application deleted successfully'], 200);
     }

@@ -77,36 +77,66 @@
         @if (isAdmin($user))
             <div class="row">
                 <div class="col-md-8  col-sm-12 col-xs-12">
-                    <div class="small-box bg-green py-4 px-3">
+                    <div class="cstScroll small-box bg-green py-4 px-3">
                         @if ($notices)
                             @foreach ($notices as $notice)
+                                @php
+                                    $NoticeDate = \Carbon\Carbon::parse($notice->created_at)->format('d M Y');
+                                    $NoticeTime = \Carbon\Carbon::parse($notice->created_at)->format('g:i a');
+                                    $limitedDescription = Str::words($notice->description, 20, '...');
+                                @endphp
                                 <ul class="timeline">
                                     <li class="time-label">
-                                        <span class="bg-red">
-                                            10 Feb. 2014
-                                        </span>
+                                        <span class="bg-red">{{ $NoticeDate }}</span>
                                     </li>
                                     <li>
                                         <i class="fa fa-envelope bg-blue"></i>
                                         <div class="timeline-item">
-                                            <span class="time"><i class="fa fa-clock"></i> 12:05</span>
+                                            <span class="time"><i class="fa fa-clock"></i> {{ $NoticeTime }}</span>
 
                                             <h3 class="timeline-header">
-                                                <a href="#"><strong>{{strtoupper($notice->notice_type)}}</strong></a>
-                                            {{$notice->name}}
+                                                <a
+                                                    href="#"><strong>{{ strtoupper($notice->notice_type) }}</strong></a>
+                                                {{ $notice->name }}
                                             </h3>
 
                                             <div class="timeline-body">
-                                               {!! $notice->description !!}
+                                                {!! $limitedDescription !!}
                                             </div>
                                             <div class="timeline-footer">
-                                                <a class="btn btn-primary btn-xs">...</a>
+                                                <button type="button" class="btn btn-info read-more-btn"
+                                                    data-id="{{ $notice->id }}" data-toggle="modal"
+                                                    data-target="#modal-info">
+                                                    Read more
+                                                </button>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </li>
                                 </ul>
                             @endforeach
                         @endif
+                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-infoLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                        <div class="noticeHeader">
+                                            <div class="noticeName">
+                                                <h4 class="modal-title" id="modal-infoLabel"></h4>
+                                                <small class="noticeType"></small>
+                                            </div>
+                                            <div id="modal-date-time"></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body" id="modal-description"></div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-12 col-xs-12">
@@ -151,7 +181,6 @@
                             @endif
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="row">
@@ -242,8 +271,8 @@
                                                 <img src="{{ asset('admin/images/female.png') }}" width="80"
                                                     height="80" alt="User Image">
                                             @else
-                                                <img src="{{ asset('upload/' . $employee->employee_img) }}" width="80"
-                                                    height="80" alt="User Image">
+                                                <img src="{{ asset('upload/' . $employee->employee_img) }}"
+                                                    width="80" height="80" alt="User Image">
                                             @endif
                                             <a class="users-list-name"
                                                 href="javascript:;">{{ $employee->user->name }}</a>
@@ -539,3 +568,29 @@
     @endif
 @endsection
 @endsection
+
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('.read-more-btn').on('click', function() {
+            const noticeId = $(this).data('id');
+            $.ajax({
+                type: "GET",
+                url: `/notices/${noticeId}`,
+                success: function(data) {
+                    // console.log(data.notice_type);
+                    $('#modal-infoLabel').text(data.title);
+                    $('.noticeType').text(data.notice_type);
+                    $('#modal-date-time').text(data.notice_date + ' - ' + data.notice_time);
+                    $('#modal-description').html(data.description);
+                },
+                error: function() {
+                    $('#modal-infoLabel').text('Error');
+                    $('#modal-description').html(
+                        '<p>An error occurred while fetching the notice content.</p>');
+                }
+            });
+        });
+    });
+</script>
+@endpush

@@ -44,7 +44,7 @@ class NoticeController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'notice_type' => 'required|in:announcement,celebration' ,
+            'notice_type' => 'required|in:announcement,celebration',
             'department_id' => 'required',
             'description' => 'required',
             'status' => 'required|in:' . implode(',', array_keys(Notice::getStatusOptions())),
@@ -62,7 +62,13 @@ class NoticeController extends Controller
      */
     public function show(Notice $notice)
     {
-        //
+        return response()->json([
+            'title' =>  $notice->name,
+            'notice_type' => $notice->notice_type,
+            'notice_date' => \Carbon\Carbon::parse($notice->created_at)->format('d M Y'),
+            'notice_time' => \Carbon\Carbon::parse($notice->created_at)->format('g:i a'),
+            'description' => $notice->description,
+        ]);
     }
 
     /**
@@ -90,7 +96,7 @@ class NoticeController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'notice_type' => 'required|in:announcement,celebration' ,
+            'notice_type' => 'required|in:announcement,celebration',
             'department_id' => 'required',
             'description' => 'required',
             'status' => 'required|in:' . implode(',', array_keys(Notice::getStatusOptions())),
@@ -117,7 +123,7 @@ class NoticeController extends Controller
         $notice = Notice::findOrFail($id);
         $notice->status = $request->status;
         $notice->save();
-    
+
         return response()->json(['message' => 'Status updated successfully'], 200);
     }
 }

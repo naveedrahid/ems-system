@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class EmployeeController extends Controller
 {
@@ -19,18 +20,56 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-        ->with('employee.department', 'employee.designation')
-        ->paginate(10, ['users.*', 'employees.employee_img', 'employees.gender']);
-        return view('employees.index', compact('employees'));
+        return view('employees.index');
     }
+
+    public function getData()
+    {
+        $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
+            ->with('employee.department', 'employee.designation')
+            ->select(['users.*', 'employees.employee_img', 'employees.gender']);
+
+        return DataTables::of($employees)
+            ->addColumn('action', function ($employee) {
+                return '<a href="' . route('employees.edit', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
+                    <i class="fa fa-edit"></i>
+                </a>';
+            })
+            ->editColumn('employee_img', function ($employee) {
+                if (empty($employee->employee->employee_img)) {
+                    if ($employee->gender === 'male') {
+                        return '<img src="' . asset('admin/images/male.jpg') . '" width="60" height="60" alt="User Image">';
+                    } elseif ($employee->gender === 'female') {
+                        return '<img src="' . asset('admin/images/female.png') . '" width="60" height="60" alt="User Image">';
+                    }
+                } else {
+                    return '<img src="' . asset('upload/' . optional($employee->employee)->employee_img) . '" width="60" height="60" alt="User Image">';
+                }
+            })
+            ->editColumn('name', function ($employee) {
+                return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->id]) . '">
+                <i class="fa fa-building-columns"></i></a>';
+            })
+            ->editColumn('department', function ($employee) {
+                return optional($employee->employee->department)->department_name ?: 'No department';
+            })
+            ->editColumn('designation', function ($employee) {
+                return optional($employee->employee->designation)->designation_name ?: 'No Designation';
+            })
+            ->editColumn('status', function ($employee) {
+                return '<button class="employee-toggle btn btn-' . ($employee->status === 'active' ? 'info' : 'danger') . ' btn-sm" data-id="' . $employee->id . '" data-status="' . $employee->status . '"><i class="fa fa-thumbs-' . ($employee->status === 'active' ? 'up' : 'down') . '"></i></button>';
+            })
+            ->rawColumns(['employee_img', 'name', 'action', 'status'])
+            ->make(true);
+    }
+
 
     public function create()
     {
         $currentUser = auth()->user();
         if ($currentUser->role_id === 1) {
             $roles = Role::all();
-        }else{
+        } else {
             $roles = Role::where('name', 'employee')->get();
         }
         $departments = Department::pluck('department_name', 'id');

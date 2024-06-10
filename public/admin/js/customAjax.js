@@ -690,171 +690,69 @@ $(document).ready(function () {
 
     // add Leave Type
 
-    $('#addLeave').submit(function (e) {
-        e.preventDefault();
+    // $('.leave-toggle').click(function () {
+    //     const button = $(this);
+    //     const id = button.data('id');
+    //     const status = button.data('status');
+    //     const newStatus = status === 'active' ? 'deactive' : 'active';
+    //     const statusIcon = status === 'active' ? 'down' : 'up';
+    //     const btnClass = status === 'active' ? 'danger' : 'info';
+    //     const loader = button.find('img');
 
-        const name = $('input[name="name"]').val().trim();
-        const defaultBalance = $('input[name="default_balance"]').val().trim();
-        const status = $('select[name="status"]').val().trim();
-        if (name === '' || defaultBalance === '' || status === '') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Leave Types Name, Total Leave, or Status cannot be empty.',
-            });
-            return;
-        }
-
-        const formData = new FormData(this);
-        const url = $(this).attr('action');
-        const token = $('meta[name="csrf-token"]').attr('content');
-        const redirectUrl = $('#redirect-url').val();
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': token
-            }
-        })
-            .then(function (response) {
-                console.log(response);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: response.message,
-                });
-                $('#addLeave')[0].reset();
-                setTimeout(function () {
-                    window.location.href = redirectUrl;
-                }, 2000);
-            })
-            .catch(function (xhr) {
-                console.error(xhr);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Failed to create Leave Type.',
-                });
-            });
-    });
-
-    // Update Leave Type
-    $('#updateLeave').submit(function (e) {
-        e.preventDefault();
-
-        const name = $('input[name="name"]').val().trim();
-        const defaultBalance = $('input[name="default_balance"]').val().trim();
-        const status = $('select[name="status"]').val().trim();
-        if (name === '' || defaultBalance === '' || status === '') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Leave Types Name, Total Leave, or Status cannot be empty.',
-            });
-            return;
-        }
-
-        const formData = new FormData(this);
-        const url = $(this).attr('action');
-        const token = $('meta[name="csrf-token"]').attr('content');
-        const redirectUrl = $('#redirect-url').val();
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': token
-            }
-        })
-            .then(function (response) {
-                console.log(response);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: response.message,
-                });
-                setTimeout(function () {
-                    window.location.href = redirectUrl;
-                }, 2000);
-            })
-            .catch(function (xhr) {
-                console.error(xhr);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Failed to create Leave Type.',
-                });
-            });
-    });
-
-    $('.leave-toggle').click(function () {
-        const button = $(this);
-        const id = button.data('id');
-        const status = button.data('status');
-        const newStatus = status === 'active' ? 'deactive' : 'active';
-        const statusIcon = status === 'active' ? 'down' : 'up';
-        const btnClass = status === 'active' ? 'danger' : 'info';
-        const loader = button.find('img');
-
-        $.ajax({
-            url: '/leave-types/' + id + '/status',
-            method: 'PUT',
-            data: { status: newStatus },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
-                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
-                button.data('status', newStatus);
-                loader.css('display', 'block');
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    },
-                    willClose: () => {
-                        loader.css('display', 'none');
-                    }
-                });
-                Toast.fire({
-                    icon: "success",
-                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
-                });
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    },
-                    willClose: () => {
-                        loader.css('opacity', '0');
-                    }
-                });
-                Toast.fire({
-                    icon: "error",
-                    title: "Failed to update status"
-                });
-            }
-        });
-    });
+    //     $.ajax({
+    //         url: '/leave-types/' + id + '/status',
+    //         method: 'PUT',
+    //         data: { status: newStatus },
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //         },
+    //         success: function (response) {
+    //             button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
+    //             button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+    //             button.data('status', newStatus);
+    //             loader.css('display', 'block');
+    //             const Toast = Swal.mixin({
+    //                 toast: true,
+    //                 position: "top-end",
+    //                 showConfirmButton: false,
+    //                 timer: 3000,
+    //                 timerProgressBar: true,
+    //                 didOpen: (toast) => {
+    //                     toast.onmouseenter = Swal.stopTimer;
+    //                     toast.onmouseleave = Swal.resumeTimer;
+    //                 },
+    //                 willClose: () => {
+    //                     loader.css('display', 'none');
+    //                 }
+    //             });
+    //             Toast.fire({
+    //                 icon: "success",
+    //                 title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
+    //             });
+    //         },
+    //         error: function (xhr) {
+    //             console.error(xhr);
+    //             const Toast = Swal.mixin({
+    //                 toast: true,
+    //                 position: "top-end",
+    //                 showConfirmButton: false,
+    //                 timer: 3000,
+    //                 timerProgressBar: true,
+    //                 didOpen: (toast) => {
+    //                     toast.onmouseenter = Swal.stopTimer;
+    //                     toast.onmouseleave = Swal.resumeTimer;
+    //                 },
+    //                 willClose: () => {
+    //                     loader.css('opacity', '0');
+    //                 }
+    //             });
+    //             Toast.fire({
+    //                 icon: "error",
+    //                 title: "Failed to update status"
+    //             });
+    //         }
+    //     });
+    // });
 
     // Destroy Leave Type
 

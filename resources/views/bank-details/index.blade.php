@@ -1,13 +1,13 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    Manage Leave Types
+    Manage Bank Details
 @endsection
 @section('page-content')
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('leave-types.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                <a href="{{ route('bank-details.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
             </h3>
             <div class="box-tools">
                 <div class="input-group input-group-sm" style="width: 250px;">
@@ -22,39 +22,48 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="26%">Name</th>
-                        <th width="30%">Description</th>
-                        <th width="20%">Leave Balance</th>
+                        <th width="15%">Employee Name</th>
+                        <th width="10%">Bank Name</th>
+                        <th width="10%">Account Title</th>
+                        <th width="20%">Account Number</th>
+                        <th width="5%">IBN</th>
+                        <th width="10%">Branch Code</th>
+                        <th width="10%">Branch Address</th>
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (count($leaveTypes) > 0)
-                        @foreach ($leaveTypes as $leaveType)
+                    @if (count($bankDetails) > 0)
+                        @foreach ($bankDetails as $bankDetail)
                             <tr>
-                                <td>{{ $leaveType->name }}</td>
-                                <td>{{ $leaveType->description }}</td>
-                                <td>{{ $leaveType->default_balance }}</td>
+                                <td>{{ $employees[$bankDetail->user_id] ?? '' }}</td>
+                                <td>{{ $bankDetail->bank_name }}</td>
+                                <td>{{ $bankDetail->account_title }}</td>
+                                <td>{{ $bankDetail->account_number }}</td>
+                                <td>{{ $bankDetail->ibn }}</td>
+                                <td>{{ $bankDetail->branch_code }}</td>
+                                <td>{{ $bankDetail->branch_address }}</td>
                                 <td>
                                     <button
-                                        class="p-relative leave-toggle btn btn-{{ $leaveType->status === 'active' ? 'info' : 'danger' }} btn-sm"
-                                        data-id="{{ $leaveType->id }}" data-status="{{ $leaveType->status }}">
-                                        <i class="fa fa-thumbs-{{ $leaveType->status === 'active' ? 'up' : 'down' }}"></i>
+                                        class="p-relative bank-toggle btn btn-{{ $bankDetail->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                        data-id="{{ $bankDetail->id }}" data-status="{{ $bankDetail->status }}">
+                                        <i class="fa fa-thumbs-{{ $bankDetail->status === 'active' ? 'up' : 'down' }}"></i>
                                         <img src="{{ asset('admin/images/loader.gif') }}" class="imgLoader" width="20"
                                             height="20" alt="Loading...">
                                     </button>
-                                    <a href="{{ route('leave-types.edit', $leaveType->id) }}"
-                                        class="btn btn-info btn-flat btn-sm">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <button class="delete-leave-type btn btn-danger btn-flat btn-sm"
-                                        data-leave-type-id="{{ $leaveType->id }}"
-                                        data-delete-route="{{ route('leave-types.destroy', ':id') }}">
-                                        <i class="fa-regular fa-trash-can"></i>
-                                    </button>
+                                    <a href="{{ route('bank-details.edit', $bankDetail) }}"
+                                        class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
+                                    <button class="delete-bank btn btn-danger btn-flat btn-sm"
+                                        data-bank-id="{{ $bankDetail->id }}"
+                                        data-delete-route="{{ route('bank-details.destroy', ':id') }}"><i
+                                            class="fa-regular fa-trash-can"></i></button>
                                 </td>
                             </tr>
                         @endforeach
+                    @else
+                        <tr>
+                            <td colspan="5">No Bank Details found.</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
@@ -65,53 +74,53 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        // $('.delete-bank').on('click', function(e) {
-        //     e.preventDefault();
-        //     const bankId = $(this).data('bank-id');
-        //     const deleteRoute = $(this).data('delete-route').replace(':id', bankId);
-        //     const $clickedElement = $(this);
+        $('.delete-bank').on('click', function(e) {
+            e.preventDefault();
+            const bankId = $(this).data('bank-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', bankId);
+            const $clickedElement = $(this);
 
-        //     Swal.fire({
-        //         title: 'Are you sure?',
-        //         text: 'You will not be able to recover this bank details!',
-        //         type: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonColor: '#3085d6',
-        //         cancelButtonColor: '#d33',
-        //         confirmButtonText: 'Yes, delete it!',
-        //         reverseButtons: true
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             const token = $('meta[name="csrf-token"]').attr('content');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this bank details!',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const token = $('meta[name="csrf-token"]').attr('content');
 
-        //             $.ajax({
-        //                 type: "DELETE",
-        //                 url: deleteRoute,
-        //                 headers: {
-        //                     'X-CSRF-TOKEN': token
-        //                 }
-        //             }).then(function(response) {
-        //                 console.log(response);
-        //                 Swal.fire({
-        //                     icon: 'success',
-        //                     title: 'Success!',
-        //                     text: response.message,
-        //                 });
-        //                 $clickedElement.closest('tr').fadeOut('slow', function() {
-        //                     $(this).css('backgroundColor', 'red').remove();
-        //                 });
-        //             }).catch(function(xhr) {
-        //                 console.error(xhr);
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Error!',
-        //                     text: 'Failed to delete Bank Details.',
-        //                 });
-        //             });
-        //         }
-        //     });
-        // });
-        $('.leave-toggle').click(function() {
+                    $.ajax({
+                        type: "DELETE",
+                        url: deleteRoute,
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        }
+                    }).then(function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                        $clickedElement.closest('tr').fadeOut('slow', function() {
+                            $(this).css('backgroundColor', 'red').remove();
+                        });
+                    }).catch(function(xhr) {
+                        console.error(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to delete Bank Details.',
+                        });
+                    });
+                }
+            });
+        });
+        $('.bank-toggle').click(function() {
             const button = $(this);
             const id = button.data('id');
             const status = button.data('status');
@@ -121,7 +130,7 @@
             const loader = button.find('img');
 
             $.ajax({
-                url: 'leave-types/status/' + id,
+                url: 'bank-details/status/' + id,
                 method: 'PUT',
                 data: {
                     status: newStatus

@@ -23,9 +23,12 @@ class LeaveTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(leaveType $leaveType)
+    public function create(leaveType $leave_type)
     {
-        return view('leave-type.create', compact('leaveType'));
+        $leave_type = new LeaveType();
+        $route = route('leave-types.store');
+        $formMethod = 'POST';
+        return view('leave-type.form', compact('leave_type', 'route', 'formMethod'));
     }
 
     /**
@@ -50,10 +53,10 @@ class LeaveTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LeaveType  $leaveType
+     * @param  \App\Models\LeaveType  $leave_type
      * @return \Illuminate\Http\Response
      */
-    public function show(LeaveType $leaveType)
+    public function show(LeaveType $leave_type)
     {
         //
     }
@@ -61,22 +64,24 @@ class LeaveTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LeaveType  $leaveType
+     * @param  \App\Models\LeaveType  $leave_type
      * @return \Illuminate\Http\Response
      */
-    public function edit(LeaveType $leaveType)
+    public function edit(LeaveType $leave_type)
     {
-        return view('leave-type.edit', compact('leaveType'));
+        $route = route('leave-types.update', $leave_type->id);
+        $formMethod = 'PUT';
+        return view('leave-type.form', compact('leave_type', 'route', 'formMethod'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\LeaveType  $leaveType
+     * @param  \App\Models\LeaveType  $leave_type
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, LeaveType $leaveType)
+    public function update(Request $request, LeaveType $leave_type)
     {
         $validate = $request->validate([
             'name' => 'required',
@@ -84,26 +89,26 @@ class LeaveTypeController extends Controller
             'default_balance' => 'required|numeric',
             'status' => 'required|in:active,deactive',
         ]);
-        $leaveType->update($validate);
+        $leave_type->update($validate);
         return response()->json(['message' => 'Leave Type Updated Successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\LeaveType  $leaveType
+     * @param  \App\Models\LeaveType  $leave_type
      * @return \Illuminate\Http\Response
      */
-    public function destroy(LeaveType $leaveType)
+    public function destroy(LeaveType $leave_type)
     {
-        $leaveType->delete();
+        $leave_type->delete();
         return response()->json(['success' => 'Leave Type deleted successfully'], 200);
     }
 
-    public function updateStatus(Request $request, LeaveType $leaveType)
+    public function updateStatus(Request $request, LeaveType $leave_type)
     {
-        $leaveType->status = $request->status;
-        $leaveType->save();
+        $leave_type->status = $request->status;
+        $leave_type->save();
         return response()->json(['message' => 'Status updated successfully'], 200);
     }
 

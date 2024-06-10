@@ -81,7 +81,7 @@ class HomeController extends Controller
         $activeEmployeeCount = $activeEmployees->count();
     
         $leaveQuery = LeaveApplication::all();
-        $notices = Notice::orderBy('id', 'DESC')->get();
+        $notices = Notice::orderBy('id', 'ASC')->take(10)->get();
 
         return view('dashboard', compact(
             'designation',

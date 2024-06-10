@@ -15,7 +15,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- Include DataTables Styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
 
@@ -133,7 +136,8 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="active">
-                                        <a href="{{ route('designation.index') }}"><i class="fa fa-circle-o"></i> View
+                                        <a href="{{ route('designation.index') }}"><i class="fa fa-circle-o"></i>
+                                            View
                                             Desgination
                                         </a>
                                     </li>
@@ -306,7 +310,7 @@
                                                 class="fa fa-circle-o"></i>All Leave</a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('leave_types.index') }}"><i
+                                        <a href="{{ route('leave-types.index') }}"><i
                                                 class="fa fa-circle-o"></i>Leave
                                             Types</a>
                                     </li>
@@ -414,16 +418,18 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
-                                        <a href="{{ route('attendance.filter') }}"><i class="fa fa-circle-o"></i>Attendance
+                                        <a href="{{ route('attendance.filter') }}"><i
+                                                class="fa fa-circle-o"></i>Attendance
                                             Filter</a>
                                     </li>
                                     <li class="">
                                         <a href="{{ route('daily.report') }}"><i class="fa fa-circle-o"></i>
-                                            Daily Attendance 
+                                            Daily Attendance
                                         </a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i>Current Month Attedance</a>
+                                        <a href="{{ route('attendance') }}"><i class="fa fa-circle-o"></i>Current
+                                            Month Attedance</a>
                                     </li>
                                 </ul>
                             </li>
@@ -496,11 +502,12 @@
             referrerpolicy="no-referrer"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
+        <script src="{{ asset('admin/dist/js/bootstrap.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="admin/js/chartJs.js"></script>
+        {{-- <script src="admin/js/chartJs.js"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
@@ -510,7 +517,7 @@
         <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
         <script src="{{ asset('admin/dist/js/app.min.js') }}"></script>
         <script src="{{ asset('admin/dist/js/demo.js') }}"></script>
-        <script src="{{ asset('admin/js/chartJs.js') }}"></script>
+        {{-- <script src="{{ asset('admin/js/chartJs.js') }}"></script> --}}
         @stack('js')
 </body>
 

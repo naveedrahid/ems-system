@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BankDetailController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
@@ -24,8 +25,6 @@ Route::get('/', function () {
 Route::fallback(function () {
     return redirect('/login');
 });
-
-
 
 Route::middleware(['auth', 'role:1,2'])->group(function () {
     // Route::get('/admin', [HomeController::class, 'dashboard'])->name('home');
@@ -58,7 +57,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::resource('holidays', HolidayController::class)->except(['index','show']);
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
-    Route::resource('notices', NoticeController::class)->except(['show']);
+    Route::resource('notices', NoticeController::class);
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
@@ -78,30 +77,13 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::put('/employees-status/{id}', [EmployeeController::class, 'updateStatus'])->name('employees.status');
     Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 
-    Route::resource('leave-types', LeaveTypeController::class)->parameters([
-        'leave-types' => 'leaveType'
-    ])->names([
-        'index' => 'leave_types.index',
-        'create' => 'leave_types.create',
-        'edit' => 'leave_types.edit',
-        'store' => 'leave_types.store',
-        'update' => 'leave_types.update',
-        'destroy' => 'leave_types.destroy',
-    ])->except([
-        'show',
-    ]);
-    Route::put('/leave-types/{leaveType}/status', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
+    Route::resource('leave-types', LeaveTypeController::class);
+    
+    Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
 
-    Route::resource('leave-applications', LeaveApplicationController::class)
-        ->parameters([
-            'leave-applications' => 'id'
-        ])->names([
-            'edit' => 'leave_application.edit',
-            'update' => 'leave_application.update',
-            'destroy' => 'leave_application.destroy',
-        ])->except([
-            'show',
-        ]);    
+    Route::resource('leave-applications', LeaveApplicationController::class)->except(['show']);    
+    Route::resource('bank-details', BankDetailController::class)->except(['show']);
+    Route::put('bank-details/status/{bank_detail}', [BankDetailController::class, 'bankStatus'])->name('bank-details.status');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -116,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/attendance/filter/download', [AttendanceController::class, 'downloadAttendanceWithFilter'])->name('attendance.filter.download');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
+    Route::get('/employees/data', [EmployeeController::class, 'getData'])->name('employees.data');
     Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');

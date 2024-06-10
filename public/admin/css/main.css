@@ -210,3 +210,32 @@ button.btn.btn-app.btnPdf i {
 .btnGroup {
     display: flex;
 }
+
+.cstScroll.bg-green.py-4.px-3 {
+    height: 400px;
+    padding: 20px 15px;
+    overflow-y: scroll;
+}
+.cstScroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.cstScroll::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.cstScroll::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+.cstScroll::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+.noticeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
