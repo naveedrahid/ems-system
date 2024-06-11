@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmployeeAttendanceMail;
-use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -278,62 +277,57 @@ class AttendanceController extends Controller
         ]);
 
         $user = User::find($userId);
-        Mail::to($user->email)->cc('developer@pixelz360.com.au')->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString()));
+
+        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString()));
 
         return response()->json(['message' => 'Check in successfully']);
     }
 
-        public function checkOutUser(Request $request)
-        {
-            $user_id = $request->user_id;
-            $date = now()->format('Y-m-d');
-            $time = now()->format('H:i:s');
-            $existingAttendance = Attendance::where('user_id', $user_id)
-                ->where('attendance_date', $date)
-                ->first();
+    public function checkOutUser(Request $request)
+    {
+        $user_id = $request->user_id;
+        $date = now()->format('Y-m-d');
+        $time = now()->format('H:i:s');
+        $existingAttendance = Attendance::where('user_id', $user_id)
+            ->where('attendance_date', $date)
+            ->first();
 
-            if ($existingAttendance && $existingAttendance->check_out) {
-                return response()->json(['message' => 'You have already checked out.']);
-            }
-
-            $checkOutTime = now();
-            $earlyCheckOutTime = Carbon::createFromTime(17, 0, 0);
-            $lateCheckOutTime = Carbon::createFromTime(17, 20, 0);
-
-            if ($checkOutTime->between($earlyCheckOutTime, $lateCheckOutTime)) {
-                $checkOutStatus = 'Out';
-            } elseif ($checkOutTime->lessThanOrEqualTo($earlyCheckOutTime)) {
-                $checkOutStatus = 'Early Out';
-            } else {
-                $checkOutStatus = 'Late Out';
-            }
-
-            $totalOvertime = null;
-            if ($checkOutStatus === 'Late Out') {
-                $officeClosingDateTime = Carbon::createFromTime(17, 20, 0);
-                $checkOutDateTime = Carbon::parse($date . ' ' . $time);
-                $overtime = $checkOutDateTime->diff($officeClosingDateTime)->format('%H:%I');
-                $totalOvertime = $overtime;
-            }
-
-            Attendance::updateOrCreate(
-                ['user_id' => $user_id, 'attendance_date' => $date],
-                [
-                    'check_out' => $time,
-                    'status' => 'present',
-                    'check_out_status' => $checkOutStatus,
-                    'total_overtime' => $totalOvertime,
-                ]
-            );
-            // Mail::to($existingAttendance->user->email)->send(new EmployeeAttendanceMail(
-            //     $existingAttendance->user,
-            //     $checkOutStatus,
-            //     $existingAttendance->check_in,
-            //     $checkOutTime,
-            //     true // Set isCheckOut to true
-            // ));
-            return response()->json(['message' => 'Check out successfully']);
+        if ($existingAttendance && $existingAttendance->check_out) {
+            return response()->json(['message' => 'You have already checked out.']);
         }
+
+        $checkOutTime = now();
+        $earlyCheckOutTime = Carbon::createFromTime(17, 0, 0);
+        $lateCheckOutTime = Carbon::createFromTime(17, 20, 0);
+
+        if ($checkOutTime->between($earlyCheckOutTime, $lateCheckOutTime)) {
+            $checkOutStatus = 'Out';
+        } elseif ($checkOutTime->lessThanOrEqualTo($earlyCheckOutTime)) {
+            $checkOutStatus = 'Early Out';
+        } else {
+            $checkOutStatus = 'Late Out';
+        }
+
+        $totalOvertime = null;
+        if ($checkOutStatus === 'Late Out') {
+            $officeClosingDateTime = Carbon::createFromTime(17, 20, 0);
+            $checkOutDateTime = Carbon::parse($date . ' ' . $time);
+            $overtime = $checkOutDateTime->diff($officeClosingDateTime)->format('%H:%I');
+            $totalOvertime = $overtime;
+        }
+
+        Attendance::updateOrCreate(
+            ['user_id' => $user_id, 'attendance_date' => $date],
+            [
+                'check_out' => $time,
+                'status' => 'present',
+                'check_out_status' => $checkOutStatus,
+                'total_overtime' => $totalOvertime,
+            ]
+        );
+
+        return response()->json(['message' => 'Check out successfully']);
+    }
 
 
     public function create()

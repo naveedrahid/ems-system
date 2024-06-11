@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\LeaveType;
 use App\Models\LeaveApplication;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,7 @@ use Illuminate\Http\Request;
 
 class LeaveApplicationController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -19,19 +22,20 @@ class LeaveApplicationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $userId = $user->id;
         $roleId = $user->role_id;
 
-        if ($user->role_id === 3) {
-            $leaveApplications = LeaveApplication::where('employee_id', $user->id)
-                ->with(['leaveType', 'user'])
+        if ($roleId === 3) {
+            $leaveApplications = LeaveApplication::where('employee_id', Employee::where('user_id', $user->id)->value('id'))
+                ->with(['leaveType', 'employee.user'])
                 ->paginate(10);
         } else {
-            $leaveApplications = LeaveApplication::with(['leaveType', 'user'])
+            $leaveApplications = LeaveApplication::with(['leaveType', 'employee.user'])
                 ->paginate(10);
         }
-        return view('leave-application.index', compact('leaveApplications', 'userId', 'roleId'));
+
+        return view('leave-application.index', compact('leaveApplications', 'roleId'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -41,10 +45,10 @@ class LeaveApplicationController extends Controller
     public function create(LeaveApplication  $leave_application)
     {
         $leave_application = new LeaveApplication();
-        $route = route('leave_application.store');
+        $route = route('leave-applications.store');
         $formMethod = 'POST';
         $leaveTypes = LeaveType::pluck('name', 'id')->toArray();
-        return view('leave-application.form', compact('leave_application', 'route','formMethod', 'leaveTypes'));
+        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes'));
     }
 
     /**
@@ -80,8 +84,9 @@ class LeaveApplicationController extends Controller
             }
         }
 
+        $employee_id = Employee::where('user_id', auth()->user()->id)->value('id');
         LeaveApplication::create([
-            'employee_id' => Auth::id(),
+            'employee_id' => $employee_id,
             'leave_type_id' => $request->leave_type_id,
             'start_date' => $start_date_parsed->format('Y-m-d'),
             'end_date' => $end_date_parsed->format('Y-m-d'),
@@ -90,9 +95,9 @@ class LeaveApplicationController extends Controller
             'total_leave' => $total_days,
             'status' => 'Pending',
         ]);
+
         return response()->json(['message' => 'Leave application created successfully']);
     }
-
 
     /**
      * Display the specified resource.
@@ -119,7 +124,7 @@ class LeaveApplicationController extends Controller
         $statusOptions = LeaveApplication::getStatusOptions();
         return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'statusOptions'));
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -131,7 +136,6 @@ class LeaveApplicationController extends Controller
     public function update(Request $request, LeaveApplication $leave_application)
     {
         $statusOptions = array_keys(LeaveApplication::getStatusOptions());
-        // dd($statusOptions, $request->status);
         $request->validate([
             'employee_id' => 'nullable',
             'leave_type_id' => 'required',

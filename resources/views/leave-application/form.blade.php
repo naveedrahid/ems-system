@@ -27,14 +27,20 @@
                             'class' => 'form-control form-select select2',
                         ]) !!}
                     </div>
-
+                    
                     <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Select Date Range:') !!}
-                        {!! Form::text('daterange', null, ['class' => 'form-control', 'id' => 'daterange']) !!}
+                        {!! Form::label('title', 'Select Date:') !!}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{-- {!! Form::text('daterange', null, ['class' => 'form-control', 'id' => 'daterange']) !!} --}}
+                                {!! Form::date('start_date', null, ['class' => 'form-control', 'id' => 'start_date']) !!}
+                            </div>
+                            <div class="col-md-6">
+                                {!! Form::date('end_date', null, ['class' => 'form-control', 'id' => 'end_date']) !!}
+                            </div>
+                            {{-- {!! Form::hidden('total_leave', null, ['id' => 'total_leave']) !!} --}}
+                        </div>
                     </div>
-                    {!! Form::hidden('start_date', $leave_application->start_date, ['id' => 'start_date']) !!}
-                    {!! Form::hidden('end_date', $leave_application->end_date, ['id' => 'end_date']) !!}
-                    {!! Form::hidden('total_leave', null, ['id' => 'total_leave']) !!}
 
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Reason') !!}
@@ -54,22 +60,25 @@
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Leave Status') !!}
                         @if (isAdmin(auth()->user()))
-                        {!! Form::select(
-                            'status',
-                            ['' => 'Select Leave Status'] + array_combine(\App\Models\LeaveApplication::getStatusOptions(), \App\Models\LeaveApplication::getStatusOptions()),
-                            $leave_application->status,
-                            [
-                                'class' => 'form-control form-select select2',
-                            ]
-                        ) !!}
-                        
+                            {!! Form::select(
+                                'status',
+                                ['' => 'Select Leave Status'] +
+                                    array_combine(
+                                        \App\Models\LeaveApplication::getStatusOptions(),
+                                        \App\Models\LeaveApplication::getStatusOptions(),
+                                    ),
+                                $leave_application->status,
+                                [
+                                    'class' => 'form-control form-select select2',
+                                ],
+                            ) !!}
                         @endif
                     </div>
-
-                    {!! Form::submit($leave_application->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
+                    <div class="box-footer">
+                            {!! Form::submit($leave_application->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
+                            <a href="{{ route('leave-applications.index') }}" class="btn btn-danger">Cancel</a>
+                    </div>
                     {!! Form::close() !!}
-
-
                 </div>
                 <div class="col-md-3"></div>
             </div>
@@ -81,47 +90,15 @@
 
 @push('js')
 <script>
-    $(function() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-
-        $('#daterange').daterangepicker({
-            opens: 'left',
-            isInvalidDate: function(date) {
-                return date.day() === 0 || date.day() === 6;
-            },
-            locale: {
-                format: 'YYYY-MM-DD'
-            },
-            startDate: startDate || moment(),
-            endDate: endDate || moment()
-        }, function(start, end, label) {
-            $('#start_date').val(start.format('YYYY-MM-DD'));
-            $('#end_date').val(end.format('YYYY-MM-DD'));
-        });
-
-        // Customize invalid date cells
-        // $('#daterange').on('show.daterangepicker', function(ev, picker) {
-        //     setTimeout(function() {
-        //         $('.daterangepicker td.off').each(function() {
-        //             if ($(this).hasClass('off')) {
-        //                 $(this).text('N/A');
-        //             }
-        //         });
-        //     }, 0);
-        // });
-    });
-
 
     $(document).ready(function() {
-        $(document).ready(function() {
             $('#updateLeaveApplication').on('submit', function(e) {
                 e.preventDefault();
                 const leave_type_id = $('select[name="leave_type_id"]').val().trim();
-                const daterange = $('input[name="daterange"]').val().trim();
+                // const daterange = $('input[name="daterange"]').val().trim();
                 const reason = $('textarea[name="reason"]').val().trim();
 
-                if (leave_type_id === '' || daterange === '' || reason === '') {
+                if (leave_type_id === '' || reason === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -133,7 +110,7 @@
                 const formData = new FormData(this);
                 const url = $(this).attr('action');
                 const token = $('meta[name="csrf-token"]').attr('content');
-                const redirectUrl = $('#redirect-url').val();
+                // const redirectUrl = $('#redirect-url').val();
                 $.ajax({
                         url: url,
                         method: 'POST',
@@ -151,9 +128,9 @@
                             title: 'Success!',
                             text: response.message,
                         });
-                        setTimeout(function() {
-                            window.location.href = redirectUrl;
-                        }, 2000);
+                        // setTimeout(function() {
+                        //     window.location.href = redirectUrl;
+                        // }, 2000);
                     })
                     .catch(function(xhr) {
                         console.error(xhr);
@@ -168,10 +145,10 @@
                 e.preventDefault();
 
                 const leave_type_id = $('select[name="leave_type_id"]').val().trim();
-                const daterange = $('input[name="daterange"]').val().trim();
+                // const daterange = $('input[name="daterange"]').val().trim();
                 const reason = $('textarea[name="reason"]').val().trim();
 
-                if (leave_type_id === '' || daterange === '' || reason === '') {
+                if (leave_type_id === '' || reason === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -183,7 +160,7 @@
                 const formData = new FormData(this);
                 const url = $(this).attr('action');
                 const token = $('meta[name="csrf-token"]').attr('content');
-                const redirectUrl = $('#redirect-url').val();
+                // const redirectUrl = $('#redirect-url').val();
                 $.ajax({
                         url: url,
                         method: 'POST',
@@ -202,9 +179,9 @@
                             text: response.message,
                         });
                         $('#addLeaveApplication')[0].reset();
-                        setTimeout(function() {
-                            window.location.href = redirectUrl;
-                        }, 2000);
+                        // setTimeout(function() {
+                        //     window.location.href = redirectUrl;
+                        // }, 2000);
                     })
                     .catch(function(xhr) {
                         console.error(xhr);
@@ -215,7 +192,6 @@
                         });
                     });
             });
-        });
     });
 </script>
 @endpush

@@ -15,8 +15,9 @@
                         <th>Email</th>
                         <th>Department</th>
                         <th>Employee Type</th>
+                        <th>Shift Type</th>
                         <th>Designation</th>
-                        @if (Auth::user()->id < 3)
+                        @if (Auth::user()->role_id == 1)
                             <th>Manage</th>
                         @endif
                     </tr>
@@ -84,37 +85,135 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script> --}}
 <script>
-$(function() {
-    $('#employees-table').DataTable({
-        processing: true,
-        responsive: true,
-        searchDelay: 300, // Reduced search delay for better responsiveness
-        serverSide: true,
-        ajax: '{{ route('employees.data') }}',
-        columns: [
-            { data: 'employee_img', name: 'employee_img', orderable: false, searchable: false },
-            { data: 'name', name: 'name' },
-            { data: 'email', name: 'email' },
-            { data: 'department', name: 'department', orderable: false, searchable: true },
-            { data: 'employee_type_id', name: 'employee_type_id', orderable: false, searchable: true },
-            { data: 'designation', name: 'designation', orderable: false, searchable: true },
-            @if (Auth::user()->id < 3)
-                { data: 'action', name: 'action', orderable: false, searchable: false }
-            @endif
-        ],
-        lengthMenu: [
-            [10, 15, 50, 100],
-            [10, 15, 50, 100]
-        ],
-        language: {
-            processing: '<div class="dataTables_processings"></div>',
-        },
-        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-        buttons: [
-            'copy', 'excel', 'pdf'
-        ]
+    $(function() {
+        $('#employees-table').DataTable({
+            processing: true,
+            responsive: true,
+            searchDelay: 300, // Reduced search delay for better responsiveness
+            serverSide: true,
+            ajax: '{{ route('employees.data') }}',
+            columns: [{
+                    data: 'employee_img',
+                    name: 'employee_img',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'email',
+                    name: 'email'
+                },
+                {
+                    data: 'department',
+                    name: 'department',
+                    orderable: false,
+                    searchable: true
+                },
+                {
+                    data: 'employee_type_id',
+                    name: 'employee_type_id',
+                    orderable: false,
+                    searchable: true
+                },
+                {
+                    data: 'shift_id',
+                    name: 'shift_id',
+                    orderable: false,
+                    searchable: true
+                },
+                {
+                    data: 'designation',
+                    name: 'designation',
+                    orderable: false,
+                    searchable: true
+                },
+                @if (Auth::user()->role_id == 1)
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                @endif
+            ],
+            lengthMenu: [
+                [10, 15, 50, 100],
+                [10, 15, 50, 100]
+            ],
+            language: {
+                processing: '<div class="dataTables_processings"></div>',
+            },
+            dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ]
+        });
     });
-});
 
+    $(document).ready(function() {
+        $(document).on('click', '.employee-toggle', function() {
+            const button = $(this);
+            const id = button.data('id');
+            const status = button.data('status');
+            const newStatus = status === 'active' ? 'deactive' : 'active';
+            const statusIcon = status === 'active' ? 'down' : 'up';
+            const btnClass = status === 'active' ? 'danger' : 'info';
+
+            $.ajax({
+                url: '/employees-status/' + id,
+                method: 'PUT',
+                data: {
+                    status: newStatus
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger'))
+                        .addClass('btn-' + btnClass);
+                    button.find('i').removeClass('fa-thumbs-' + (status === 'active' ?
+                        'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: "Status " + newStatus.charAt(0).toUpperCase() +
+                            newStatus.slice(1) + " successfully"
+                    });
+                    button.data('status', newStatus);
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "error",
+                        title: "Failed to update status"
+                    });
+                }
+            });
+        });
+    });
 </script>
 @endpush

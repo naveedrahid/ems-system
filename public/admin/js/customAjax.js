@@ -536,61 +536,7 @@ $(document).ready(function () {
 
     // update status Employee
 
-    $('.employee-toggle').click(function () {
-        const button = $(this);
-        const id = button.data('id');
-        const status = button.data('status');
-        const newStatus = status === 'active' ? 'deactive' : 'active';
-        const statusIcon = status === 'active' ? 'down' : 'up';
-        const btnClass = status === 'active' ? 'danger' : 'info';
 
-        $.ajax({
-            url: '/employees-status/' + id,
-            method: 'PUT',
-            data: { status: newStatus },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
-                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-                Toast.fire({
-                    icon: "success",
-                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
-                });
-                button.data('status', newStatus);
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-                Toast.fire({
-                    icon: "error",
-                    title: "Failed to update status"
-                });
-            }
-        });
-    });
 
     $('#department_id').change(function () {
         const departmentId = $(this).val();

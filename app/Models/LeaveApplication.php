@@ -20,13 +20,15 @@ class LeaveApplication extends Model
         ];
     }
     
-    
-
     function leaveType(){
         return $this->belongsTo(LeaveType::class);
     }
 
     function user(){
         return $this->belongsTo(User::class, 'employee_id');
+    }
+
+    public function employee(){
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

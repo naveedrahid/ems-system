@@ -310,11 +310,11 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
-                                        <a href="{{ route('leave_application.create') }}"><i
+                                        <a href="{{ route('leave-applications.create') }}"><i
                                                 class="fa fa-circle-o"></i>Request A Leave</a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('leave_application.index') }}"><i
+                                        <a href="{{ route('leave-applications.index') }}"><i
                                                 class="fa fa-circle-o"></i>All Leave</a>
                                     </li>
                                     <li class="">
@@ -404,11 +404,11 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li class="">
-                                        <a href="{{ route('leave_application.create') }}"><i
+                                        <a href="{{ route('leave-applications.create') }}"><i
                                                 class="fa fa-circle-o"></i>Request A Leave</a>
                                     </li>
                                     <li class="">
-                                        <a href="{{ route('leave_application.index') }}"><i
+                                        <a href="{{ route('leave-applications.index') }}"><i
                                                 class="fa fa-circle-o"></i>All Leave</a>
                                     </li>
                                     <li class="">

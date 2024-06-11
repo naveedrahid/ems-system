@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
 use App\Models\EmployeeType;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -26,19 +27,19 @@ class EmployeeController extends Controller
 
     public function getData()
     {
-        // $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-        // ->with('employee.department', 'employee.designation')
-        // ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id']);
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
-        ->with('employee.department', 'employee.designation', 'employee.employeeType')
-        ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
-        ->get();
+            ->with('employee.department', 'employee.designation', 'employee.employeeType')
+            ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
+            ->get();
 
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) {
                 return '<a href="' . route('employees.edit', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
                     <i class="fa fa-edit"></i>
-                </a>';
+                </a> <button class="employee-toggle btn btn-' . ($employee->status === "active" ? "info" : "danger") . ' btn-sm"
+                    data-id="' . $employee->id . '" data-status="' . $employee->status . '">
+                    <i class="fa fa-thumbs-' . ($employee->status === "active" ? "up" : "down") . '"></i>
+                </button';
             })
             ->editColumn('employee_img', function ($employee) {
                 if (empty($employee->employee->employee_img)) {
@@ -63,8 +64,11 @@ class EmployeeController extends Controller
             })
             ->editColumn('employee_type_id', function ($employee) {
                 return optional($employee->employee->employeeType)->type ?? '';
-            })            
-            ->rawColumns(['employee_img', 'name', 'employee_type_id','action', 'status'])
+            })
+            ->editColumn('shift_id', function ($employee) {
+                return optional($employee->employee->shift)->name ?? '';
+            })
+            ->rawColumns(['employee_img', 'name', 'employee_type_id','shift_id', 'action', 'status'])
             ->make(true);
     }
 
@@ -79,7 +83,8 @@ class EmployeeController extends Controller
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
         $employeeTypes = EmployeeType::all();
-        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes'));
+        $employeeShift = Shift::all();
+        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
     }
 
     public function getDesignations($departmentId)
@@ -114,7 +119,8 @@ class EmployeeController extends Controller
             'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
-            'employee_type_id' => 'required'
+            'employee_type_id' => 'required',
+            'shift_id' => 'required'
         ]);
 
         $user = User::create([
@@ -152,6 +158,7 @@ class EmployeeController extends Controller
             'employee_img' => $imageName,
             'gender' => $request->gender,
             'employee_type_id' => $request->employee_type_id,
+            'shift_id' => $request->shift_id,
         ]);
 
         return response()->json(['message' => 'Employee Created successfully created']);
@@ -159,13 +166,16 @@ class EmployeeController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $employees = User::with('employee')->findOrFail($id);
+        $employee = User::with('employee')->findOrFail($id);
         $roles = Role::pluck('name', 'id');
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
-
-        return view('employees.edit', compact('employees', 'roles', 'departments', 'designations'));
+        $employeeShifts = Shift::all();
+        $employeeTypes = EmployeeType::all();
+    
+        return view('employees.edit', compact('employee', 'roles', 'departments', 'designations', 'employeeShifts', 'employeeTypes'));
     }
+    
 
     public function update(Request $request, $id)
     {
@@ -217,6 +227,8 @@ class EmployeeController extends Controller
             'gender' => $request->gender,
             'department_id' => $request->department_id,
             'designation_id' => $request->designation_id,
+            'employee_type_id' => $request->employee_type_id,
+            'shift_id' => $request->shift_id,
         ];
 
         if ($request->hasFile('employee_img')) {

@@ -10,7 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
+        'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'shift_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
     ];
 
     // protected $guarded = ['id'];
@@ -35,5 +35,11 @@ class Employee extends Model
     }
     public function employeeType() {
         return $this->belongsTo(EmployeeType::class);
+    }
+    public function shift() {
+        return $this->belongsTo(Shift::class);
+    }
+    public function LeaveApplication(){
+        return $this->hasMany(LeaveApplication::class);
     }
 }

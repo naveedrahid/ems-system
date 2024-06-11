@@ -84,7 +84,11 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     
     Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
 
-    Route::resource('leave-applications', LeaveApplicationController::class)->except(['show']);    
+    // Route::resource('leave-applications', LeaveApplicationController::class)->except(['show']);
+    Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');
+    Route::get('/leave-applications/{leave_application}/edit', [LeaveApplicationController::class, 'edit'])->name('leave-applications.edit');
+    Route::delete('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'destroy'])->name('leave-applications.destroy');
+
     Route::resource('bank-details', BankDetailController::class)->except(['show']);
     Route::put('bank-details/status/{bank_detail}', [BankDetailController::class, 'bankStatus'])->name('bank-details.status');
 });
@@ -98,12 +102,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
-    // Route::get('/attendance/filter/download', [AttendanceController::class, 'downloadAttendanceWithFilter'])->name('attendance.filter.download');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::get('/employees/data', [EmployeeController::class, 'getData'])->name('employees.data');
-    Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave_application.store');
-    Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave_application.create');
-    Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave_application.index');
+    Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave-applications.store');
+    Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave-applications.create');
+    Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave-applications.index');
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
 });

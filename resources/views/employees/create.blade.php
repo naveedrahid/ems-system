@@ -66,6 +66,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-3 form-group">
+                                    <label for="shift_id">Employee Shift</label>
+                                    <select name="shift_id" id="shift_id"
+                                        class="form-control form-select select2">
+                                        <option value="">Select Shift</option>
+                                        @foreach ($employeeShift as $shift)
+                                            <option value="{{ $shift->id }}">{{ $shift->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3 form-group">
