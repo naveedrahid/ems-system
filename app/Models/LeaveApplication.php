@@ -9,7 +9,7 @@ class LeaveApplication extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['employee_id', 'leave_type_id', 'start_date', 'end_date', 'reason', 'leave_image','total_leave','status'];
+    protected $fillable = ['employee_id','user_id', 'leave_type_id', 'start_date', 'end_date', 'reason', 'leave_image','total_leave','status'];
     
     public static function getStatusOptions()
     {
@@ -25,10 +25,6 @@ class LeaveApplication extends Model
     }
 
     function user(){
-        return $this->belongsTo(User::class, 'employee_id');
-    }
-
-    public function employee(){
-        return $this->belongsTo(Employee::class, 'employee_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

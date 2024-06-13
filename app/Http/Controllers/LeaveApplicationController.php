@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
+use App\Mail\LeaveApplicationMail;
+use App\Mail\LeaveApprovalStatusMail;
 use App\Models\LeaveType;
 use App\Models\LeaveApplication;
 use App\Models\User;
@@ -10,6 +11,8 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class LeaveApplicationController extends Controller
 {
@@ -24,13 +27,10 @@ class LeaveApplicationController extends Controller
         $user = Auth::user();
         $roleId = $user->role_id;
 
-        if ($roleId === 3) {
-            $leaveApplications = LeaveApplication::where('employee_id', Employee::where('user_id', $user->id)->value('id'))
-                ->with(['leaveType', 'employee.user'])
-                ->paginate(10);
+        if ($roleId === 1 || $roleId === 2) {
+            $leaveApplications = LeaveApplication::with(['leaveType', 'user'])->paginate(10);
         } else {
-            $leaveApplications = LeaveApplication::with(['leaveType', 'employee.user'])
-                ->paginate(10);
+            $leaveApplications = LeaveApplication::where('user_id', $user->id)->paginate(10);
         }
 
         return view('leave-application.index', compact('leaveApplications', 'roleId'));
@@ -42,14 +42,16 @@ class LeaveApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(LeaveApplication  $leave_application)
+    public function create()
     {
-        $leave_application = new LeaveApplication();
-        $route = route('leave-applications.store');
+        $leave_application = new LeaveApplication(); //Remove the parameter from here
+        $route = route('leave-applications.store'); // Change the route to the store method
         $formMethod = 'POST';
         $leaveTypes = LeaveType::pluck('name', 'id')->toArray();
-        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes'));
+        $users = User::pluck('name', 'id')->toArray();
+        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'users'));
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -59,7 +61,10 @@ class LeaveApplicationController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        dd($request->all());
+                $request->validate([
+            'employee_id' => 'nullable',
+            'user_id' => 'required',
             'leave_type_id' => 'required',
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d',
@@ -74,7 +79,6 @@ class LeaveApplicationController extends Controller
 
         $start_date_parsed = Carbon::createFromFormat('Y-m-d', $request->start_date);
         $end_date_parsed = Carbon::createFromFormat('Y-m-d', $request->end_date);
-        $total_days = $start_date_parsed->diffInDays($end_date_parsed) + 1;
 
         $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
         $total_days = 0;
@@ -84,9 +88,16 @@ class LeaveApplicationController extends Controller
             }
         }
 
-        $employee_id = Employee::where('user_id', auth()->user()->id)->value('id');
+        $user = Auth::user();
+        // if (isAdmin($user)) {
+        //     $employee_id = $request->selected_user_id;
+        // } else {
+        //     $employee_id = $request->user_id;
+        // }        
+
         LeaveApplication::create([
-            'employee_id' => $employee_id,
+            'employee_id' => 1,
+            'user_id' => $request->user_id,
             'leave_type_id' => $request->leave_type_id,
             'start_date' => $start_date_parsed->format('Y-m-d'),
             'end_date' => $end_date_parsed->format('Y-m-d'),
@@ -96,10 +107,13 @@ class LeaveApplicationController extends Controller
             'status' => 'Pending',
         ]);
 
+        // $user = auth()->user();
+        // Mail::to($user->email)->send(new LeaveApplicationMail($user, $LeaveApplication));
+
         return response()->json(['message' => 'Leave application created successfully']);
     }
 
-    /**
+    /** ~
      * Display the specified resource.
      *
      * @param  \App\Models\LeaveApplication  $leave_application
@@ -109,6 +123,7 @@ class LeaveApplicationController extends Controller
     {
         //
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -122,7 +137,8 @@ class LeaveApplicationController extends Controller
         $formMethod = 'PUT';
         $leaveTypes = LeaveType::pluck('name', 'id')->toArray();
         $statusOptions = LeaveApplication::getStatusOptions();
-        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'statusOptions'));
+        $users = User::pluck('name', 'id')->toArray();
+        return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'statusOptions', 'users'));
     }
 
 
@@ -137,7 +153,7 @@ class LeaveApplicationController extends Controller
     {
         $statusOptions = array_keys(LeaveApplication::getStatusOptions());
         $request->validate([
-            'employee_id' => 'nullable',
+            'user_id' => 'required',
             'leave_type_id' => 'required',
             'reason' => 'required',
             'status' => 'required|in:' . implode(',', $statusOptions),
@@ -181,6 +197,7 @@ class LeaveApplicationController extends Controller
         }
 
         $data = [
+            'user_id' => $request->user_id,
             'leave_type_id' => $request->leave_type_id,
             'start_date' => $start_date,
             'end_date' => $end_date,
@@ -215,4 +232,18 @@ class LeaveApplicationController extends Controller
 
         return response()->json(['success' => 'Leave Application deleted successfully'], 200);
     }
+
+    public function updateStatus(LeaveApplication $leave_application) {
+        $newStatus = request()->input('status');
+    
+        $leave_application->status = $newStatus;
+        $leave_application->save();
+    
+        $user = $leave_application->user;
+        $status = $leave_application->status;
+        Mail::to($user->email)->send(new LeaveApprovalStatusMail($user, $leave_application, $status));
+    
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+    
 }

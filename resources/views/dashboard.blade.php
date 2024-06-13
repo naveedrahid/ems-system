@@ -374,6 +374,69 @@
             </div>
         @else
             <div class="row">
+                <div class="col-md-8  col-sm-12 col-xs-12">
+                    <div class="cstScroll small-box bg-green py-4 px-3">
+                        @if ($notices)
+                            @foreach ($notices as $notice)
+                                @php
+                                    $NoticeDate = \Carbon\Carbon::parse($notice->created_at)->format('d M Y');
+                                    $NoticeTime = \Carbon\Carbon::parse($notice->created_at)->format('g:i a');
+                                    $limitedDescription = Str::words($notice->description, 20, '...');
+                                @endphp
+                                <ul class="timeline">
+                                    <li class="time-label">
+                                        <span class="bg-red">{{ $NoticeDate }}</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-envelope bg-blue"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fa fa-clock"></i> {{ $NoticeTime }}</span>
+
+                                            <h3 class="timeline-header">
+                                                <a
+                                                    href="#"><strong>{{ strtoupper($notice->notice_type) }}</strong></a>
+                                                {{ $notice->name }}
+                                            </h3>
+
+                                            <div class="timeline-body">
+                                                {!! $limitedDescription !!}
+                                            </div>
+                                            <div class="timeline-footer">
+                                                <button type="button" class="btn btn-info read-more-btn"
+                                                    data-id="{{ $notice->id }}" data-toggle="modal"
+                                                    data-target="#modal-info">
+                                                    Read more
+                                                </button>
+                                            </div>
+                                        </div>  
+                                    </li>
+                                </ul>
+                            @endforeach
+                        @endif
+                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-infoLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                        <div class="noticeHeader">
+                                            <div class="noticeName">
+                                                <h4 class="modal-title" id="modal-infoLabel"></h4>
+                                                <small class="noticeType"></small>
+                                            </div>
+                                            <div id="modal-date-time"></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body" id="modal-description"></div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="small-box bg-aqua py-4 px-3">
                         <div class="inner">

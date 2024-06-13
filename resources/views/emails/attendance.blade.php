@@ -75,21 +75,43 @@
 <body>
     <div class="content">
         <h1>Dear, {{ $employeeName }}!</h1>
-        <h2>Your Check In Time is: {{ $checkInTime }}</h2>
-        <p>Status: 
-            @if ($checkInStatus == 'Late In')
-                <span class="status" style="background-color: #d58512;">{{ $checkInStatus }}</span>
-            @elseif($checkInStatus == 'Early In')
-                <span class="status" style="background-color: #00c0ef;">{{ $checkInStatus }}</span>
-            @elseif($checkInStatus == 'In')
-                <span class="status" style="background-color: #204d74;">{{ $checkInStatus }}</span>
-            @endif
-        </p>
-        <p>Thank you for checking in! Your attendance has been recorded successfully. Have a great day!</p>
+        
+        @if ($checkType == 'Check-In')
+            <h2>Your Check In Time is: {{ $checkTime }}</h2>
+            <p>Status: 
+                @if ($checkStatus == 'Late In')
+                    <span
+                        style="color: #fff;background-color: #d58512;border-color: #985f0d;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @elseif($checkStatus == 'Early In')
+                    <span
+                        style="color: #fff;background-color: #00c0ef;border-color: #00acd6;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @elseif($checkStatus == 'In')
+                <span
+                    style="color: #fff;background-color: #204d74;border-color: #122b40;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @endif
+            </p>
+            <p>Thank you for checking in! Your attendance has been recorded successfully. Have a great day!</p>
+        @elseif ($checkType == 'Check-Out')
+            <h2>Your Check Out Time is: {{ $checkTime }}</h2>
+            <p>Status: 
+                @if ($checkStatus == 'Early Out')
+                <span
+                    style="color: #fff;background-color: #ff851b;border-color: #f08323;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @elseif($checkStatus == 'Late Out')
+                    <span
+                        style="color: #fff;background-color: #001f3f;border-color: #001f3f;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @elseif($checkStatus == 'Out')
+                    <span
+                        style="color: #fff;background-color: #337ab7;border-color: #275f90;border-radius: 3px;padding:3px 5px;font-size: 12px;line-height: 1.5;">{{ $checkStatus }}</span>
+                @endif
+            </p>
+            <p>Thank you for checking out! Your attendance has been recorded successfully. Have a great day!</p>
+        @endif
     </div>
     <footer>
-        <small>Copyright 2022-2024 | All Rights Reserved . Powered by </small>
+        <small>Copyright 2022-2024 | All Rights Reserved. Powered by </small>
         <small><a href="https://pixelz360.com.au/" target="_blank">Pixelz360</a></small>
     </footer>
 </body>
+
 </html>

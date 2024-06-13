@@ -216,11 +216,11 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="{{route('notices.create')}}"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Notice</a>
                                     </li>
-                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="{{route('notices.index')}}"><i class="fa fa-circle-o"></i>
                                             View
                                             Notices
                                         </a></li>

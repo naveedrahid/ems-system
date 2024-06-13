@@ -278,14 +278,14 @@ class AttendanceController extends Controller
 
         $user = User::find($userId);
 
-        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString()));
-
+        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString(), 'Check-In'));
         return response()->json(['message' => 'Check in successfully']);
     }
 
     public function checkOutUser(Request $request)
     {
         $user_id = $request->user_id;
+        $user = User::findOrFail($user_id);
         $date = now()->format('Y-m-d');
         $time = now()->format('H:i:s');
         $existingAttendance = Attendance::where('user_id', $user_id)
@@ -326,9 +326,9 @@ class AttendanceController extends Controller
             ]
         );
 
+        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkOutStatus, $time, 'Check-Out'));
         return response()->json(['message' => 'Check out successfully']);
     }
-
 
     public function create()
     {

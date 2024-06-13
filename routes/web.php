@@ -58,7 +58,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::resource('holidays', HolidayController::class)->except(['index','show']);
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
-    Route::resource('notices', NoticeController::class);
+    Route::resource('notices', NoticeController::class)->except(['index', 'show']);
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');
     Route::get('/leave-applications/{leave_application}/edit', [LeaveApplicationController::class, 'edit'])->name('leave-applications.edit');
     Route::delete('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'destroy'])->name('leave-applications.destroy');
+    Route::post('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'updateStatus'])->name('leave-applications.status');
 
     Route::resource('bank-details', BankDetailController::class)->except(['show']);
     Route::put('bank-details/status/{bank_detail}', [BankDetailController::class, 'bankStatus'])->name('bank-details.status');
@@ -109,4 +110,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave-applications.create');
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave-applications.index');
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
+    Route::get('notices', [NoticeController::class, 'index'])->name('notices.index');
+    Route::get('notices/{notice}', [NoticeController::class, 'show'])->name('notices.show');
 });
