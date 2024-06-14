@@ -14,7 +14,10 @@
                         'method' => $formMethod,
                         'id' => $complaint->exists ? 'updateComplain' : 'addComplain',
                     ]) !!}
-
+                        <div class="mb-3 form-group">
+                            {!! Form::label('content', 'Department Name') !!}
+                            {!! Form::text('content', null, ['class' => 'form-control', 'required']) !!}
+                        </div>
                     <div class="box-footer">
                         {!! Form::submit($complaint->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
                         <a href="{{ route('complaints.index') }}" class="btn btn-danger">Cancel</a>
