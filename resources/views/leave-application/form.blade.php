@@ -12,50 +12,50 @@
                     {!! Form::model($leave_application, [
                         'url' => $route,
                         'method' => $formMethod,
+                        'files' => true,
                         'id' => $leave_application->exists ? 'updateLeaveApplication' : 'addLeaveApplication',
                     ]) !!}
-
+                
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-
+                
                     <div class="mb-3 form-group">
                         @php
                             $user = Auth::user();
                         @endphp
                         @if (isAdmin($user))
-                        {!! Form::label('title', 'User Name') !!}
-                        {!! Form::select('user_id', ['' => 'Select User'] + $users, $leave_application->user_id, [
-                            'class' => 'form-control form-select select2',
+                            {!! Form::label('title', 'User Name') !!}
+                            {!! Form::select('user_id', ['' => 'Select User'] + $users, $leave_application->user_id, [
+                                'class' => 'form-control form-select select2',
                             ]) !!}
                         @else
-                        {!! Form::hidden('user_id', $user->id) !!}
+                            {!! Form::hidden('user_id', $user->id) !!}
                             {!! Form::label('user_name', 'User Name') !!}
                             {!! Form::text('user_name', $user->name, ['class' => 'form-control', 'readonly']) !!}
                         @endif
-                    </div>                                                           
-
+                    </div>
+                
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Leave Type') !!}
                         {!! Form::select('leave_type_id', ['' => 'Select Leave Type'] + $leaveTypes, null, [
                             'class' => 'form-control form-select select2',
                         ]) !!}
                     </div>
-
+                
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Select Date:') !!}
                         <div class="row">
                             <div class="col-md-6">
-                                {{-- {!! Form::text('daterange', null, ['class' => 'form-control', 'id' => 'daterange']) !!} --}}
-                                {!! Form::text('start_date', null, ['class' => 'form-control', 'id' => 'start_date']) !!}
+                                {!! Form::date('start_date', null, ['class' => 'form-control', 'id' => 'start_date', 'placeholder' => 'YYYY-MM-DD']) !!}
                             </div>
                             <div class="col-md-6">
-                                {!! Form::text('end_date', null, ['class' => 'form-control', 'id' => 'end_date']) !!}
+                                {!! Form::date('end_date', null, ['class' => 'form-control', 'id' => 'end_date', 'placeholder' => 'YYYY-MM-DD']) !!}
                             </div>
-                            {{-- {!! Form::hidden('total_leave', null, ['id' => 'total_leave']) !!} --}}
+                            {!! Form::hidden('total_leave', null, ['id' => 'total_leave']) !!}
                         </div>
                     </div>
-
+                
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Reason') !!}
                         {!! Form::textarea('reason', null, [
@@ -65,24 +65,23 @@
                             'rows' => 10,
                         ]) !!}
                     </div>
-
+                
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Upload') !!}
                         {!! Form::file('leave_image', ['id' => 'leave_image']) !!}
                     </div>
-
+                
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Leave Status') !!}
                         @if (isAdmin(auth()->user()))
-                        {!! Form::select(
-                            'status',
-                            ['' => 'Select Leave Status'] + \App\Models\LeaveApplication::getStatusOptions(),
-                            'Pending', // Set the default value to 'Pending'
-                            [
-                                'class' => 'form-control form-select select2',
-                            ],
-                        ) !!}
-                        
+                            {!! Form::select(
+                                'status',
+                                ['' => 'Select Leave Status'] + \App\Models\LeaveApplication::getStatusOptions(),
+                                'Pending',
+                                [
+                                    'class' => 'form-control form-select select2',
+                                ],
+                            ) !!}
                         @endif
                     </div>
                     <div class="box-footer">
@@ -101,124 +100,133 @@
 
 @push('js')
 <script>
-    $(document).ready(function() {
-
-        $(function() {
-            $('#start_date, #end_date').daterangepicker({
-                singleDatePicker: true,
-                autoUpdateInput: false, // Prevent auto-update of input
-                locale: {
-                    format: 'YYYY-MM-DD'
-                },
-                isInvalidDate: function(date) {
-                    // Disable weekends: Saturday (6) and Sunday (0)
-                    return date.day() === 0 || date.day() === 6;
-                }
-            }).on('apply.daterangepicker', function(ev, picker) {
-                // Manually update input value
-                $(this).val(picker.startDate.format('YYYY-MM-DD'));
-            });
+    $(function() {
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
+        $('#daterange').daterangepicker({
+            opens: 'left',
+            isInvalidDate: function(date) {
+                return date.day() === 0 || date.day() === 6;
+            },
+            locale: {
+                format: 'yyyy-mm-dd'
+            },
+            startDate: startDate || moment(),
+            endDate: endDate || moment()
+        }, function(start, end, label) {
+            $('#start_date').val(start.format('yyyy-mm-dd'));
+            $('#end_date').val(end.format('yyyy-mm-dd'));
         });
-
-        $('#updateLeaveApplication').on('submit', function(e) {
-            e.preventDefault();
-            const leave_type_id = $('select[name="leave_type_id"]').val().trim();
-            // const daterange = $('input[name="daterange"]').val().trim();
-            const reason = $('textarea[name="reason"]').val().trim();
-
-            if (leave_type_id === '' || reason === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Leave Types Name, Start Date, End Date, or Reason cannot be empty.',
-                });
-                return;
-            }
-
-            const formData = new FormData(this);
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            // const redirectUrl = $('#redirect-url').val();
-            $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    }
-                })
-                .then(function(response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    // setTimeout(function() {
-                    //     window.location.href = redirectUrl;
-                    // }, 2000);
-                })
-                .catch(function(xhr) {
-                    console.error(xhr);
+        // Customize invalid date cells
+        // $('#daterange').on('show.daterangepicker', function(ev, picker) {
+        //     setTimeout(function() {
+        //         $('.daterangepicker td.off').each(function() {
+        //             if ($(this).hasClass('off')) {
+        //                 $(this).text('N/A');
+        //             }
+        //         });
+        //     }, 0);
+        // });
+    });
+    $(document).ready(function() {
+        $(document).ready(function() {
+            $('#updateLeaveApplication').on('submit', function(e) {
+                e.preventDefault();
+                const leave_type_id = $('select[name="leave_type_id"]').val().trim();
+                const start_date = $('input[name="start_date"]').val().trim();
+                const end_date = $('input[name="end_date"]').val().trim();
+                const reason = $('textarea[name="reason"]').val().trim();
+                if (leave_type_id === '' || start_date === ''|| end_date === '' || reason === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Failed to create Leave Application.',
+                        text: 'Leave Types Name, Start Date, End Date, or Reason cannot be empty.',
                     });
-                });
-        });
-        $('#addLeaveApplication').submit(function(e) {
-            e.preventDefault();
-
-            const leave_type_id = $('select[name="leave_type_id"]').val().trim();
-            // const daterange = $('input[name="daterange"]').val().trim();
-            const reason = $('textarea[name="reason"]').val().trim();
-
-            if (leave_type_id === '' || reason === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Leave Types Name, Start Date, End Date, or Reason cannot be empty.',
-                });
-                return;
-            }
-
-            const formData = new FormData(this);
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            // const redirectUrl = $('#redirect-url').val();
-            $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    }
-                })
-                .then(function(response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
+                    return;
+                }
+                const formData = new FormData(this);
+                const url = $(this).attr('action');
+                const token = $('meta[name="csrf-token"]').attr('content');
+                const redirectUrl = $('#redirect-url').val();
+                $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        }
+                    })
+                    .then(function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                        setTimeout(function() {
+                            window.location.href = redirectUrl;
+                        }, 2000);
+                    })
+                    .catch(function(xhr) {  
+                        console.error(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to create Leave Application.',
+                        });
                     });
-                    $('#addLeaveApplication')[0].reset();
-                    // setTimeout(function() {
-                    //     window.location.href = redirectUrl;
-                    // }, 2000);
-                })
-                .catch(function(xhr) {
-                    console.error(xhr);
+            });
+            $('#addLeaveApplication').submit(function(e) {
+                e.preventDefault();
+                const leave_type_id = $('select[name="leave_type_id"]').val().trim();
+                const start_date = $('input[name="start_date"]').val().trim();
+                const end_date = $('input[name="end_date"]').val().trim();
+                const reason = $('textarea[name="reason"]').val().trim();
+                if (leave_type_id === '' || start_date === ''|| end_date === '' || reason === '') {
                     Swal.fire({
-                        icon:    'error',
+                        icon: 'error',
                         title: 'Error!',
-                        text: 'Failed to create Leave Application.',
+                        text: 'Leave Types Name, Start Date, End Date, or Reason cannot be empty.',
                     });
-                });
+                    return;
+                }
+                const formData = new FormData(this);
+                const url = $(this).attr('action');
+                const token = $('meta[name="csrf-token"]').attr('content');
+                const redirectUrl = $('#redirect-url').val();
+                $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRF-TOKEN': token
+                        }
+                    })
+                    .then(function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                        });
+                        $('#addLeaveApplication')[0].reset();
+                        setTimeout(function() {
+                            window.location.href = redirectUrl;
+                        }, 2000);
+                    })
+                    .catch(function(xhr) {
+                        console.error(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to create Leave Type.',
+                        });
+                    });
+            });
         });
     });
 </script>

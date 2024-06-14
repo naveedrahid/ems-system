@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class LeaveApplicationController extends Controller
@@ -51,7 +50,7 @@ class LeaveApplicationController extends Controller
         $users = User::pluck('name', 'id')->toArray();
         return view('leave-application.form', compact('leave_application', 'route', 'formMethod', 'leaveTypes', 'users'));
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -59,60 +58,53 @@ class LeaveApplicationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        dd($request->all());
-                $request->validate([
+
+     public function store(Request $request)
+     {
+         $request->validate([
             'employee_id' => 'nullable',
-            'user_id' => 'required',
-            'leave_type_id' => 'required',
-            'start_date' => 'required|date_format:Y-m-d',
-            'end_date' => 'required|date_format:Y-m-d',
-            'reason' => 'required',
-        ]);
+             'user_id' => 'required|exists:users,id',
+             'leave_type_id' => 'required',
+             'start_date' => 'required',
+             'end_date' => 'required',
+             'reason' => 'required',
+         ]);
 
-        $imageName = null;
-        if ($request->hasFile('leave_image') && $request->file('leave_image')->isValid()) {
-            $imageName = time() . '.' . $request->file('leave_image')->extension();
-            $request->file('leave_image')->move(public_path('upload'), $imageName);
-        }
+         $start_date_parsed = Carbon::createFromFormat('Y-m-d', $request->start_date);
+         $end_date_parsed = Carbon::createFromFormat('Y-m-d', $request->end_date);
+         $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
+         $total_days = 0;
+         foreach ($period as $date) {
+             if (!$date->isWeekend()) {
+                 $total_days++;
+             }
+         }
 
-        $start_date_parsed = Carbon::createFromFormat('Y-m-d', $request->start_date);
-        $end_date_parsed = Carbon::createFromFormat('Y-m-d', $request->end_date);
-
-        $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
-        $total_days = 0;
-        foreach ($period as $date) {
-            if (!$date->isWeekend()) {
-                $total_days++;
-            }
-        }
-
-        $user = Auth::user();
-        // if (isAdmin($user)) {
-        //     $employee_id = $request->selected_user_id;
-        // } else {
-        //     $employee_id = $request->user_id;
-        // }        
-
-        LeaveApplication::create([
-            'employee_id' => 1,
-            'user_id' => $request->user_id,
-            'leave_type_id' => $request->leave_type_id,
-            'start_date' => $start_date_parsed->format('Y-m-d'),
-            'end_date' => $end_date_parsed->format('Y-m-d'),
-            'reason' => $request->reason,
-            'leave_image' => $imageName,
-            'total_leave' => $total_days,
-            'status' => 'Pending',
-        ]);
-
-        // $user = auth()->user();
-        // Mail::to($user->email)->send(new LeaveApplicationMail($user, $LeaveApplication));
-
+         $imageName = null;
+         if ($request->hasFile('leave_image') && $request->file('leave_image')->isValid()) {
+             $imageName = time() . '.' . $request->file('leave_image')->extension();
+             $request->file('leave_image')->move(public_path('upload'), $imageName);
+         }
+    
+     
+        $leaveApplication = LeaveApplication::create([
+             'employee_id' => null,
+             'user_id' => $request->user_id,
+             'leave_type_id' => $request->leave_type_id,
+             'start_date' => $start_date_parsed->format('Y-m-d'),
+             'end_date' => $end_date_parsed->format('Y-m-d'),
+             'reason' => $request->reason,
+             'leave_image' => $imageName,
+             'total_leave' => $total_days,
+             'status' => 'Pending',
+         ]);
+        $user = auth()->user();
+        Mail::to($user->email)->send(new LeaveApplicationMail($user, $leaveApplication));
+        //  return redirect()->route('leave-applications.index')->with('message', 'Leave application created successfully');
         return response()->json(['message' => 'Leave application created successfully']);
-    }
-
+     }
+     
+     
     /** ~
      * Display the specified resource.
      *
@@ -233,17 +225,17 @@ class LeaveApplicationController extends Controller
         return response()->json(['success' => 'Leave Application deleted successfully'], 200);
     }
 
-    public function updateStatus(LeaveApplication $leave_application) {
+    public function updateStatus(LeaveApplication $leave_application)
+    {
         $newStatus = request()->input('status');
-    
+
         $leave_application->status = $newStatus;
         $leave_application->save();
-    
+
         $user = $leave_application->user;
         $status = $leave_application->status;
         Mail::to($user->email)->send(new LeaveApprovalStatusMail($user, $leave_application, $status));
-    
+
         return response()->json(['message' => 'Status updated successfully']);
     }
-    
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BankDetailController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
@@ -80,6 +81,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
     Route::resource('leave-types', LeaveTypeController::class);
 
+    Route::resource('complaints', ComplaintController::class);
+
     Route::resource('shifts', ShiftController::class);
     
     Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
@@ -106,7 +109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::get('/employees/data', [EmployeeController::class, 'getData'])->name('employees.data');
-    Route::post('/leave-applications/create', [LeaveApplicationController::class, 'store'])->name('leave-applications.store');
+    Route::post('/leave-applications', [LeaveApplicationController::class, 'store'])->name('leave-applications.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave-applications.create');
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave-applications.index');
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
