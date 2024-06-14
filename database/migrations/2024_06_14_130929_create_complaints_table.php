@@ -18,7 +18,7 @@ class CreateComplaintsTable extends Migration
             $table->integer('user_id');
             $table->integer('employee_id');
             $table->string('ticket_number', 10)->unique();
-            $table->string('complaint_status');
+            $table->string('complaint_status')->default('pending');
             $table->string('complaint_type');
             $table->text('content');
             $table->softDeletes();
