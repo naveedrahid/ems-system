@@ -26,23 +26,23 @@ class ComplaintController extends Controller
      */
     public function create()
     {
-        // $complaint = new Complaint();
-        // $route = route('complaints.store');
-        // $formMethod = 'POST';
-        // // getting user details
-        // $user = auth()->user();
+        $complaint = new Complaint();
+        $route = route('complaints.store');
+        $formMethod = 'POST';
+        // getting user details
+        $user = auth()->user();
 
-        // $employee = Employee::with(['designation', 'department', 'employeeType'])
-        //     ->where('user_id', $user->id)
-        //     ->select('id', 'user_id', 'department_id', 'designation_id', 'employee_type_id')
-        //     ->first();
+        $employee = Employee::with(['designation', 'department', 'employeeType'])
+            ->where('user_id', $user->id)
+            ->select('id', 'user_id', 'department_id', 'designation_id', 'employee_type_id')
+            ->first();
 
-        // $designationName = $employee->designation->designation_name ?? null;
-        // $departmentName = $employee->department->department_name ?? null;
-        // $employeeTypeName = $employee->employeeType->type ?? null;
-        // $ticketNumber = 'TICKET-' . strtoupper(bin2hex(random_bytes(8)));
+        $designationName = $employee->designation->designation_name ?? null;
+        $departmentName = $employee->department->department_name ?? null;
+        $employeeTypeName = $employee->employeeType->type ?? null;
+        $ticketNumber = 'TICKET-' . strtoupper(bin2hex(random_bytes(8)));
 
-        // return view('complaints.form', compact('complaint', 'route', 'formMethod', 'designationName', 'departmentName', 'employeeTypeName', 'ticketNumber'));
+        return view('complaints.form', compact('complaint', 'route', 'formMethod', 'designationName', 'departmentName', 'employeeTypeName', 'ticketNumber'));
     }
 
     /**
@@ -75,9 +75,9 @@ class ComplaintController extends Controller
      */
     public function edit(Complaint $complaint)
     {
-        // $route = route('complaints.update', $complaint->id);
-        // $formMethod = 'PUT';
-        // return view('complaints.form', compact('complaint', 'route', 'formMethod'));
+        $route = route('complaints.update', $complaint->id);
+        $formMethod = 'PUT';
+        return view('complaints.form', compact('complaint', 'route', 'formMethod'));
     }
 
     /**

@@ -8,7 +8,7 @@
         <div class="box-body">
             <div class="row justify-content-center">
                 <div class="col-md-12">
-                    {{-- {!! Form::model($complaint, [
+                    {!! Form::model($complaint, [
                         'url' => $route,
                         'method' => $formMethod,
                         'id' => $complaint->exists ? 'updateComplain' : 'addComplain',
@@ -50,15 +50,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3 form-group ticketNumber text-center btn btn-block btn-default btn-flat">
-                        <strong>{{$ticketNumber}}</strong>
+                        <div class="col-12">
+                            <div class="mb-3 form-group">
+                                <div class="mb-3 form-group ticketNumber text-center btn btn-block btn-default btn-flat">
+                                    <strong>{{$ticketNumber}}</strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div class="box-footer">
                         {!! Form::submit($complaint->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
                         <a href="{{ route('complaints.index') }}" class="btn btn-danger">Cancel</a>
                     </div>
-                    {!! Form::close() !!} --}}
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>

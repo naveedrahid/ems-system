@@ -34,8 +34,8 @@
                     @if ($leaveApplications->count() > 0)
                         @foreach ($leaveApplications as $leaveApplication)
                             <tr>
-                                <td>{{ $leaveApplication->user->name }}</td>
-                                <td>{{ $leaveApplication->leaveType->name }}</td>
+                                <td>{{ $leaveApplication->user->name ?? '' }}</td>
+                                <td>{{ $leaveApplication->leaveType->name ?? ''}}</td>
                                 <td>{{ $leaveApplication->start_date }}</td>
                                 <td>{{ $leaveApplication->end_date }}</td>
                                 <td>
