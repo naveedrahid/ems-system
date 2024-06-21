@@ -49,22 +49,27 @@
             <div class="col-md-6">
                 <div class="changePassword">
                     <h3>Change Password</h3>
-                    <form action="{{ route('employees.changePassword', auth()->user()->id) }}" method="POST" id="changePassword">
+                    <form action="{{ route('employees.changePassword', auth()->user()->id) }}" method="POST"
+                        id="changePassword">
                         @csrf
                         @method('PUT')
-                    
+
                         <div class="form-group">
                             <label for="new_password">New Password</label>
                             <input type="password" name="new_password" id="new_password" class="form-control">
+                            <small>
+                                Password must contain at least one special character, Uppercase & two numbers (@, #, !).<br>
+                                <strong>Example:</strong> Password99@
+                            </small>
                         </div>
-                    
+
                         <div class="form-group">
                             <label for="new_password_confirmation">Confirm New Password</label>
                             <input type="password" name="new_password_confirmation" id="new_password_confirmation"
-                                   class="form-control">
+                                class="form-control">
                             <span id="password-match-message" class="text-danger"></span>
                         </div>
-                    
+
                         <button type="submit" class="btn btn-primary">Change Password</button>
                     </form>
                 </div>
@@ -76,58 +81,13 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        $('#changePassword').submit(function(e) {
-            e.preventDefault();
-
-            const new_password = $('input[name="new_password"]').val().trim();
-            const new_password_confirmation = $('input[name="new_password_confirmation"]').val().trim();
-
-            if (new_password === '' || new_password_confirmation === '') {
-                if (new_password === '') {
-                    toastr.error('Password is required.');
-                }
-
-                if (new_password_confirmation === '') {
-                    toastr.error('Confirm Password is required.');
-                }
-                return;
-            }
-
-            const formData = new FormData(this);
-            const url = $(this).attr('action');
-            const button = $('button[type="submit"]');
-            button.prop('disabled', true);
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-            })
-            .done(function(response) {
-                toastr.success(response.message);
-                $('#changePassword')[0].reset();
-                button.prop('disabled', false);
-            })
-            .fail(function(err) {
-                console.error(err);
-                toastr.error('Failed to change password.');
-                button.prop('disabled', false);
-            });
-        });
-    });
-    $(document).ready(function() {
         const $newPasswordInput = $('#new_password');
         const $confirmPasswordInput = $('#new_password_confirmation');
         const $messageElement = $('#password-match-message');
 
         function checkPasswordsMatch() {
-            const newPassword = $newPasswordInput.val();
-            const confirmPassword = $confirmPasswordInput.val();
+            const newPassword = $newPasswordInput.val().trim();
+            const confirmPassword = $confirmPasswordInput.val().trim();
 
             if (newPassword === '' || confirmPassword === '') {
                 $messageElement.text('');
@@ -143,17 +103,86 @@
             }
         }
 
+        function validatePassword(password) {
+            const minLength = password.length >= 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasSpecialChar = /[@#!]/.test(password);
+            const hasTwoNumbers = /(?=(.*[0-9]){2})/.test(password);
+
+            if (!minLength) {
+                toastr.error('Password must be at least 8 characters long.');
+                return false;
+            }
+            if (!hasUpperCase) {
+                toastr.error('Password must contain at least one uppercase letter.');
+                return false;
+            }
+            if (!hasSpecialChar) {
+                toastr.error('Password must contain at least one special character (@, #, !).');
+                return false;
+            }
+            if (!hasTwoNumbers) {
+                toastr.error('Password must contain at least two numbers.');
+                return false;
+            }
+
+            return true;
+        }
+
         $newPasswordInput.on('input', checkPasswordsMatch);
         $confirmPasswordInput.on('input', checkPasswordsMatch);
 
-        $('#changePassword').on('submit', function(e) {
-            if ($newPasswordInput.val() !== $confirmPasswordInput.val()) {
-                e.preventDefault();
-                $messageElement.text('Passwords do not match');
-                $messageElement.addClass('text-danger');
-                $messageElement.removeClass('text-success');
-                toastr.error('Passwords do not match');
+        $('#changePassword').submit(function(e) {
+            e.preventDefault();
+
+            const newPassword = $newPasswordInput.val().trim();
+            const newPasswordConfirmation = $confirmPasswordInput.val().trim();
+
+            if (newPassword === '' || newPasswordConfirmation === '') {
+                if (newPassword === '') {
+                    toastr.error('Password is required.');
+                }
+
+                if (newPasswordConfirmation === '') {
+                    toastr.error('Confirm Password is required.');
+                }
+                return;
             }
+
+            if (!validatePassword(newPassword)) {
+                return;
+            }
+
+            if (newPassword !== newPasswordConfirmation) {
+                toastr.error('Passwords do not match.');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const url = $(this).attr('action');
+            const button = $('button[type="submit"]');
+            button.prop('disabled', true);
+
+            $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                })
+                .done(function(response) {
+                    toastr.success(response.message);
+                    $('#changePassword')[0].reset();
+                    button.prop('disabled', false);
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    toastr.error('Failed to change password.');
+                    button.prop('disabled', false);
+                });
         });
     });
 </script>

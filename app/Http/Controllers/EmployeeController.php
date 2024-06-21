@@ -289,7 +289,13 @@ class EmployeeController extends Controller
 
     public function changePassword(Request $request, User $user){    
         $request->validate([
-            'new_password' => 'required|min:8|confirmed',
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[0-9].*[0-9])(?=.*[@#!]).*$/'
+            ],
         ]);
     
         $user->password = Hash::make($request->new_password);
