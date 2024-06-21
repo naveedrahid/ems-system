@@ -200,11 +200,11 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="{{route('awards.create')}}"><i class="fa fa-circle-o"></i>
                                             Add New
                                             Award</a>
                                     </li>
-                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="{{route('awards.index')}}"><i class="fa fa-circle-o"></i>
                                             View
                                             Awards
                                         </a></li>

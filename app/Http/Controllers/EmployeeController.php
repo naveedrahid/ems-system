@@ -287,14 +287,15 @@ class EmployeeController extends Controller
         return view('employees.profile', compact('employee'));
     }
 
-    public function changePassword(Request $request, User $user){
+    public function changePassword(Request $request, User $user){    
         $request->validate([
             'new_password' => 'required|min:8|confirmed',
         ]);
     
         $user->password = Hash::make($request->new_password);
         $user->save();
-
-        return response()->json(['message', 'Password changed successfully'], 200);
+    
+        return response()->json(['message' => 'Password changed successfully'], 200);
     }
+    
 }
