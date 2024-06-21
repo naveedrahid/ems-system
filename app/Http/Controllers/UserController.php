@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
+use App\Models\EmployeeType;
 use App\Models\Role;
+use App\Models\Shift;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Hash;
@@ -33,12 +35,15 @@ class UserController extends Controller
         $currentUser = auth()->user();
         if ($currentUser->role_id == 1) {
             $roles = Role::all();
-        }else{
+        } else {
             $roles = Role::where('name', 'employee')->first();
         }
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
-        return view('employees.create', compact('departments', 'designations', 'roles'));
+        $employeeTypes = EmployeeType::all();
+        $employeeShift = Shift::all();
+
+        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
     }
 
     public function getDesignations($departmentId)
@@ -135,12 +140,14 @@ class UserController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $employees = User::with('employee')->findOrFail($id);
+        $employee = User::with('employee')->findOrFail($id);
         $roles = Role::pluck('name', 'id');
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
+        $employeeShifts = Shift::all();
+        $employeeTypes = EmployeeType::all();
 
-        return view('employees.edit', compact('employees', 'roles', 'departments', 'designations'));
+        return view('employees.edit', compact('employee', 'roles', 'departments', 'designations', 'employeeTypes', 'employeeShifts'));
     }
 
     /**

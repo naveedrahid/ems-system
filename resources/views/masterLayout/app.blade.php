@@ -22,7 +22,8 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('admin/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/dist/css/AdminLTE.min.css') }}">
     @stack('css')
@@ -49,7 +50,7 @@
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav flexBtnHeader">
                         <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                                 @if (optional(auth()->user()->employee)->employee_img)
                                     <img src="{{ asset('upload/' . optional(auth()->user()->employee)->employee_img) }}"
                                         alt="Employee Image"
@@ -67,7 +68,7 @@
                                 </li>
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        <a href="{{route('employees.profile', auth()->user()->id)}}" class="btn btn-default btn-flat">Profile</a>
                                     </div>
                                     <div class="pull-right">
                                         <form action="{{ route('logoutUser') }}" method="POST">
@@ -151,6 +152,27 @@
                             </li>
                             <li class="treeview">
                                 <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Complaint Management
+                                    </span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="active"><a href="{{ route('complaints.create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add New
+                                            Complaint</a>
+                                    </li>
+                                    <li class=""><a href="{{ route('complaints.index') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            View
+                                            Complaints
+                                        </a></li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
                                     <i class="fa fa-users"></i> <span>Shifts</span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
@@ -166,25 +188,6 @@
                                                 class="fa fa-circle-o"></i>
                                             View
                                             Shift
-                                        </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="javascript:;">
-                                    <i class="fa fa-users"></i> <span>Complaint Management
-                                    </span>
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li class="active"><a href="javascript:;"><i class="fa fa-circle-o"></i>
-                                            Add New
-                                            Complaint</a>
-                                    </li>
-                                    <li class=""><a href="javascript:;"><i class="fa fa-circle-o"></i>
-                                            View
-                                            Complaints
                                         </a></li>
                                 </ul>
                             </li>
@@ -216,11 +219,13 @@
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li class="active"><a href="{{route('notices.create')}}"><i class="fa fa-circle-o"></i>
+                                    <li class="active"><a href="{{ route('notices.create') }}"><i
+                                                class="fa fa-circle-o"></i>
                                             Add New
                                             Notice</a>
                                     </li>
-                                    <li class=""><a href="{{route('notices.index')}}"><i class="fa fa-circle-o"></i>
+                                    <li class=""><a href="{{ route('notices.index') }}"><i
+                                                class="fa fa-circle-o"></i>
                                             View
                                             Notices
                                         </a></li>
@@ -375,6 +380,27 @@
                         @else
                             <li class="treeview">
                                 <a href="javascript:;">
+                                    <i class="fa fa-users"></i> <span>Complaint Management
+                                    </span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li class="active"><a href="{{ route('complaints.create') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            Add New
+                                            Complaint</a>
+                                    </li>
+                                    <li class=""><a href="{{ route('complaints.index') }}"><i
+                                                class="fa fa-circle-o"></i>
+                                            View
+                                            Complaints
+                                        </a></li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href="javascript:;">
                                     <i class="fa fa-users"></i> <span>Employees</span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
@@ -523,9 +549,19 @@
         {{-- <script src="{{ asset('admin/plugins/chartjs/Chart.min.js') }}"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
         <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
         <script src="{{ asset('admin/dist/js/app.min.js') }}"></script>
         <script src="{{ asset('admin/dist/js/demo.js') }}"></script>
         {{-- <script src="{{ asset('admin/js/chartJs.js') }}"></script> --}}
+        <script>
+            toastr.options = {
+                "closeButton": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            }
+        </script>
         @stack('js')
 </body>
 

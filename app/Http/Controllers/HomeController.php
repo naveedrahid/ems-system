@@ -64,13 +64,13 @@ class HomeController extends Controller
         $designation = $employee->designation ? $employee->designation->designation_name : null;
         $employeesByDepartment = Employee::where('department_id', $departmentId)->get();
         $leaveTypes = LeaveType::where('status', 'active')->get();
-        $leaveApplications = LeaveApplication::where('employee_id', $user->id)
+        $leaveApplications = LeaveApplication::where('user_id', $user->id)
             ->where('status', 'Approved')
             ->get();
         $availedLeaves = $leaveApplications->groupBy('leave_type_id')->map(function ($leaves) {
             return $leaves->sum('total_leave');
         });
-
+        
         $remainingLeaves = $leaveTypes->mapWithKeys(function ($leaveType) use ($availedLeaves) {
             $availedLeaveCount = $availedLeaves->get($leaveType->id, 0);
             $remainingLeaveCount = $leaveType->default_balance - $availedLeaveCount;

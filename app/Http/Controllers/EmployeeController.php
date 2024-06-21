@@ -39,7 +39,9 @@ class EmployeeController extends Controller
                 </a> <button class="employee-toggle btn btn-' . ($employee->status === "active" ? "info" : "danger") . ' btn-sm"
                     data-id="' . $employee->id . '" data-status="' . $employee->status . '">
                     <i class="fa fa-thumbs-' . ($employee->status === "active" ? "up" : "down") . '"></i>
-                </button';
+                </button> <a href="' . route('employees.profile', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
+                    <i class="far fa-eye"></i>
+                </a>';
             })
             ->editColumn('employee_img', function ($employee) {
                 if (empty($employee->employee->employee_img)) {
@@ -68,7 +70,7 @@ class EmployeeController extends Controller
             ->editColumn('shift_id', function ($employee) {
                 return optional($employee->employee->shift)->name ?? '';
             })
-            ->rawColumns(['employee_img', 'name', 'employee_type_id','shift_id', 'action', 'status'])
+            ->rawColumns(['employee_img', 'name', 'employee_type_id', 'shift_id', 'action', 'status'])
             ->make(true);
     }
 
@@ -172,10 +174,9 @@ class EmployeeController extends Controller
         $designations = Designation::pluck('designation_name', 'id');
         $employeeShifts = Shift::all();
         $employeeTypes = EmployeeType::all();
-    
+
         return view('employees.edit', compact('employee', 'roles', 'departments', 'designations', 'employeeShifts', 'employeeTypes'));
     }
-    
 
     public function update(Request $request, $id)
     {
@@ -270,5 +271,30 @@ class EmployeeController extends Controller
         $employee->save();
 
         return response()->json(['message' => 'Status updated successfully'], 200);
+    }
+
+    public function employeeProfile(Request $request, $id)
+    {
+        $user = auth()->user();
+
+        if (isAdmin($user)) {
+            $employee = User::with(['employee.bank'])->findOrFail($id);
+            return view('employees.profile', compact('employee'));
+        } else {
+            $employee = User::with(['employee.bank'])->findOrFail($user->id);
+            return view('employees.profile', compact('employee'));
+        }
+        return view('employees.profile', compact('employee'));
+    }
+
+    public function changePassword(Request $request, User $user){
+        $request->validate([
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+    
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json(['message', 'Password changed successfully'], 200);
     }
 }

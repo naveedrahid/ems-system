@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BankDetailController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DepartmentController;
@@ -56,6 +57,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     
     Route::resource('designation', DesignationController::class)->except(['show']);
 
+    Route::resource('awards', AwardController::class)->except(['show']);
+
     Route::resource('holidays', HolidayController::class)->except(['index','show']);
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
@@ -81,17 +84,16 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
     Route::resource('leave-types', LeaveTypeController::class);
 
-    Route::resource('complaints', ComplaintController::class);
-
     Route::resource('shifts', ShiftController::class);
     
     Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
-
-    // Route::resource('leave-applications', LeaveApplicationController::class)->except(['show']);
+    
     Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');
     Route::get('/leave-applications/{leave_application}/edit', [LeaveApplicationController::class, 'edit'])->name('leave-applications.edit');
     Route::delete('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'destroy'])->name('leave-applications.destroy');
     Route::post('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'updateStatus'])->name('leave-applications.status');
+    
+    Route::post('/complaints/{complaint}', [ComplaintController::class, 'updateStatus'])->name('complaints.status');
 
     Route::resource('bank-details', BankDetailController::class)->except(['show']);
     Route::put('bank-details/status/{bank_detail}', [BankDetailController::class, 'bankStatus'])->name('bank-details.status');
@@ -99,6 +101,7 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
+    Route::resource('complaints', ComplaintController::class);
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
     Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
@@ -109,6 +112,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::get('/employees/data', [EmployeeController::class, 'getData'])->name('employees.data');
+    Route::get('/employees/profile/{id}', [EmployeeController::class, 'employeeProfile'])->name('employees.profile');
+    Route::put('/employees/change-password/{user}', [EmployeeController::class, 'changePassword'])->name('employees.changePassword');
     Route::post('/leave-applications', [LeaveApplicationController::class, 'store'])->name('leave-applications.store');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leave-applications.create');
     Route::get('leave-applications', [LeaveApplicationController::class, 'index'])->name('leave-applications.index');

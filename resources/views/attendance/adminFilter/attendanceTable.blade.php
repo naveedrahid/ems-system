@@ -32,6 +32,7 @@
                     $weekend = \Carbon\Carbon::parse($date)->isWeekend();
                     $isFutureDate = \Carbon\Carbon::parse($date)->isFuture();
                     $holidayName = checkHoliday($formattedDate, $holidays);
+                    $leavesStatus = checkLaeve($formattedDate, $leaves);
                 @endphp
                 <tr>
                     @foreach ($employees as $employee)
@@ -106,6 +107,8 @@
                         @elseif ($holidayName)
                             <span
                                 style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">{{ $holidayName }}</span>
+                        @elseif ($leavesStatus == 'Approved')
+                                <span style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">Leave</span>        
                         @elseif (optional($attendanceData)->status)
                             <span
                                 style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">

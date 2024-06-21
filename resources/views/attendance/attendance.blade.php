@@ -49,6 +49,7 @@
                             $timeNow = \Carbon\Carbon::now();
                             $isFutureDate = \Carbon\Carbon::parse($date)->isFuture();
                             $holidayName = checkHoliday($formattedDate, $holidays);
+                            $leavesStatus = checkLaeve($formattedDate, $leaves);
                         @endphp
                         <tr>
                             <td>{{ Auth::user()->name }}</td>
@@ -111,6 +112,8 @@
                                     <span class="btn btn-warning btn-xs">Holiday</span>
                                 @elseif ($holidayName)
                                     <span class="btn btn-warning btn-xs">{{ $holidayName }}</span>
+                                @elseif ($leavesStatus == 'Approved')
+                                    <span class="btn btn-success btn-xs">Leave</span>
                                 @elseif (optional($attendanceData)->status)
                                     <span class="btn btn-success btn-xs">
                                         {{ optional($attendanceData)->status ? textFormating($attendanceData->status) : '' }}

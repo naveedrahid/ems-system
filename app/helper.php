@@ -25,6 +25,21 @@ if (!function_exists('checkHoliday')) {
     }
 }
 
+if (!function_exists('checkLaeve')) {
+    function checkLaeve($date, $leaves)
+    {
+        foreach ($leaves as $leave) {
+            if ($date >= $leave->start_date && $date <= $leave->end_date) {
+                return $leave->status;
+                // dd($leave->status);
+            }
+            // dd($leave);
+        }
+        // dd($leaves);
+        return null;
+    }
+}
+
 // show user upcoming birthday
 
 if (!function_exists('getUpcomingBirthdays')) {

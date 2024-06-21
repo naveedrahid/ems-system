@@ -42,4 +42,14 @@ class Employee extends Model
     public function LeaveApplication(){
         return $this->hasMany(LeaveApplication::class);
     }
+
+    public function awards()
+    {
+        return $this->hasMany(Award::class, 'user_id', 'user_id');
+    }
+
+    public function bank()
+    {
+        return $this->hasMany(BankDetail::class);
+    }
 }

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmployeeAttendanceMail;
+use App\Models\LeaveApplication;
 
 class AttendanceController extends Controller
 {
@@ -67,9 +68,10 @@ class AttendanceController extends Controller
                 ->whereMonth('attendance_date', $month)
                 ->get();
         }
+        $leaves = LeaveApplication::where('user_id', $userId)->select('start_date', 'end_date', 'status')->get();
 
         if ($request->ajax()) {
-            $html = view('attendance.adminFilter.attendanceTable', compact('users','employees', 'attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.adminFilter.attendanceTable', compact('users', 'employees', 'attendance', 'month', 'year', 'holidays', 'leaves'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
@@ -127,7 +129,7 @@ class AttendanceController extends Controller
 
         $pdfContent = '';
         if (view()->exists('attendance.adminFilter.attendanceTable')) {
-            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays','employees'))->render();
+            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays', 'employees'))->render();
         }
 
         $pdfContentWithLogo = $styles . $pdfContent;
@@ -143,7 +145,7 @@ class AttendanceController extends Controller
         $holidays = Holiday::all();
         $user = User::where('id', auth()->user()->id)->get();
         $attendanceQuery = Attendance::where('user_id', auth()->user()->id);
-
+        $leaves = LeaveApplication::where('user_id', auth()->user()->id)->select('start_date', 'end_date', 'status')->get();
         if ($request->has('month') && $request->has('year')) {
             $month = $request->input('month');
             $year = $request->input('year');
@@ -156,7 +158,7 @@ class AttendanceController extends Controller
         $attendance = $attendanceQuery->get();
 
         if ($request->ajax()) {
-            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays', 'leaves'))->render();
 
             if ($attendance->isEmpty()) {
                 $html = '<tr><td colspan="9" class="text-center">No record found</td></tr>';
@@ -182,7 +184,7 @@ class AttendanceController extends Controller
             $imageHtml = '<img src="data:image/png;base64,' . $image . '" width="200" height="200"/>';
 
             $styles = view('attendance.partial.pdfFilterStyle', compact('month', 'year', 'imageHtml'))->render();
-            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays'))->render();
+            $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays', 'leaves'))->render();
 
             $pdfContentWithLogo = $styles . $html;
 
@@ -193,7 +195,7 @@ class AttendanceController extends Controller
             return $dompdf->stream('employee_attendance_report.pdf', ['Attachment' => true]);
         }
 
-        return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year', 'holidays'));
+        return view('attendance.attendanceFilter', compact('user', 'attendance', 'month', 'year', 'holidays', 'leaves'));
     }
 
     public function attendanceLog()
@@ -205,19 +207,25 @@ class AttendanceController extends Controller
 
     public function AttendanceShow()
     {
+        $currentUser = auth()->user()->id;
         $holidays = Holiday::all();
-        $users = User::where('id', auth()->user()->id)->get();
+        $leaves = LeaveApplication::where('user_id', $currentUser)->select('start_date', 'end_date', 'status')->get();
+        // dd($leaves);
+        $users = User::where('id', $currentUser)->get();
         $attendance = Attendance::where('user_id', auth()->user()->id)->get();
         $currentMonth = date('m');
         $currentYear = date('Y');
 
-        return view('attendance.attendance', compact('users', 'attendance', 'currentMonth', 'currentYear', 'holidays'));
+        return view('attendance.attendance', compact('users', 'attendance', 'currentMonth', 'currentYear', 'holidays', 'leaves'));
     }
 
     public function downloadPdf()
     {
+        $userId = auth()->user()->id;
         $data = [
-            'attendance' => Attendance::where('user_id', auth()->user()->id)->get(),
+            'attendance' => Attendance::where('user_id', $userId)->get(),
+            'leaves' => LeaveApplication::where('user_id', $userId)->select('start_date', 'end_date', 'status')->get(),
+            'holidays' => Holiday::all(),
             'currentYear' => date('Y'),
             'currentMonth' => date('m'),
         ];
@@ -335,7 +343,7 @@ class AttendanceController extends Controller
         $userNames = User::all();
         return view('attendance.create', compact('userNames'));
     }
- 
+
     public function store(Request $request)
     {
         $request->validate([

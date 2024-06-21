@@ -110,12 +110,13 @@
                                                     Read more
                                                 </button>
                                             </div>
-                                        </div>  
+                                        </div>
                                     </li>
                                 </ul>
                             @endforeach
                         @endif
-                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-infoLabel">
+                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog"
+                            aria-labelledby="modal-infoLabel">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -132,7 +133,8 @@
                                     </div>
                                     <div class="modal-body" id="modal-description"></div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-outline pull-left"
+                                            data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
@@ -408,12 +410,13 @@
                                                     Read more
                                                 </button>
                                             </div>
-                                        </div>  
+                                        </div>
                                     </li>
                                 </ul>
                             @endforeach
                         @endif
-                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-infoLabel">
+                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog"
+                            aria-labelledby="modal-infoLabel">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -430,7 +433,8 @@
                                     </div>
                                     <div class="modal-body" id="modal-description"></div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-outline pull-left"
+                                            data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
@@ -464,11 +468,13 @@
                             @php
                                 $totalAvaile = 0;
                                 foreach ($leaveTypes as $leaveType) {
+                                    // dd($leaveType);
                                     $totalAvaile += $availedLeaves->get($leaveType->id, 0);
                                 }
                             @endphp
                             <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
                             @foreach ($leaveTypes as $leaveType)
+                            
                                 <span class="info-box-text">{{ strtoupper($leaveType->name) }} -
                                     {{ $availedLeaves->get($leaveType->id, 0) }}</span>
                             @endforeach

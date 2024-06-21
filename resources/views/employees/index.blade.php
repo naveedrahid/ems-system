@@ -15,7 +15,7 @@
                         <th>Email</th>
                         <th>Department</th>
                         <th>Employee Type</th>
-                        <th>Shift Type</th>
+                        <th>Shift</th>
                         <th>Designation</th>
                         @if (Auth::user()->role_id == 1)
                             <th>Manage</th>
@@ -75,21 +75,13 @@
 </style>
 @endpush
 @push('js')
-{{-- <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.flash.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script> --}}
 <script>
     $(function() {
         $('#employees-table').DataTable({
             processing: true,
             responsive: true,
-            searchDelay: 300, // Reduced search delay for better responsiveness
+            searchDelay: 300,
             serverSide: true,
             ajax: '{{ route('employees.data') }}',
             columns: [{

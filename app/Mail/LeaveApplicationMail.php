@@ -38,7 +38,7 @@ class LeaveApplicationMail extends Mailable
             $startDate = $this->leaveApplication->start_date;
             $endDate = $this->leaveApplication->end_date;
         }
-    
+
         return $this->view('emails.leave-applications')
             ->with([
                 'employeeName' => $this->user->name,

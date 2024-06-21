@@ -30,7 +30,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @dd($leaveApplications) --}}
                     @if ($leaveApplications->count() > 0)
                         @foreach ($leaveApplications as $leaveApplication)
                             <tr>
@@ -109,9 +108,9 @@ $(document).ready(function() {
         const newStatus = $(this).data('status');
         const leaveId = $(this).data('id');
         const row = $(this).closest('.leave-application-row');
-        const buttons = row.find('.setDisabled'); // Find all buttons with class setDisabled in the row
+        const buttons = row.find('.setDisabled');
 
-        buttons.prop('disabled', true); // Disable all buttons with class setDisabled in the row
+        buttons.prop('disabled', true);
 
         $.ajax({
             url: '/leave-applications/' + leaveId,
@@ -144,11 +143,11 @@ $(document).ready(function() {
                     dropdownToggle.addClass('btn-warning');
                 }
 
-                buttons.prop('disabled', false); // Enable all buttons with class setDisabled in the row after request completes
+                buttons.prop('disabled', false);
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
-                buttons.prop('disabled', false); // Enable all buttons with class setDisabled in the row in case of error
+                buttons.prop('disabled', false);
             }
         });
     });
