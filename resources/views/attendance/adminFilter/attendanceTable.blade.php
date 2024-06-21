@@ -44,6 +44,11 @@
                                     ->first();
                             @endphp
                             {{ $employee->user->name ?? 'Unknown' }}
+                            @if($attendanceData)
+                            <a href="{{ route('attendance.edit', $attendanceData->id) }}" style="float:right;">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        @endif
                         </td>
                     @endforeach
                     <td><span class="currentDate">{{ $displayDate }}</span></td>

@@ -23,9 +23,9 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
+                        <th width="10%">Desingnation</th>
                         <th width="16%">Desingnation</th>
-                        <th width="40%">Department Name</th>
+                        <th width="30%">Department Name</th>
                         <th width="20%">Status</th>
                         <th width="20%">Manage</th>
                     </tr>
@@ -34,8 +34,7 @@
                     @if (count($designations) > 0)
                         @foreach ($designations as $designation)
                             <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
-                                <td>{{ $designation->designation_name }}</td>
+                                <td>{{ $designation->created_at->toFormattedDateString() }}</td>                                <td>{{ $designation->designation_name }}</td>
                                 <td>{{ $designation->department->department_name }}</td>
                                 <td>
                                     <button

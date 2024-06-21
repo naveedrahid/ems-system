@@ -31,7 +31,6 @@ class EmployeeController extends Controller
             ->with('employee.department', 'employee.designation', 'employee.employeeType')
             ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
             ->get();
-
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) {
                 return '<a href="' . route('employees.edit', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
@@ -55,8 +54,13 @@ class EmployeeController extends Controller
                 }
             })
             ->editColumn('name', function ($employee) {
-                return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->employee_id]) . '">
-                <i class="fa fa-building-columns"></i></a>';
+                $user = auth()->user();
+                if (isAdmin($user)) {
+                    return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->employee_id]) . '">
+                    <i class="fa fa-building-columns"></i></a>';
+                } else {
+                    return $employee->name;
+                }
             })
             ->editColumn('department', function ($employee) {
                 return optional($employee->employee->department)->department_name ?: 'No department';
@@ -280,14 +284,12 @@ class EmployeeController extends Controller
         if (isAdmin($user)) {
             $employee = User::with(['employee.bank'])->findOrFail($id);
             return view('employees.profile', compact('employee'));
-        } else {
-            $employee = User::with(['employee.bank'])->findOrFail($user->id);
-            return view('employees.profile', compact('employee'));
-        }
+        } 
         return view('employees.profile', compact('employee'));
     }
 
-    public function changePassword(Request $request, User $user){    
+    public function changePassword(Request $request, User $user)
+    {
         $request->validate([
             'new_password' => [
                 'required',
@@ -297,11 +299,10 @@ class EmployeeController extends Controller
                 'regex:/^(?=.*[A-Z])(?=.*[0-9].*[0-9])(?=.*[@#!]).*$/'
             ],
         ]);
-    
+
         $user->password = Hash::make($request->new_password);
         $user->save();
-    
+
         return response()->json(['message' => 'Password changed successfully'], 200);
     }
-    
 }

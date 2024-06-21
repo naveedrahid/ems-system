@@ -41,6 +41,8 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
 
     Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+    Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+    Route::put('/attendance/update/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
     Route::get('/attendance/report/download', [AttendanceController::class, 'downloadAttendanceReport'])->name('attendance.report.download');

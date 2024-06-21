@@ -14,7 +14,8 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="40%">Shift Name</th>
+                        <th width="10%">Date</th>
+                        <th width="30%">Shift Name</th>
                         <th width="20%">Opening</th>
                         <th width="20%">Closing</th>
                         <th width="20%">Manage</th>
@@ -24,6 +25,7 @@
                     @if (count($shifts) > 0)
                         @foreach ($shifts as $shift)
                             <tr>
+                                <td>{{ $shift->created_at->toFormattedDateString() }}</td>
                                 <td>{{ $shift->name }}</td>
                                 <td>{{ $shift->opening }}</td>
                                 <td>{{ $shift->closing }}</td>

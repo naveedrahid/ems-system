@@ -22,8 +22,9 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="26%">Name</th>
-                        <th width="30%">Description</th>
+                        <th width="10%">date</th>
+                        <th width="20%">Name</th>
+                        <th width="25%">Description</th>
                         <th width="20%">Leave Balance</th>
                         <th width="10%">Manage</th>
                     </tr>
@@ -32,6 +33,7 @@
                     @if (count($leaveTypes) > 0)
                         @foreach ($leaveTypes as $leaveType)
                             <tr>
+                                <td>{{ $leaveType->created_at->toFormattedDateString() }}</td>
                                 <td>{{ $leaveType->name }}</td>
                                 <td>{{ $leaveType->description }}</td>
                                 <td>{{ $leaveType->default_balance }}</td>

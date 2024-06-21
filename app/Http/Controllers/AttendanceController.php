@@ -265,7 +265,7 @@ class AttendanceController extends Controller
         }
 
         $checkInStatus = null;
-        $lateInTime = Carbon::createFromTime(8, 20);
+        $lateInTime = Carbon::createFromTime(8, 21);
         $earlyInTime = Carbon::createFromTime(8, 0);
 
         if ($currentTime->greaterThan($lateInTime)) {
@@ -340,8 +340,12 @@ class AttendanceController extends Controller
 
     public function create()
     {
-        $userNames = User::all();
-        return view('attendance.create', compact('userNames'));
+        $attendance = new Attendance();
+        $route = route('attendance.store');
+        $formMethod = 'POST';
+        $isEdit = false;
+        $userNames = User::all()->pluck('name', 'id');
+        return view('attendance.form', compact('userNames', 'attendance', 'route', 'formMethod', 'isEdit'));
     }
 
     public function store(Request $request)
@@ -353,9 +357,11 @@ class AttendanceController extends Controller
             'check_out' => 'required',
         ]);
 
-        $letInTime = Carbon::createFromTime(8, 20);
+        $letInTime = Carbon::createFromTime(8, 21);
+        $openTime = Carbon::createFromTime(8, 00);
         // $earlyInTime = Carbon::createFromTime(8, 0);
-        $officeClosingTime = Carbon::createFromTime(17, 20);
+        $otTime = Carbon::createFromTime(17, 21);
+        $closingTime = Carbon::createFromTime(17, 00);
 
         $checkInTime = Carbon::parse($request->check_in);
         $checkOutTime = Carbon::parse($request->check_out);
@@ -363,15 +369,19 @@ class AttendanceController extends Controller
         $checkInStatus = null;
         if ($checkInTime->greaterThan($letInTime)) {
             $checkInStatus = 'Late In';
-        } elseif ($checkInTime->lessThan($letInTime)) {
+        } elseif ($checkInTime->lessThan($openTime)) {
             $checkInStatus = 'Early In';
+        } elseif ($checkInTime->lessThan($letInTime) && $checkInTime->greaterThan($openTime)) {
+            $checkInStatus = 'In';
         }
 
         $checkOutStatus = null;
-        if ($checkOutTime->lessThanOrEqualTo($officeClosingTime)) {
-            $checkOutStatus = 'Early Out';
-        } else {
+        if ($checkOutTime->greaterThan($otTime)) {
             $checkOutStatus = 'Late Out';
+        } elseif ($checkOutTime->lessThan($closingTime)) {
+            $checkOutStatus = 'Early Out';
+        } elseif ($checkOutTime->greaterThan($closingTime) && $checkOutTime->lessThan($otTime)) {
+            $checkOutStatus = 'Out';
         }
 
         $totalMinutes = calculateOvertime($request->check_in, $request->check_out);
@@ -387,6 +397,70 @@ class AttendanceController extends Controller
             'status' => 'Present',
         ]);
 
-        return redirect()->route('attendance.create')->with('success', 'Attendance created Successfully');
+        return response()->json(['message' => 'Attendance created Successfully'], 200);
     }
+
+    public function edit(Request $request, $id)
+    {
+        $attendance = Attendance::findOrFail($id);
+        $route = route('attendance.update', $attendance->id);
+        $formMethod = 'PUT';
+        $isEdit = true;
+        $userNames = User::all()->pluck('name', 'id');
+        return view('attendance.form', compact('userNames', 'attendance', 'route', 'formMethod', 'isEdit'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'required',
+            'attendance_date' => 'required',
+            'check_in' => 'required',
+            'check_out' => 'required',
+        ]);
+    
+        $letInTime = Carbon::createFromTime(8, 21);
+        $openTime = Carbon::createFromTime(8, 00);
+        $otTime = Carbon::createFromTime(17, 21);
+        $closingTime = Carbon::createFromTime(17, 00);
+    
+        $checkInTime = Carbon::parse($request->check_in);
+        $checkOutTime = Carbon::parse($request->check_out);
+    
+        $checkInStatus = null;
+        if ($checkInTime->greaterThan($letInTime)) {
+            $checkInStatus = 'Late In';
+        } elseif ($checkInTime->lessThan($openTime)) {
+            $checkInStatus = 'Early In';
+        } elseif ($checkInTime->lessThan($letInTime) && $checkInTime->greaterThan($openTime)) {
+            $checkInStatus = 'In';
+        }
+    
+        $checkOutStatus = null;
+        if ($checkOutTime->greaterThan($otTime)) {
+            $checkOutStatus = 'Late Out';
+        } elseif ($checkOutTime->lessThan($closingTime)) {
+            $checkOutStatus = 'Early Out';
+        } elseif ($checkOutTime->greaterThan($closingTime) && $checkOutTime->lessThan($otTime)) {
+            $checkOutStatus = 'Out';
+        }
+    
+        $totalMinutes = calculateOvertime($request->check_in, $request->check_out);
+    
+        $attendance = Attendance::findOrFail($id);
+        $attendance->update([
+            'user_id' => $request->user_id,
+            'attendance_date' => $request->attendance_date,
+            'check_in' => $request->check_in,
+            'check_out' => $request->check_out,
+            'check_in_status' => $checkInStatus,
+            'check_out_status' => $checkOutStatus,
+            'total_overtime' => $totalMinutes,
+            'status' => 'Present',
+        ]);
+    
+        return response()->json(['message' => 'Attendance updated successfully'], 200);
+    }
+    
+    
 }

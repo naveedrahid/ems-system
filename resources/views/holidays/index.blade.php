@@ -28,11 +28,11 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
-                        <th width="16%">Holiday Name</th>
+                        <th width="10%">Date</th>
+                        <th width="15%">Holiday Name</th>
                         <th width="20%">Description</th>
                         <th width="20%">Date</th>
-                        <th width="20%">Holiday Type</th>
+                        <th width="15%">Holiday Type</th>
                         <th width="20%">Manage</th>
                     </tr>
                 </thead>
@@ -40,7 +40,7 @@
                     @if (count($holidays) > 0)
                         @foreach ($holidays as $holiday)
                             <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
+                                <td>{{ $holiday->created_at->toFormattedDateString() }}</td>
                                 <td>{{ $holiday->name }}</td>
                                 <td>
                                     {{ $holiday->description }}

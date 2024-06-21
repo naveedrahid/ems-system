@@ -31,11 +31,8 @@ if (!function_exists('checkLaeve')) {
         foreach ($leaves as $leave) {
             if ($date >= $leave->start_date && $date <= $leave->end_date) {
                 return $leave->status;
-                // dd($leave->status);
             }
-            // dd($leave);
         }
-        // dd($leaves);
         return null;
     }
 }
@@ -120,7 +117,7 @@ if (!function_exists('textFormating')) {
 if (!function_exists('calculateAttendanceStatus')) {
     function calculateAttendanceStatus($checkInTime, $checkOutTime)
     {
-        $lateCheckInTime = Carbon::createFromTime(8, 30, 0); // 8:30 AM
+        $lateCheckInTime = Carbon::createFromTime(8, 21, 0); // 8:30 AM
         $officeClosingTime = Carbon::createFromTime(17, 0, 0); // 5:00 PM
 
         $checkInTime = Carbon::createFromFormat('H:i:s', $checkInTime);
