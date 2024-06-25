@@ -7,17 +7,10 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a class="btn btn-danger btn-xm"><i class="fa fa-trash"></i></a>
-                <a href="{{ route('designation.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                <a href="{{ route('designation.create') }}" class="btn btn-block btn-primary">
+                    Insert Designations
+                </a>
             </h3>
-            <div class="box-tools">
-                <div class="input-group input-group-sm" style="width: 250px;">
-                    <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
@@ -34,7 +27,8 @@
                     @if (count($designations) > 0)
                         @foreach ($designations as $designation)
                             <tr>
-                                <td>{{ $designation->created_at->toFormattedDateString() }}</td>                                <td>{{ $designation->designation_name }}</td>
+                                <td>{{ $designation->created_at->toFormattedDateString() }}</td>
+                                <td>{{ $designation->designation_name }}</td>
                                 <td>{{ $designation->department->department_name }}</td>
                                 <td>
                                     <button
@@ -60,3 +54,71 @@
     </div>
 @endsection
 @endsection
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('.delete-designation').on('click', function(e) {
+            e.preventDefault();
+            const leaveType = $(this).data('designation-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', leaveType);
+            const targetElement = $(this);
+
+
+            if (confirm('Are you sure you want to delete this designation?')) {
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(result) {
+                    toastr.success(result.message);
+                    targetElement.closest('tr').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }).catch(function(err) {
+                    console.log(err);
+                    toastr.error('Faild to delete Designation');
+                });
+            }
+        });
+
+        $('.status-toggle').click(function() {
+            const button = $(this);
+            const id = button.data('id');
+            const status = button.data('status');
+            const newStatus = status === 'active' ? 'deactive' : 'active';
+            const statusIcon = status === 'active' ? 'down' : 'up';
+            const btnClass = status === 'active' ? 'danger' : 'info';
+            const btnSts = $('.status-toggle');
+            btnSts.prop('disabled', true);
+            $.ajax({
+                    url: '/update-status/' + id,
+                    method: 'PUT',
+                    data: {
+                        status: newStatus
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                })
+                .then((response) => {
+                    button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger'))
+                        .addClass('btn-' + btnClass);
+                    button.find('i').removeClass('fa-thumbs-' + (status === 'active' ?
+                        'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
+
+                    toastr.success(response.message);
+                    button.data('status', newStatus);
+                    btnSts.prop('disabled', false);
+                }).catch((err) => {
+                    console.log(err);
+                    toastr.error('Faild to status Designation');
+                    btnSts.prop('disabled', false);
+                });
+        });
+    });
+</script>
+@endpush

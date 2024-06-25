@@ -46,55 +46,7 @@
     $(document).ready(function() {
 
         // Create Department
-        $('#departmentData').submit(function(e) {
-            e.preventDefault();
-            const dp_name = $('input[name="department_name"]').val().trim();
-            const dp_status = $('select[name="status"]').val().trim();
-            if (dp_name === '' || dp_status === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Name or status cannot be empty.',
-                });
-                return;
-            }
-
-            const formData = new FormData(this);
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    }
-                })
-                .then(function(response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    $('#departmentData')[0].reset();
-                    $('#dp_name').val('');
-                })
-                .catch(function(xhr) {
-                    console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to create Department.',
-                    });
-                });
-        });
-
-        // Update Department
-
-        $('#departmentDataUpdate').submit(function(e) {
+        $('#departmentData, #departmentDataUpdate').submit(function(e) {
             e.preventDefault();
 
             const dp_name = $('input[name="department_name"]').val().trim();
@@ -109,9 +61,11 @@
             }
 
             const formData = new FormData(this);
-            formData.append('_method', 'PUT');
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+
             $.ajax({
                     url: url,
                     method: 'POST',
@@ -124,20 +78,16 @@
                 })
                 .then(function(response) {
                     console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    // window.location.reload();
+                    toastr.success(response.message);
+                    button.prop('disabled', false);
+                    if ($(e.target).attr('id') === 'departmentData') {
+                        $('#departmentData')[0].reset();
+                    }
                 })
-                .catch(function(xhr) {
-                    console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to update Department.',
-                    });
+                .catch(function(err) {
+                    console.error(err);
+                    toastr.error('Failed to save Department.');
+                    button.prop('disabled', false);
                 });
         });
     });

@@ -369,7 +369,7 @@
                                             <a href="{{ route('users') }}"><i class="fa fa-circle-o"></i>Users</a>
                                         </li>
                                         <li class="active">
-                                            <a href="{{ route('roles') }}"><i class="fa fa-circle-o"></i>Roles</a>
+                                            <a href="{{ route('roles.index') }}"><i class="fa fa-circle-o"></i>Roles</a>
                                         </li>
                                     @endif
                                     <li class="">

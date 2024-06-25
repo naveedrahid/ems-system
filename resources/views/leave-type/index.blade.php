@@ -7,16 +7,10 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('leave-types.create') }}" class="btn btn-default btn-xm"><i class="fa fa-plus"></i></a>
+                <a href="{{ route('leave-types.create') }}" class="btn btn-block btn-primary">
+                    Add Leave Types
+                </a>
             </h3>
-            <div class="box-tools">
-                <div class="input-group input-group-sm" style="width: 250px;">
-                    <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="box-body">
             <table class="table table-bordered">

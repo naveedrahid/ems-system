@@ -53,6 +53,7 @@
                         id="changePassword">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" name="logout" value="{{ route('logoutUser') }}">
 
                         <div class="form-group">
                             <label for="new_password">New Password</label>
@@ -161,6 +162,7 @@
             const formData = new FormData(this);
             const url = $(this).attr('action');
             const button = $('button[type="submit"]');
+            const logout = $('input[name="logout"]').val().trim();
             button.prop('disabled', true);
 
             $.ajax({
@@ -176,7 +178,9 @@
                 .done(function(response) {
                     toastr.success(response.message);
                     $('#changePassword')[0].reset();
-                    button.prop('disabled', false);
+                    if (response.logout) {
+                        window.location.href = '/login';
+                    }
                 })
                 .fail(function(err) {
                     console.error(err);

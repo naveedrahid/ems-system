@@ -6,55 +6,6 @@ $(document).ready(function () {
         });
     }
     modalCallBack();
-    // add Role Request
-
-    $('#addRoleForm').submit(function (e) {
-        e.preventDefault();
-        const roleName = $('#add_role').val().trim();
-        if (roleName === '') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Role name cannot be empty.',
-            });
-            return;
-        }
-
-        const formData = new FormData(this);
-        const url = $(this).attr('action');
-        const token = $('meta[name="csrf-token"]').attr('content');
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': token
-            }
-        })
-            .then(function (response) {
-                console.log(response);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: response.message,
-                });
-                $('#addRoleForm')[0].reset();
-                $('#add_role').val('');
-            })
-            .catch(function (xhr) {
-                console.error(xhr);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Failed to create role.',
-                });
-            });
-    });
-
-
-    // post check in request
 
     $('#checkin').submit(function (e) {
         e.preventDefault();
@@ -169,110 +120,7 @@ $(document).ready(function () {
 
     // Destroy Designation
 
-    $('.delete-designation').on('click', function (e) {
-        e.preventDefault();
-        const leaveType = $(this).data('designation-id');
-        const deleteRoute = $(this).data('delete-route').replace(':id', leaveType);
-        const $clickedElement = $(this);
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this Leave Type!',
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const token = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    type: "DELETE",
-                    url: deleteRoute,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    }
-                }).then(function (response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    $clickedElement.closest('tr').fadeOut('slow', function () {
-                        $(this).css('backgroundColor', 'red').remove();
-                    });
-                }).catch(function (xhr) {
-                    console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to delete Leave Type.',
-                    });
-                });
-            }
-        });
-    });
-
-    // Update Status Designation
-
-    $('.status-toggle').click(function () {
-        const button = $(this);
-        const id = button.data('id');
-        const status = button.data('status');
-        const newStatus = status === 'active' ? 'deactive' : 'active';
-        const statusIcon = status === 'active' ? 'down' : 'up';
-        const btnClass = status === 'active' ? 'danger' : 'info';
-
-        $.ajax({
-            url: '/update-status/' + id,
-            method: 'PUT',
-            data: { status: newStatus },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger')).addClass('btn-' + btnClass);
-                button.find('i').removeClass('fa-thumbs-' + (status === 'active' ? 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-                Toast.fire({
-                    icon: "success",
-                    title: "Status " + newStatus.charAt(0).toUpperCase() + newStatus.slice(1) + " successfully"
-                });
-                button.data('status', newStatus);
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-                Toast.fire({
-                    icon: "error",
-                    title: "Failed to update status"
-                });
-            }
-        });
-    });
 
     // Add Users
 
@@ -468,11 +316,6 @@ $(document).ready(function () {
         });
     });
 
-    // Add Employee
-
-
-    // Update Employee
-
     $('#UpdateEmployee').submit(function (e) {
         e.preventDefault();
 
@@ -535,8 +378,6 @@ $(document).ready(function () {
     });
 
     // update status Employee
-
-
 
     $('#department_id').change(function () {
         const departmentId = $(this).val();

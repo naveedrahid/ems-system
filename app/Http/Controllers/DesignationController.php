@@ -111,7 +111,7 @@ class DesignationController extends Controller
     {
         $designation = Designation::findOrFail($id);
         $designation->delete();
-        return response()->json(['success' => 'Designation deleted successfully'], 200);
+        return response()->json(['message' => 'Designation deleted successfully'], 200);
     }
 
     public function updateStatus(Request $request, $id)

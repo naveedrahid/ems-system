@@ -5,6 +5,13 @@
 @endsection
 @section('page-content')
     <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">
+                <a href="{{ route('awards.create') }}" class="btn btn-block btn-primary">
+                    Create Awards
+                </a>
+            </h3>
+        </div>
         <div class="box-body">
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">

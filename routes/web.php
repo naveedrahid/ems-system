@@ -29,7 +29,7 @@ Route::fallback(function () {
     return redirect('/login');
 });
 
-Route::middleware(['auth', 'role:1,2'])->group(function () {
+Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () {
     // Route::get('/admin', [HomeController::class, 'dashboard'])->name('home');
 
     Route::get('/users', [UserController::class, 'index'])->name('users');
@@ -47,21 +47,22 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
     Route::get('/attendance/report/download', [AttendanceController::class, 'downloadAttendanceReport'])->name('attendance.report.download');
     // Route::get('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
-    Route::get('/role', [RoleController::class, 'index'])->name('roles');
-    Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
-    Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
-    Route::get('/role/{id}/edit', [RoleController::class, 'edit'])->name('role_edit');
-    Route::put('/role/{id}/update', [RoleController::class, 'update'])->name('role_update');
-    Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
-    Route::put('/role-status/{id}', [RoleController::class, 'updateStatus'])->name('role.status');
+    Route::resource('roles', RoleController::class)->except(['show']);
+    // Route::put('/roles/status/{id}', [RoleController::class, 'updateStatus'])->name('roles.status');
+    // Route::get('/role', [RoleController::class, 'index'])->name('roles');
+    // Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
+    // Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
+    // Route::get('/role/{id}/edit', [RoleController::class, 'edit'])->name('role_edit');
+    // Route::put('/role/{id}/update', [RoleController::class, 'update'])->name('role_update');
+    // Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
 
     Route::resource('department', DepartmentController::class)->except(['show']);
-    
+
     Route::resource('designation', DesignationController::class)->except(['show']);
 
     Route::resource('awards', AwardController::class)->except(['show']);
 
-    Route::resource('holidays', HolidayController::class)->except(['index','show']);
+    Route::resource('holidays', HolidayController::class)->except(['index', 'show']);
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
@@ -87,21 +88,21 @@ Route::middleware(['auth', 'role:1,2'])->group(function () {
     Route::resource('leave-types', LeaveTypeController::class);
 
     Route::resource('shifts', ShiftController::class);
-    
+
     Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
-    
+
     Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');
     Route::get('/leave-applications/{leave_application}/edit', [LeaveApplicationController::class, 'edit'])->name('leave-applications.edit');
     Route::delete('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'destroy'])->name('leave-applications.destroy');
     Route::post('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'updateStatus'])->name('leave-applications.status');
-    
+
     Route::post('/complaints/{complaint}', [ComplaintController::class, 'updateStatus'])->name('complaints.status');
 
     Route::resource('bank-details', BankDetailController::class)->except(['show']);
     Route::put('bank-details/status/{bank_detail}', [BankDetailController::class, 'bankStatus'])->name('bank-details.status');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
     Route::resource('complaints', ComplaintController::class);
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');

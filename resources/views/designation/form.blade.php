@@ -18,13 +18,12 @@
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Department Name') !!}
                         {!! Form::select('department_id', ['' => 'Select Department'] + $departments->toArray(), null, [
-                            'class' => 'form-control form-select select2',
-                            'required',
+                            'class' => 'form-control form-select select2'
                         ]) !!}
                     </div>
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Designation Name') !!}
-                        {!! Form::text('designation_name', null, ['class' => 'form-control', 'required']) !!}
+                        {!! Form::text('designation_name', null, ['class' => 'form-control']) !!}
                     </div>
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Status') !!}
@@ -32,7 +31,7 @@
                             'status',
                             ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
                             $designation->status,
-                            ['class' => 'form-control form-select select2', 'required'],
+                            ['class' => 'form-control form-select select2'],
                         ) !!}
                     </div>
                     <div class="box-footer">
@@ -51,26 +50,35 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        // Create Designation
 
-        $('#designationSoter').submit(function(e) {
+        $('#designationSoter, #designationUpdate').submit(function(e) {
             e.preventDefault();
 
             const departmentId = $('select[name="department_id"]').val().trim();
             const designationName = $('input[name="designation_name"]').val().trim();
             const status = $('select[name="status"]').val().trim();
-            if (departmentId === '' || designationName === '' || status === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Department ID, Designation Name, or Status cannot be empty.',
-                });
-                return;
+            let hasError = false;
+            
+            if (departmentId == '') {
+                toastr.error('Name is required.');
+                hasError = true;
             }
-
+            if (designationName == '') {
+                toastr.error('Designation is required.');
+                hasError = true;
+            }
+            if (status == '') {
+                toastr.error('Status is required.');
+                hasError = true;
+            }
+            
+            if (hasError) return;
             const formData = new FormData(this);
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+
             $.ajax({
                     url: url,
                     method: 'POST',
@@ -83,75 +91,67 @@
                 })
                 .then(function(response) {
                     console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    $('#designationSoter')[0].reset();
-                    $('#department_id').val('');
-                    $('#designation_name').val('');
-                    $('#status').val('');
-                    // window.location.reload(); // or redirect to a different page
+                    toastr.success(response.message);
+                    button.prop('disabled', false);
+                    if ($(e.target).attr('id') === 'designationSoter') {
+                        $('#designationSoter')[0].reset();
+                    }
                 })
-                .catch(function(xhr) {
-                    console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to create Designation.',
-                    });
+                .catch(function(err) {
+                    console.error(err);
+                    toastr.error('Failed to save Designation.');
+                    button.prop('disabled', false);
                 });
         });
 
         // Update Designation
 
-        $('#designationUpdate').submit(function(e) {
-            e.preventDefault();
+        // $('#designationUpdate').submit(function(e) {
+        //     e.preventDefault();
 
-            const departmentId = $('select[name="department_id"]').val().trim();
-            const designationName = $('input[name="designation_name"]').val().trim();
-            const status = $('select[name="status"]').val().trim();
-            if (departmentId === '' || designationName === '' || status === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Department ID, Designation Name, or Status cannot be empty.',
-                });
-                return;
-            }
+        //     const departmentId = $('select[name="department_id"]').val().trim();
+        //     const designationName = $('input[name="designation_name"]').val().trim();
+        //     const status = $('select[name="status"]').val().trim();
+        //     if (departmentId === '' || designationName === '' || status === '') {
+        //         Swal.fire({
+        //             icon: 'error',
+        //             title: 'Error!',
+        //             text: 'Department ID, Designation Name, or Status cannot be empty.',
+        //         });
+        //         return;
+        //     }
 
-            const formData = new FormData(this);
-            formData.append('_method', 'PUT');
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    }
-                })
-                .then(function(response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                })
-                .catch(function(xhr) {
-                    console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to create Designation.',
-                    });
-                });
-        });
+        //     const formData = new FormData(this);
+        //     formData.append('_method', 'PUT');
+        //     const url = $(this).attr('action');
+        //     const token = $('meta[name="csrf-token"]').attr('content');
+        //     $.ajax({
+        //             url: url,
+        //             method: 'POST',
+        //             data: formData,
+        //             processData: false,
+        //             contentType: false,
+        //             headers: {
+        //                 'X-CSRF-TOKEN': token
+        //             }
+        //         })
+        //         .then(function(response) {
+        //             console.log(response);
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Success!',
+        //                 text: response.message,
+        //             });
+        //         })
+        //         .catch(function(xhr) {
+        //             console.error(xhr);
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error!',
+        //                 text: 'Failed to create Designation.',
+        //             });
+        //         });
+        // });
     });
 </script>
 @endpush

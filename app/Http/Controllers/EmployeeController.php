@@ -11,6 +11,7 @@ use App\Models\Employee;
 use App\Models\EmployeeType;
 use App\Models\Shift;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 
 class EmployeeController extends Controller
@@ -285,7 +286,7 @@ class EmployeeController extends Controller
             $employee = User::with(['employee.bank'])->findOrFail($id);
             return view('employees.profile', compact('employee'));
         } 
-        return view('employees.profile', compact('employee'));
+        return view('employees.profile');
     }
 
     public function changePassword(Request $request, User $user)
@@ -302,7 +303,8 @@ class EmployeeController extends Controller
 
         $user->password = Hash::make($request->new_password);
         $user->save();
+        Auth::logout();
 
-        return response()->json(['message' => 'Password changed successfully'], 200);
+        return response()->json(['message' => 'Password changed successfully', 'logout' => true], 200);
     }
 }

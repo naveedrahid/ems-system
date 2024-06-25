@@ -231,7 +231,6 @@ class UserController extends Controller
         return response()->json(['success' => 'User Updated Successfully'], 200);
     }
 
-
     /**
      * Remove the specified resource from storage.
      *
@@ -248,7 +247,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->status = $request->status;
         $user->save();
-
         return response()->json(['message' => 'Status updated successfully'], 200);
     }
 }
