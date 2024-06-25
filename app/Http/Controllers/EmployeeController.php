@@ -281,11 +281,13 @@ class EmployeeController extends Controller
     public function employeeProfile(Request $request, $id)
     {
         $user = auth()->user();
-
+    
         if (isAdmin($user)) {
             $employee = User::with(['employee.bank'])->findOrFail($id);
-            return view('employees.profile', compact('employee'));
-        } 
+        } else {
+            $employee = User::with(['employee.bank'])->findOrFail($user->id);
+        }
+    
         return view('employees.profile', compact('employee'));
     }
 
