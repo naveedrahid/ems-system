@@ -286,7 +286,7 @@ class EmployeeController extends Controller
             $employee = User::with(['employee.bank'])->findOrFail($id);
             return view('employees.profile', compact('employee'));
         } 
-        return view('employees.profile');
+        return view('employees.profile', compact('employee'));
     }
 
     public function changePassword(Request $request, User $user)
