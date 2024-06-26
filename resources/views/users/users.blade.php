@@ -16,7 +16,6 @@
             <table class="table table-bordered">
                 <thead style="background-color: #F8F8F8;">
                     <tr>
-                        <th width="4%"><input type="checkbox" name="" id="checkAll"></th>
                         <th width="20%">Name</th>
                         <th width="20%">Email</th>
                         <th width="10%">Role</th>
@@ -30,7 +29,6 @@
                             {{-- @if (count($employees) > 0)
                                 @foreach ($employees as $employee) --}}
                             <tr>
-                                <td><input type="checkbox" name="" id="" class="checkSingle"></td>
                                 <td>{{ $employee->name }}</td>
                                 <td>{{ $employee->email }}</td>
                                 <td>

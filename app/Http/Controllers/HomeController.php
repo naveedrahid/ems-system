@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Holiday;
 use App\Models\LeaveApplication;
 use App\Models\LeaveType;
 use App\Models\Notice;
+use App\Models\TimeLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -40,7 +42,7 @@ class HomeController extends Controller
     {
         //get use upcomming birthday code
         $currentDate = Carbon::now();
-        
+
         $startOfMonth = $currentDate->copy()->startOfMonth();
         $userBirthdays = getUpcomingBirthdays();
 
@@ -50,7 +52,7 @@ class HomeController extends Controller
             $startDate = explode(' - ', $holiday->date)[0];
             return $startDate >= $holidayDate;
         });
-        
+
         $user = Auth::user();
         $employee = Employee::where('user_id', $user->id)->first();
 
@@ -70,7 +72,7 @@ class HomeController extends Controller
         $availedLeaves = $leaveApplications->groupBy('leave_type_id')->map(function ($leaves) {
             return $leaves->sum('total_leave');
         });
-        
+
         $remainingLeaves = $leaveTypes->mapWithKeys(function ($leaveType) use ($availedLeaves) {
             $availedLeaveCount = $availedLeaves->get($leaveType->id, 0);
             $remainingLeaveCount = $leaveType->default_balance - $availedLeaveCount;
@@ -79,10 +81,15 @@ class HomeController extends Controller
 
         $activeEmployees = User::where('status', 'active')->get();
         $activeEmployeeCount = $activeEmployees->count();
-    
+
         $leaveQuery = LeaveApplication::all();
         $notices = Notice::where('status', 'active')->orderBy('id', 'ASC')->take(10)->get();
-
+        $currentDate = now()->toDateString();
+        $startTimeTracking = TimeLog::whereDate('created_at', $currentDate)
+        ->select('start_time', 'end_time', 'id')
+        ->latest()
+        ->first();
+        
         return view('dashboard', compact(
             'designation',
             'departmentName',
@@ -94,9 +101,15 @@ class HomeController extends Controller
             'holidays',
             'activeEmployeeCount',
             'leaveQuery',
-            'notices'
+            'notices',
+            'startTimeTracking'
         ));
     }
+
+    // public function startTimeIsExist(){
+    //     // $startTimeTracking = $timeLog->get()->first();
+    //     return view('dashboard', compact('startTimeTracking'));
+    // }
 
     public function logout()
     {

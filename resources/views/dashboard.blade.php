@@ -24,6 +24,28 @@
                     <h4><span>Today: {{ $currentDayName }} , {{ date('d M, Y') }}</span></h4>
                 </div>
                 <div>
+                    {{-- <div id="clock"></div>
+                    <button id="toggle">Play</button> --}}
+
+                    <div id="clock">00:00:00</div>
+
+                    @if ($startTimeTracking != null)
+                        @if ($startTimeTracking->end_time == null)
+                            {{-- Display Pause Time button --}}
+                            <form action="{{ route('end.time', $startTimeTracking->id) }}" method="POST" id="end-time-form">
+                                @method('PUT')
+                                @csrf
+                                <button type="submit" id="end-time-btn">Pause Time</button>
+                            </form>
+                        @else
+                            {{-- Display Start Time button --}}
+                            <form action="{{ route('start.time') }}" method="POST" id="start-time-form">
+                                @csrf
+                                <button type="submit" id="start-time-btn">Start Time</button>
+                            </form>
+                        @endif
+                    @endif
+
                     <ul class="p-0 list-unstyled mb-3">
                         @php
                             $userId = Auth::id();
@@ -177,7 +199,8 @@
                         <div class="info-box-content">
                             <span class="info-box-text">Total Pending Request</span>
                             @if ($leaveQuery)
-                                <span class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
+                                <span
+                                    class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
                             @else
                                 <span class="info-box-number">0</span>
                             @endif
@@ -474,7 +497,6 @@
                             @endphp
                             <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
                             @foreach ($leaveTypes as $leaveType)
-                            
                                 <span class="info-box-text">{{ strtoupper($leaveType->name) }} -
                                     {{ $availedLeaves->get($leaveType->id, 0) }}</span>
                             @endforeach
@@ -660,6 +682,105 @@
                 }
             });
         });
+
+        // timer clock
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+
+        let clockInterval;
+        let isRunning = false;
+        let startTime;
+
+        function updateClock() {
+            const clock = $('#clock');
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            clock.html(hours + ':' + minutes + ':' + seconds);
+        }
+
+        function startClock() {
+            startTime = new Date().getTime();
+            localStorage.setItem('startTime', startTime);
+            clockInterval = setInterval(updateClock, 1000);
+            $('#start-time-btn').text('Pause Time');
+            isRunning = true;
+        }
+
+        function stopClock() {
+            clearInterval(clockInterval);
+            $('#start-time-btn').text('Resume Time');
+            isRunning = false;
+        }
+
+        const storedStartTime = localStorage.getItem('startTime');
+        if (storedStartTime) {
+            startTime = parseInt(storedStartTime, 10);
+            const elapsedTime = new Date().getTime() - startTime;
+            const secondsElapsed = Math.floor(elapsedTime / 1000);
+            const secondsLeft = 86400 - secondsElapsed;
+            if (secondsLeft > 0) {
+                startClock();
+            } else {
+                stopClock();
+                localStorage.removeItem('startTime');
+            }
+        }
+
+        $('#start-time-form').submit(function(e) {
+            e.preventDefault();
+
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                    url: url,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .done(function(response) {
+                    toastr.success(response.message);
+                    window.location.reload();
+                    startClock();
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    toastr.error('An error occurred while starting the time.');
+                });
+        });
+
+        // Handle end time button click
+        $('#end-time-form').submit(function(e) {
+            e.preventDefault();
+
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+
+            $.ajax({
+                    url: url,
+                    method: 'PUT', // Use PUT method
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .done(function(response) {
+                    toastr.success(response.message);
+                    window.location.reload();
+                    stopClock();
+                    localStorage.removeItem('startTime');
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    toastr.error('An error occurred while stopping the time.');
+                });
+        });
+        updateClock();
     });
 </script>
 @endpush

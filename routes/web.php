@@ -16,6 +16,7 @@ use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\TimeLogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,7 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
+
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
@@ -103,6 +105,10 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
 });
 
 Route::middleware(['auth', 'check.user.status'])->group(function () {
+    Route::resource('time-logs', TimeLogController::class)->except(['edit', 'update', 'show', 'store', 'create']);
+    // Route::post('/dashboard/start-work/{id}', [HomeController::class, 'startTime'])->name('time.start');
+    Route::post('/start-time', [TimeLogController::class, 'startTime'])->name('start.time');
+    Route::put('/end-time/{time_log}', [TimeLogController::class, 'endTimeTracker'])->name('end.time');
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
     Route::resource('complaints', ComplaintController::class);
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');

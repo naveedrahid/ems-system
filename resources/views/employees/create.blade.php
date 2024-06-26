@@ -76,6 +76,18 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-3 form-group">
+                                    <label class="form-label">Work Type: <span class="text text-red">*</span></label>
+                                    <select name="work_type" id="work_type" class="form-control form-select select2"
+                                        style="width: 100%;">
+                                        <option value="">Select Type</option>
+                                        @foreach (['fulltime', 'parttime'] as $workType)
+                                            <option value="{{ $workType }}"
+                                                {{ old('work_type') == $workType ? 'selected' : '' }}>
+                                                {{ ucfirst($workType) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3 form-group">
@@ -139,6 +151,18 @@
                                     <label class="form-label">Password</label>
                                     <input type="password" name="user_password" id="user_password" class="form-control">
                                 </div>
+                                <div class="mb-3 form-group">
+                                    <label class="form-label">Job Type: <span class="text text-red">*</span></label>
+                                    <select name="job_type" id="job_type" class="form-control form-select select2"
+                                        style="width: 100%;">
+                                        <option value="">Select Type</option>
+                                        @foreach (['onsite', 'remote', 'hybrid'] as $jobType)
+                                            <option value="{{ $jobType }}"
+                                                {{ old('job_type') == $jobType ? 'selected' : '' }}>
+                                                {{ ucfirst($jobType) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="box-footer">
@@ -172,14 +196,14 @@
             const user_role = $('select[name="user_role"]').val().trim();
             const status = $('select[name="status"]').val().trim();
             const department_id = $('select[name="department_id"]').val().trim();
-            const designation_id = $('select[name="designation_id"]').val().trim();
+            // const designation_id = $('select[name="designation_id"]').val().trim();
             const employee_type_id = $('select[name="employee_type_id"]').val().trim();
 
             emergency_person_name
             if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number ==
                 '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' ||
                 date_of_birth == '' || joining_date == '' || address == '' || user_role == '' ||
-                status == '' || department_id == '' || designation_id == '' || employee_type_id == '') {
+                status == '' || department_id == '' || employee_type_id == '') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',

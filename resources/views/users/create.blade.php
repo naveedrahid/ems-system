@@ -118,7 +118,7 @@
                                     <label class="form-label">Password</label>
                                     <input type="password" name="user_password" id="user_password" class="form-control">
                                 </div>
-                            </div   >
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">Submit</button>

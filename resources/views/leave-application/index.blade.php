@@ -32,6 +32,9 @@
                 <tbody>
                     @if ($leaveApplications->count() > 0)
                         @foreach ($leaveApplications as $leaveApplication)
+                        @php
+                            $user = auth()->user();
+                        @endphp
                             <tr>
                                 <td>{{ $leaveApplication->user->name ?? '' }}</td>
                                 <td>{{ $leaveApplication->leaveType->name ?? ''}}</td>
@@ -52,7 +55,7 @@
                                     @php
                                         $statusUpdate = $leaveApplication->status;
                                     @endphp
-                                    @if (!isAdmin(auth()->user()))
+                                    @if (!isAdmin($user))
                                         <button type="button"
                                             class="btn btn-{{ $statusUpdate == 'Approved' ? 'success' : ($statusUpdate == 'Pending' ? 'warning' : 'danger') }}">
                                             {{ ucfirst($leaveApplication->status) }}
@@ -80,7 +83,7 @@
                                         </div>
                                     @endif
                                 </td>
-                                @if (isAdmin(auth()->user()))
+                                @if (isAdmin($user))
                                     <td>
                                         <a href="{{ route('leave-applications.edit', $leaveApplication) }}"
                                             class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>

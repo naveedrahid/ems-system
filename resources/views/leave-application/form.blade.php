@@ -14,16 +14,16 @@
                         'method' => $formMethod,
                         'files' => true,
                         'id' => $leave_application->exists ? 'updateLeaveApplication' : 'addLeaveApplication',
-                    ]) !!}
+                        ]) !!}
                 
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
+                    @php
+                        $user = auth()->user();
+                    @endphp
                 
                     <div class="mb-3 form-group">
-                        @php
-                            $user = Auth::user();
-                        @endphp
                         @if (isAdmin($user))
                             {!! Form::label('title', 'User Name') !!}
                             {!! Form::select('user_id', ['' => 'Select User'] + $users, $leave_application->user_id, [
@@ -73,7 +73,7 @@
                 
                     <div class="mb-3 form-group">
                         {!! Form::label('title', 'Leave Status') !!}
-                        @if (isAdmin(auth()->user()))
+                        @if (isAdmin($user))
                             {!! Form::select(
                                 'status',
                                 ['' => 'Select Leave Status'] + \App\Models\LeaveApplication::getStatusOptions(),

@@ -127,6 +127,8 @@ class EmployeeController extends Controller
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
             'employee_type_id' => 'required',
+            'job_type' => 'required',
+            'work_type' => 'required|in:fulltime,parttime',
             'shift_id' => 'required'
         ]);
 
@@ -134,6 +136,8 @@ class EmployeeController extends Controller
             'name' => $request->user_name,
             'email' => $request->user_email,
             'role_id' => $request->user_role,
+            'job_type' => $request->job_type,
+            'work_type' => $request->work_type,
             'status' => $request->status,
             'password' => Hash::make($request->user_password),
         ]);
@@ -204,6 +208,8 @@ class EmployeeController extends Controller
             'employee_img' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
+            'job_type' => 'required',
+            'work_type' => 'required|in:fulltime,parttime',
         ]);
 
         $userData = [
@@ -211,8 +217,9 @@ class EmployeeController extends Controller
             'email' => $request->user_email,
             'role_id' => $request->user_role,
             'status' => $request->status,
+            'job_type' => $request->job_type,
+            'work_type' => $request->work_type,
         ];
-
         $user->update($userData);
 
         $role = Role::find($request->user_role);
@@ -254,7 +261,6 @@ class EmployeeController extends Controller
         } else {
             $user->employee()->create($employeeData);
         }
-
         return response()->json(['success' => 'User Updated Successfully'], 200);
     }
 

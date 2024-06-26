@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\TimeLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TimeLogController extends Controller
 {
@@ -14,7 +17,15 @@ class TimeLogController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        if (isAdmin($user)) {
+            $timeLog = TimeLog::with('user')->get();
+            return view('time-logs.index', compact('timeLog'));
+            
+        } else {
+            $timeLog = TimeLog::where('user_id', $user->id)->with('user')->get();
+            return view('time-logs.index', compact('timeLog'));
+        }
     }
 
     /**
@@ -80,6 +91,75 @@ class TimeLogController extends Controller
      */
     public function destroy(TimeLog $timeLog)
     {
-        //
+        $timeLog->delete();
+        return response()->json(['message' => 'Time Log deleted successfully'], 200);
+    }
+
+    public function startTime(Request $request)
+    {
+        $userId = Auth::id();
+        $currentDate = now()->toDateString();
+
+        $attendance = Attendance::where('user_id', $userId)
+            ->whereDate('attendance_date', $currentDate)
+            ->whereNotNull('check_in')
+            ->first();
+
+        if (!$attendance) {
+            return response()->json(['message' => 'You have not checked in today.'], 400);
+        }
+
+        $timelog = Timelog::where('user_id', $userId)
+            ->whereDate('created_at', $currentDate)
+            ->whereNull('end_time')
+            ->first();
+
+        if ($timelog) {
+            return response()->json(['message' => 'You must log the end time before starting a new log.'], 400);
+        }
+
+        Timelog::create([
+            'user_id' => $userId,
+            'attendance_id' => $attendance->id,
+            'start_time' => now()->format('H:i:s')
+        ]);
+
+        return response()->json(['message' => 'Start time logged successfully.'], 200);
+    }
+
+    public function endTimeTracker(Request $request, TimeLog $timeLog)
+    {
+        $userId = Auth::id();
+        $currentDate = now()->toDateString();
+
+        $attendance = Attendance::where('user_id', $userId)
+            ->whereDate('attendance_date', $currentDate)
+            ->whereNotNull('check_in')
+            ->first();
+
+        if (!$attendance) {
+            return response()->json(['message' => 'You have not checked in today.'], 400);
+        }
+
+        $timelog = Timelog::where('user_id', $userId)
+            ->whereDate('created_at', $currentDate)
+            ->whereNull('end_time')
+            ->first();
+
+        if (!$timelog) {
+            return response()->json(['message' => 'No start time logged for today.'], 400);
+        }
+
+        $startTime = strtotime($timelog->start_time);
+        $endTime = strtotime(now()->format('H:i:s'));
+        $durationInSeconds = $endTime - $startTime;
+        $duration = gmdate('H:i:s', $durationInSeconds);
+
+        $timelog->update([
+            'end_time' => now()->format('H:i:s'),
+            'duration' => $duration
+        ]);
+
+        return response()->json(['message' => 'End time logged successfully.'], 200);
     }
 }
