@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <!-- Include DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"> 
     <!-- Include DataTables Styling -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css">
