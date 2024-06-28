@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('shifts.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('shifts.create') }}" class="btn btn-primary">
                     Insert Shifts
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Date</th>
                         <th width="30%">Shift Name</th>
@@ -23,7 +23,7 @@
                         <th width="20%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($shifts) > 0)
                         @foreach ($shifts as $shift)
                             <tr>
@@ -37,7 +37,7 @@
                                     <button class="delete-shift btn btn-danger btn-flat btn-sm"
                                         data-holiday-id="{{ $shift->id }}"
                                         data-delete-route="{{ route('shifts.destroy', $shift->id) }}">
-                                        <i class="fa-regular fa-trash-can"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
                             </tr>

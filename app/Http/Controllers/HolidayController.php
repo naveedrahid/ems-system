@@ -14,7 +14,7 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        $holidays = Holiday::get();
+        $holidays = Holiday::orderBy('id', 'DESC')->get();
         return view('holidays.index', compact('holidays'));
     }
     
@@ -107,7 +107,7 @@ class HolidayController extends Controller
     public function destroy(Holiday $holiday)
     {
         $holiday->delete();
-        return response()->json(['message', 'Holiday Deleted Successfully']);
+        return response()->json(['message' => 'Holiday Deleted Successfully'],200);
     }
 
     public function updateStatus(Request $request, Holiday $holiday)

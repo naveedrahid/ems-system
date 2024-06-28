@@ -11,7 +11,7 @@
             @endphp
             @if (isAdmin($user))
                 <h3 class="box-title">
-                    <a href="{{ route('holidays.create') }}" class="btn btn-block btn-primary">
+                    <a href="{{ route('holidays.create') }}" class="btn btn-primary">
                         Add Holidays
                     </a>
                 </h3>
@@ -19,7 +19,7 @@
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Date</th>
                         <th width="15%">Holiday Name</th>
@@ -29,7 +29,7 @@
                         <th width="20%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($holidays) > 0)
                         @foreach ($holidays as $holiday)
                             <tr>
@@ -61,12 +61,17 @@
                                             <i class="fa fa-edit"></i></a>
                                         <button class="delete-holiday btn btn-danger btn-flat btn-sm"
                                             data-holiday-id="{{ $holiday->id }}"
-                                            data-delete-route="{{ route('holidays.destroy', ':holiday') }}"><i
-                                                class="fa-regular fa-trash-can"></i></button>
+                                            data-delete-route="{{ route('holidays.destroy', ':holiday') }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </td>
                                 @endif
                             </tr>
                         @endforeach
+                    @else
+                        <tr>
+                            <td class="text-center" colspan="8">Record Not Found!.</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
@@ -80,49 +85,30 @@
     $(document).ready(function() {
         $('.delete-holiday').on('click', function(e) {
             e.preventDefault();
+
             const holidayId = $(this).data('holiday-id');
             const deleteRoute = $(this).data('delete-route').replace(':holiday', holidayId);
-            const $clickedElement = $(this);
+            const token = $('meta[name="csrf-token"]').attr('content');
+            const clickedElement = $(this);
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this holiday!',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const token = $('meta[name="csrf-token"]').attr('content');
-
-                    $.ajax({
-                        type: "DELETE",
-                        url: deleteRoute,
-                        headers: {
-                            'X-CSRF-TOKEN': token
-                        }
-                    }).then(function(response) {
-                        console.log(response);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                        });
-                        $clickedElement.closest('tr').fadeOut('slow', function() {
-                            $(this).css('backgroundColor', 'red').remove();
-                        });
-                    }).catch(function(xhr) {
-                        console.error(xhr);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Failed to delete holiday.',
-                        });
+            if (confirm('Are you sure? You will not be able to recover this holiday!')) {
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    console.log(response);
+                    toastr.success(response.message);
+                    clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).css('backgroundColor', 'red').remove();
                     });
-                }
-            });
+                }).catch(function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Failed to delete Holiday');
+                });
+            }
         });
         $('.holiday-toggle').click(function() {
             const button = $(this);

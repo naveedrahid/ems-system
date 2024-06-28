@@ -16,7 +16,7 @@ class DesignationController extends Controller
      */
     public function index()
     {
-        $designations = Designation::with('department')->get();
+        $designations = Designation::with('department')->paginate(10);
         return view('designation.index', compact('designations'));
     }
 

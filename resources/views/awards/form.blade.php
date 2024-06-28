@@ -1,14 +1,13 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    <h1>{{ $award->exists ? 'Edit award' : 'Create award' }}</h1>
+    {{ $award->exists ? 'Edit award' : 'Create award' }}
 @endsection
 @section('page-content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <div class="row justify-content-center">
-                <div class="col-md-2"></div>
-                <div class="col-md-8    ">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card small-box card-primary p-5">
                     {!! Form::model($award, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -74,10 +73,8 @@
                     </div>
                     {!! Form::close() !!}
                 </div>
-                <div class="col-md-2"></div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
 @endsection
@@ -161,11 +158,13 @@
                 })
                 .then((response) => {
                     toastr.success(response.message);
-                    $(this)[0].reset();
+                    if ($(e.target).attr('id') === 'createAwardHandler') {
+                        $('#createAwardHandler')[0].reset();
+                    }
                     button.prop('disabled', false);
                 }).catch((err) => {
                     console.error(err);
-                    toastr.error('Failed to save complaint.');
+                    toastr.error('Failed to save Award.');
                     button.prop('disabled', true);
                 });
         });

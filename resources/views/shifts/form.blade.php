@@ -1,13 +1,13 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    <h1>{{ $shift->exists ? 'Edit Shift' : 'Create Shift' }}</h1>
+    {{ $shift->exists ? 'Edit Shift' : 'Create Shift' }}
 @endsection
 @section('page-content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card small-box card-primary p-5">
                     {!! Form::model($shift, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -17,25 +17,29 @@
                     @if ($shift->exists === 'PUT')
                         @method('PUT')
                     @endif
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Shift Name') !!}
-                        {!! Form::text('name', null, ['class' => 'form-control']) !!}
-                        <div id="nameError" class="text-danger"></div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Shift Name') !!}
+                                {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                                <div id="nameError" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Open Time') !!}
+                                {!! Form::time('opening', null, ['class' => 'form-control']) !!}
+                                <div id="openingError" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Close Time') !!}
+                                {!! Form::time('closing', null, ['class' => 'form-control']) !!}
+                                <div id="closingError" class="text-danger"></div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Open Time') !!}
-                        {!! Form::time('opening', null, ['class' => 'form-control']) !!}
-                        <div id="openingError" class="text-danger"></div>
-                    </div>
-                    
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Close Time') !!}
-                        {!! Form::time('closing', null, ['class' => 'form-control']) !!}
-                        <div id="closingError" class="text-danger"></div>
-                    </div>                    
-
                     <div class="box-footer">
                         {!! Form::submit($shift->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
                         <a href="{{ route('shifts.index') }}" class="btn btn-danger">Cancel</a>

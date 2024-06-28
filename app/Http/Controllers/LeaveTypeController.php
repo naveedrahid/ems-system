@@ -102,7 +102,7 @@ class LeaveTypeController extends Controller
     public function destroy(LeaveType $leave_type)
     {
         $leave_type->delete();
-        return response()->json(['success' => 'Leave Type deleted successfully'], 200);
+        return response()->json(['message' => 'Leave Type deleted successfully'], 200);
     }
 
     public function updateStatus(Request $request, LeaveType $leave_type)

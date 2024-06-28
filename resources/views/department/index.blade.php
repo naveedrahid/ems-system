@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('department.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('department.create') }}" class="btn btn-primary">
                     Add Department
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Date</th>
                         <th width="30%">Department Name</th>
@@ -22,7 +22,7 @@
                         <th width="20%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($departments) > 0)
                         @foreach ($departments as $department)
                             <tr>
@@ -40,8 +40,9 @@
                                         class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                     <button class="delete-department btn btn-danger btn-flat btn-sm"
                                         data-department-id="{{ $department->id }}"
-                                        data-delete-route="{{ route('department.destroy', ':id') }}"><i
-                                            class="fa-regular fa-trash-can"></i></button>
+                                        data-delete-route="{{ route('department.destroy', ':id') }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                        </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -63,22 +64,12 @@
         // Destroy Department
         $('.delete-department').on('click', function(e) {
             e.preventDefault();
+
             const departmentId = $(this).data('department-id');
             const deleteRoute = $(this).data('delete-route').replace(':id', departmentId);
-
             const $clickedElement = $(this);
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this department!',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
+            if (confirm('Are you sure you want to delete this Department?'))  {
                     const token = $('meta[name="csrf-token"]').attr('content');
 
                     $.ajax({
@@ -88,23 +79,15 @@
                             'X-CSRF-TOKEN': token
                         }
                     }).then(function(response) {
-                        console.log(response);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                        });
-                        $clickedElement.closest('tr').remove();
+                        toastr.success(response.message);
+                        $clickedElement.closest('tr').fadeOut('slow', function () {
+                            $(this).remove();
+                        })
                     }).catch(function(xhr) {
                         console.error(xhr);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Failed to delete Department.',
-                        });
+                        toastr.error('Faild to delete Department');
                     });
                 }
-            });
         });
     });
 </script>

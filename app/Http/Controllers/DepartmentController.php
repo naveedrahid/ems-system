@@ -92,7 +92,7 @@ class DepartmentController extends Controller
     {
         // $department = Department::findOrFail($id);
         $department->delete();
-        return response()->json(['success' => 'Department deleted successfully'], 200);
+        return response()->json(['message' => 'Department deleted successfully'], 200);
     }
     
     

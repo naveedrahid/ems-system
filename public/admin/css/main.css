@@ -69,12 +69,6 @@ li.nav-item.checkinMain {
 li.nav-item.checkinMain {
     list-style: none;
 }
-
-.main-sidebar,
-.left-side {
-    padding-top: 55px
-}
-
 .main-header .logo {
     height: 53px
 }
@@ -239,3 +233,17 @@ button.btn.btn-app.btnPdf i {
     align-items: center;
     justify-content: space-between;
 }
+ul.pagination {
+    justify-content: center;
+}
+
+
+
+
+
+
+
+
+
+
+

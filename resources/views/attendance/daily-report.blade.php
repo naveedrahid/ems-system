@@ -7,7 +7,7 @@
     <div class="box">
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Employee Name</th>
                         <th width="15%">Date</th>
@@ -20,7 +20,7 @@
                         <th width="6%">status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if ($users)
                         @foreach ($attendance as $result)
                             <tr>
@@ -77,6 +77,12 @@
                                 </td>
                             </tr>
                         @endforeach
+                    @else
+                    <tr>
+                        <td class="text-center" colspan="8">
+                            No Record Found!.
+                        </td>
+                    </tr>
                     @endif
                 </tbody>
             </table>

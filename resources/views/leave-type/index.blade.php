@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('leave-types.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('leave-types.create') }}" class="btn btn-primary">
                     Add Leave Types
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">date</th>
                         <th width="20%">Name</th>
@@ -23,7 +23,7 @@
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($leaveTypes) > 0)
                         @foreach ($leaveTypes as $leaveType)
                             <tr>
@@ -46,11 +46,15 @@
                                     <button class="delete-leave-type btn btn-danger btn-flat btn-sm"
                                         data-leave-type-id="{{ $leaveType->id }}"
                                         data-delete-route="{{ route('leave-types.destroy', ':id') }}">
-                                        <i class="fa-regular fa-trash-can"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
+                    @else
+                        <tr>
+                            <td class="text-center" colspan="8">No Record Found!.</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
@@ -61,53 +65,37 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        // $('.delete-bank').on('click', function(e) {
-        //     e.preventDefault();
-        //     const bankId = $(this).data('bank-id');
-        //     const deleteRoute = $(this).data('delete-route').replace(':id', bankId);
-        //     const $clickedElement = $(this);
 
-        //     Swal.fire({
-        //         title: 'Are you sure?',
-        //         text: 'You will not be able to recover this bank details!',
-        //         type: 'warning',
-        //         showCancelButton: true,
-        //         confirmButtonColor: '#3085d6',
-        //         cancelButtonColor: '#d33',
-        //         confirmButtonText: 'Yes, delete it!',
-        //         reverseButtons: true
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             const token = $('meta[name="csrf-token"]').attr('content');
+        $('.delete-leave-type').on('click', function(e) {
+            e.preventDefault();
+            const leaveTypeId = $(this).data('leave-type-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', leaveTypeId);
+            const clickedElement = $(this);
 
-        //             $.ajax({
-        //                 type: "DELETE",
-        //                 url: deleteRoute,
-        //                 headers: {
-        //                     'X-CSRF-TOKEN': token
-        //                 }
-        //             }).then(function(response) {
-        //                 console.log(response);
-        //                 Swal.fire({
-        //                     icon: 'success',
-        //                     title: 'Success!',
-        //                     text: response.message,
-        //                 });
-        //                 $clickedElement.closest('tr').fadeOut('slow', function() {
-        //                     $(this).css('backgroundColor', 'red').remove();
-        //                 });
-        //             }).catch(function(xhr) {
-        //                 console.error(xhr);
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Error!',
-        //                     text: 'Failed to delete Bank Details.',
-        //                 });
-        //             });
-        //         }
-        //     });
-        // });
-        $('.leave-toggle').click(function() {
+            if (confirm('You will not be able to recover this Leave type!')) {
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    toastr.success(response.message);
+                    clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).remove();
+                    })
+                }).catch(function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Failed to delete Leave type');
+                });
+            }
+        });
+
+        $('.leave-toggle').click(function(e) {
+            e.preventDefault();
+
             const button = $(this);
             const id = button.data('id');
             const status = button.data('status');

@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('awards.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('awards.create') }}" class="btn btn-primary">
                     Create Awards
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="20%">Date</th>
                         <th width="15%">Employee Name</th>
@@ -24,7 +24,7 @@
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if ($awards->count() > 0)
                         @foreach ($awards as $award)
                             <tr>
@@ -52,11 +52,15 @@
                                     <button class="delete-award btn btn-danger btn-flat btn-sm"
                                         data-award="{{ $award->id }}"
                                         data-delete-route="{{ route('awards.destroy', $award->id) }}">
-                                        <i class="fa-regular fa-trash-can"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
+                        @else
+                        <tr>
+                            <td class="text-center" colspan="8">No Record found</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>

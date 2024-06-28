@@ -46,7 +46,7 @@
                 </div>
             </form>
             <a id="downloadLink" href="#" class="btn btn-primary btn btn-info btnPdf" style="display:none;">
-                <i class="fa-solid fa-file-pdf"></i>
+                <i class="fas fa-file-pdf"></i>
             </a>
             <div id="loading" style="display: none;">Loading...</div>
             <div id="attendanceTable"></div>

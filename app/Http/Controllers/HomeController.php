@@ -84,11 +84,6 @@ class HomeController extends Controller
 
         $leaveQuery = LeaveApplication::all();
         $notices = Notice::where('status', 'active')->orderBy('id', 'ASC')->take(10)->get();
-        $currentDate = now()->toDateString();
-        $startTimeTracking = TimeLog::whereDate('created_at', $currentDate)
-        ->select('start_time', 'end_time', 'id')
-        ->latest()
-        ->first();
         
         return view('dashboard', compact(
             'designation',
@@ -102,7 +97,6 @@ class HomeController extends Controller
             'activeEmployeeCount',
             'leaveQuery',
             'notices',
-            'startTimeTracking'
         ));
     }
 

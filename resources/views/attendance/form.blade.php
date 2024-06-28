@@ -4,11 +4,10 @@
     {{ $attendance->exists ? 'Edit Attendance' : 'Add Attendance' }}
 @endsection
 @section('page-content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <div class="row justify-content-center">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card small-box card-primary p-5">
                     {!! Form::model($attendance, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -17,45 +16,52 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Select User') !!}
-                        @if ($isEdit)
-                            {{-- Display selected user in a read-only field --}}
-                            {!! Form::text('user_name', $attendance->user->name, [
-                                'class' => 'form-control',
-                                'readonly' => 'readonly',
-                            ]) !!}
-                            {!! Form::hidden('user_id', $attendance->user_id, ['id' => 'user_id']) !!}
-                        @else
-                            {{-- Display dropdown for selecting user --}}
-                            {!! Form::select('user_id', ['' => 'Select User'] + $userNames->toArray(), null, [
-                                'class' => 'form-control form-select select2',
-                                'id' => 'user_id',
-                                'style' => 'width: 100%;',
-                            ]) !!}
-                        @endif
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Select User') !!}
+                                @if ($isEdit)
+                                    {{-- Display selected user in a read-only field --}}
+                                    {!! Form::text('user_name', $attendance->user->name, [
+                                        'class' => 'form-control',
+                                        'readonly' => 'readonly',
+                                    ]) !!}
+                                    {!! Form::hidden('user_id', $attendance->user_id, ['id' => 'user_id']) !!}
+                                @else
+                                    {{-- Display dropdown for selecting user --}}
+                                    {!! Form::select('user_id', ['' => 'Select User'] + $userNames->toArray(), null, [
+                                        'class' => 'form-control form-select select2',
+                                        'id' => 'user_id',
+                                        'style' => 'width: 100%;',
+                                    ]) !!}
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Date') !!}
+                                {!! Form::date('attendance_date', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'check In Time') !!}
+                                {!! Form::time('check_in', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'check Out Time') !!}
+                                {!! Form::time('check_out', null, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Date') !!}
-                        {!! Form::date('attendance_date', null, ['class' => 'form-control']) !!}
-                    </div>
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'check In Time') !!}
-                        {!! Form::time('check_in', null, ['class' => 'form-control']) !!}
-                    </div>
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'check Out Time') !!}
-                        {!! Form::time('check_out', null, ['class' => 'form-control']) !!}
-                    </div>
-
                     <div class="box-footer">
                         {!! Form::submit($attendance->exists ? 'update' : 'create', ['class' => 'btn btn-primary']) !!}
                         <a href="{{ route('attendance.report') }}" class="btn btn-danger">Cancel</a>
                     </div>
                     {!! Form::close() !!}
                 </div>
-                <div class="col-md-2"></div>
             </div>
         </div>
     </div>
@@ -115,7 +121,7 @@
                     toastr.success(response.message);
                     button.prop('disabled', false);
                     if ($(this).attr('id') === 'addAttendance') {
-                        $(this)[0].reset();
+                        $('#addAttendance')[0].reset();
                     }
                 }).catch((err) => {
                     console.error(err);

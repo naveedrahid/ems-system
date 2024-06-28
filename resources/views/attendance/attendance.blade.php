@@ -9,12 +9,12 @@
             <div class="btnGroup">
                 <form action="{{ route('download-pdf') }}" method="GET" class="mt-3">
                     @csrf
-                    <button type="submit" class="btn btn-info btnPdf mb-3"><i class="fa-solid fa-file-pdf"></i></button>
+                    <button type="submit" class="btn btn-info btnPdf mb-3"><i class="fas fa-file-pdf"></i></button>
                     <div>&nbsp;</div>
                 </form>
             </div>
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Employee Name</th>
                         <th width="15%">Date</th>
@@ -27,7 +27,7 @@
                         <th width="5%">status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @php
                         $currentMonthDates = collect();
                         $startDate = Carbon\Carbon::createFromDate($currentYear, $currentMonth, 1);

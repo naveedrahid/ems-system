@@ -1,14 +1,13 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    <h1>{{ $leave_type->exists ? 'Edit Leave Types' : 'Create Leave Types' }}</h1>
+    {{ $leave_type->exists ? 'Edit Leave Types' : 'Create Leave Types' }}
 @endsection
 @section('page-content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <div class="row justify-content-center">
-                <div class="col-md-3"></div>
-                <div class="col-md-6">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card small-box card-primary p-5">
                     {!! Form::model($leave_type, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -18,52 +17,54 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Leave Types Name') !!}
-                        {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'leave_name']) !!}
-                        <div id="leave_nameError" class="text-danger"></div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Leave Types Name') !!}
+                                {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'leave_name']) !!}
+                                <div id="leave_nameError" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Total Leave') !!}
+                                {!! Form::text('default_balance', null, ['class' => 'form-control', 'id' => 'default_balance']) !!}
+                                <div id="default_balanceError" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('status', 'Status') !!}
+                                {!! Form::select(
+                                    'status',
+                                    ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
+                                    $leave_type->status,
+                                    ['class' => 'form-control form-select select2', 'id' => 'status'],
+                                ) !!}
+                                <div id="statusError" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('title', 'Description') !!}
+                                {!! Form::textarea('description', old('description'), [
+                                    'id' => 'description',
+                                    'cols' => 30,
+                                    'rows' => 10,
+                                    'class' => 'form-control',
+                                ]) !!}
+                                <div id="branch_addressError" class="text-danger"></div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Total Leave') !!}
-                        {!! Form::text('default_balance', null, ['class' => 'form-control', 'id' => 'default_balance']) !!}
-                        <div id="default_balanceError" class="text-danger"></div>
-                    </div>
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('status', 'Status') !!}
-                        {!! Form::select(
-                            'status',
-                            ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
-                            $leave_type->status,
-                            ['class' => 'form-control form-select select2', 'id' => 'status'],
-                        ) !!}
-                        <div id="statusError" class="text-danger"></div>
-                    </div>
-
-                    <div class="mb-3 form-group">
-                        {!! Form::label('title', 'Description') !!}
-                        {!! Form::textarea('description', old('description'), [
-                            'id' => 'description',
-                            'cols' => 30,
-                            'rows' => 10,
-                            'class' => 'form-control',
-                        ]) !!}
-                        <div id="branch_addressError" class="text-danger"></div>
-                    </div>
-
                     <div class="box-footer">
-                        {!! Form::submit() !!}
+                        {!! Form::submit($leave_type->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
                         <a href="{{ route('leave-types.index') }}" class="btn btn-danger">Cancel</a>
                     </div>
-
                     {!! Form::close() !!}
                 </div>
-                <div class="col-md-3"></div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
 @endsection
@@ -78,28 +79,21 @@
             const status = $('select[name="status"]').val().trim();
 
             $('.text-danger').text('');
-            const submitButton = $(this).find('input[type="submit"]');
-            submitButton.prop('disabled', true);
-            let hasError = false;
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
 
-            if (name === '') {
-                $('#leave_nameError').text('Name is required.');
-                hasError = true;
-            }
+            if (name === '' || defaultBalance === '' || status === '') {
+                if (name === '') {
+                    toastr.error('Name is required.');
+                }
 
-            if (defaultBalance === '') {
-                $('#default_balanceError').text('Total Leaves is required.');
-                hasError = true;
-            }
+                if (defaultBalance === '') {
+                    toastr.error('Total Leaves is required.');
+                }
 
-            if (status === '') {
-                $('#statusError').text('Status is required.');
-                hasError = true;
-            }
-
-            if (hasError) {
-                submitButton.prop('disabled', false);
-                return;
+                if (status === '') {
+                    toastr.error('Status is required.');
+                }
             }
 
             const formData = new FormData(this);
@@ -116,33 +110,19 @@
                     }
                 })
                 .done(function(response) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Your Leave Type has been saved",
-                        showConfirmButton: false,
-                        timer: 1500,
-                        text: response.message,
-                    });
-                    $('#addLeave')[0].reset();
+                    toastr.success(response.message);
+                    button.prop('disabled', false);
+                    if ($(e.target).attr('id') === 'addLeave') {
+                        $('#addLeave')[0].reset();
+                    }
                 })
                 .fail(function(xhr) {
                     console.error(xhr);
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        $.each(errors, function(key, value) {
-                            $('#' + key + 'Error').text(value[0]);
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Failed to save Leave Types.',
-                        });
-                    }
+                    toastr.error('Failed to save Leave Types.');
+                    button.prop('disabled', false);
                 })
                 .always(function() {
-                    submitButton.prop('disabled', false);
+                    button.prop('disabled', false);
                 });
         });
 

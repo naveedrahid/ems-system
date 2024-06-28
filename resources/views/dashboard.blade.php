@@ -4,689 +4,454 @@
     Dashboard
 @endsection
 @section('page-content')
-    <div class="row" style="margin-bottom:30px;">
-        <div class="col-md-8">
-            <div>
-                <h1>{{ auth()->user()->name }} |
-                    <small>
-                        {{ $designation }} - {{ $departmentName }} Department
-                    </small>
-                </h1>
-
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="text-right">
-                <div>
-                    @php
-                        $currentDayName = Carbon\Carbon::now()->format('l');
-                    @endphp
-                    <h4><span>Today: {{ $currentDayName }} , {{ date('d M, Y') }}</span></h4>
+        <div class="col-lg-12 main-boxes">
+            <div class="row top-boxes">
+                <div class="col-lg-5 col-md-5  col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box text-left boxes">
+                        <div class="inner inner-box">
+                            <h5 class="text-bold">Welcome back {{ auth()->user()->name }}</h5>
+                            <small>
+                                {{ $designation }} - {{ $departmentName }} Department
+                            </small>
+                            <p>Since your last login on the system, there were:</p>
+                            <ul>
+                                <a href="">
+                                    <li>21 New Request</li>
+                                </a>
+                                <a href="">
+                                    <li>15 New Report</li>
+                                </a>
+                                <a href="">
+                                    <li>45 New Message</li>
+                                </a>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    {{-- <div id="clock"></div>
-                    <button id="toggle">Play</button> --}}
-
-                    <div id="clock">00:00:00</div>
-
-                    @if ($startTimeTracking != null)
-                        @if ($startTimeTracking->end_time == null)
-                            {{-- Display Pause Time button --}}
-                            <form action="{{ route('end.time', $startTimeTracking->id) }}" method="POST" id="end-time-form">
-                                @method('PUT')
-                                @csrf
-                                <button type="submit" id="end-time-btn">Pause Time</button>
-                            </form>
-                        @else
-                            {{-- Display Start Time button --}}
-                            <form action="{{ route('start.time') }}" method="POST" id="start-time-form">
-                                @csrf
-                                <button type="submit" id="start-time-btn">Start Time</button>
-                            </form>
-                        @endif
-                    @endif
-
-                    <ul class="p-0 list-unstyled mb-3">
-                        @php
-                            $userId = Auth::id();
-                            $attendance = DB::table('attendances')
-                                ->where('user_id', $userId)
-                                ->whereDate('attendance_date', now()->toDateString())
-                                ->first();
-                            $userCheckedInToday = $attendance !== null;
-                        @endphp
-                        @if (!$userCheckedInToday)
-                            @php
-                                $checkInTime = \Carbon\Carbon::createFromTimeString('07:45:00');
-                                $currentTime = \Carbon\Carbon::now();
-                            @endphp
-
-                            @if ($currentTime->greaterThanOrEqualTo($checkInTime))
-                                <li class="nav-item checkinMain">
-                                    <form action="{{ route('checkIn') }}" method="POST" id="checkin">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success checkinBtn">Check In</button>
-                                    </form>
-                                </li>
-                            @endif
-                        @else
-                            @php
-                                $userCheckedOut = $attendance->check_out !== null;
-                            @endphp
-
-                            @if (!$userCheckedOut)
-                                <li class="nav-item checkoutMain">
-                                    <script>
-                                        const userId = {{ auth()->user()->id }};
-                                    </script>
-                                    <form action="{{ route('checkOut') }}" method="POST" id="checkOut"
-                                        data-already-checked-out="{{ auth()->check() && auth()->user()->hasCheckedOut ? 'true' : 'false' }}">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning">Check Out</button>
-                                    </form>
-                                </li>
-                            @endif
-                        @endif
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    @php
-        $user = auth()->user();
-    @endphp
-    @if (Auth::user())
-        @if (isAdmin($user))
-            <div class="row">
-                <div class="col-md-8  col-sm-12 col-xs-12">
-                    <div class="cstScroll small-box bg-green py-4 px-3">
-                        @if ($notices)
-                            @foreach ($notices as $notice)
-                                @php
-                                    $NoticeDate = \Carbon\Carbon::parse($notice->created_at)->format('d M Y');
-                                    $NoticeTime = \Carbon\Carbon::parse($notice->created_at)->format('g:i a');
-                                    $limitedDescription = Str::words($notice->description, 20, '...');
-                                @endphp
-                                <ul class="timeline">
-                                    <li class="time-label">
-                                        <span class="bg-red">{{ $NoticeDate }}</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-envelope bg-blue"></i>
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="fa fa-clock"></i> {{ $NoticeTime }}</span>
-
-                                            <h3 class="timeline-header">
-                                                <a
-                                                    href="#"><strong>{{ strtoupper($notice->notice_type) }}</strong></a>
-                                                {{ $notice->name }}
-                                            </h3>
-
-                                            <div class="timeline-body">
-                                                {!! $limitedDescription !!}
-                                            </div>
-                                            <div class="timeline-footer">
-                                                <button type="button" class="btn btn-info read-more-btn"
-                                                    data-id="{{ $notice->id }}" data-toggle="modal"
-                                                    data-target="#modal-info">
-                                                    Read more
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            @endforeach
-                        @endif
-                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog"
-                            aria-labelledby="modal-infoLabel">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                        <div class="noticeHeader">
-                                            <div class="noticeName">
-                                                <h4 class="modal-title" id="modal-infoLabel"></h4>
-                                                <small class="noticeType"></small>
-                                            </div>
-                                            <div id="modal-date-time"></div>
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box text-left boxes work-status">
+                        <div class="inner inner-box">
+                            <h5 class="text-bold">Work Status</h5>
+                            <div class="row progress-item">
+                                <div class="col-lg-3 p-0">
+                                    <strong>
+                                        <p class="title">On Site</p>
+                                    </strong>
+                                </div>
+                                <div class="col-lg-9 pl-1 remote">
+                                    <div class="progress-group">
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar bg-primary" style="width: 80%"></div>
                                         </div>
                                     </div>
-                                    <div class="modal-body" id="modal-description"></div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline pull-left"
-                                            data-dismiss="modal">Close</button>
+                                    <div class="total-employees">103 Employees</div>
+                                </div>
+                            </div>
+                            <div class="row progress-item">
+                                <div class="col-lg-3 p-0">
+                                    <strong>
+                                        <p class="title">Remote</p>
+                                    </strong>
+                                </div>
+                                <div class="col-lg-9 pl-1 remote">
+                                    <div class="progress-group">
+                                        <div class="progress progress-sm">
+                                            <div class="progress-bar bg-primary" style="width: 50%"></div>
+                                        </div>
                                     </div>
+                                    <div class="total-employees">50 Employees</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-aqua"><i class="ion ion-ios-book"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Total Employees</span>
-                            <span class="info-box-number">{{ $activeEmployeeCount }}</span>
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="small-box text-left boxes announcement">
+                        <div class="row">
+                            <div class="col-lg-6 p-0">
+                                <div class="inner">
+                                    <h5 class="text-bold">Announcement</h5>
+                                    <p>Since your last login on the login on </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 p-0">
+                                <div class="icon d-flex justify-content-center">
+                                    <img src="dist/img/announcement.png" width="110" height="100">
+                                </div>
+                            </div>
+                            <div class="col-lg-5 mt-2">
+                                <a href="{{ route('notices.index') }}" class="btn btn-block btn-primary">Create
+                                    New</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="info-box">
-                        <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Total Leave Requests</span>
-                            @if ($leaveQuery)
-                                <span class="info-box-number">{{ $leaveQuery->count() }}</span>
-                            @else
-                                <span class="info-box-number">0</span>
-                            @endif
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="row deshboard-cards">
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box">
+                        <div class="inner">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-lg-2">
+                                    <div class="deshboard-cards-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-10 pl-3">
+                                    <div class="detail">
+                                        <p>Total Employee</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="pt-2 mb-0">{{ $activeEmployeeCount }} </h3>
                         </div>
                     </div>
-                    <div class="info-box">
-                        <span class="info-box-icon bg-green"><i class="fa fa-list"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Total Approved Request</span>
-                            @if ($leaveQuery)
-                                <span
-                                    class="info-box-number">{{ $leaveQuery->where('status', 'Approved')->count() }}</span>
-                            @else
-                                <span class="info-box-number">0</span>
-                            @endif
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box">
+                        <div class="inner">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-lg-2">
+                                    <div class="deshboard-cards-icon">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-10 pl-3">
+                                    <div class="detail">
+                                        <p>Today's Presents</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="pt-2 mb-0">100</h3>
                         </div>
                     </div>
-                    <div class="info-box">
-                        <span class="info-box-icon bg-yellow"><i class="fa fa-user"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Total Pending Request</span>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box">
+                        <div class="inner">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-lg-2">
+                                    <div class="deshboard-cards-icon">
+                                        <i class="fas fa-user-times"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-10 pl-3">
+                                    <div class="detail">
+                                        <p>Today's Absents</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="pt-2 mb-0">321</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <!-- small box -->
+                    <div class="small-box">
+                        <div class="inner">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-lg-2">
+                                    <div class="deshboard-cards-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-10 pl-3">
+                                    <div class="detail">
+                                        <p>Today's Leave</p>
+                                    </div>
+                                </div>
+                            </div>
                             @if ($leaveQuery)
-                                <span
-                                    class="info-box-number">{{ $leaveQuery->where('status', 'Pending')->count() }}</span>
+                                <h3 class="pt-2 mb-0">{{ $leaveQuery->count() }}</h3>
                             @else
-                                <span class="info-box-number">0</span>
+                                <h3 class="pt-2 mb-0">0</h3>
                             @endif
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-aqua py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalLeaves = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    $totalLeaves += $leaveType->default_balance;
-                                }
-                            @endphp
-                            <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
-                            @foreach ($leaveTypes as $leaveType)
-                                <p class="m-0">
-                                    {{ $leaveType->name }} - {{ $leaveType->default_balance }}
-                                </p>
-                            @endforeach
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 pl-3">
+                <div class="notice-board mb-3">
+                    <div class="card-header">
+                        <h4 class="card-title text-bold">Notice</h4>
+                        <div class="card-tools">
+                            <span class="badge badge-danger">2 Messages</span>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-red py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalAvaile = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    $totalAvaile += $availedLeaves->get($leaveType->id, 0);
-                                }
-                            @endphp
-                            <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
-                            @foreach ($leaveTypes as $leaveType)
-                                <p class="m-0">{{ strtoupper($leaveType->name) }} -
-                                    {{ $availedLeaves->get($leaveType->id, 0) }}</p>
-                            @endforeach
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-green py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalRemaining = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
-                                    $totalRemaining += $remainingLeaveCount;
-                                }
-                            @endphp
-
-                            <h4><strong>Remaining Leave: {{ $totalRemaining }}</strong></h4>
-
-                            @foreach ($leaveTypes as $leaveType)
+                    <div class="timeline mt-3">
+                        @if ($notices->count() > 0)
+                            @foreach ($notices as $notice)
                                 @php
-                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
+                                    $NoticeDate = \Carbon\Carbon::parse($notice->created_at)->format('d M Y');
+                                    $NoticeTime = \Carbon\Carbon::parse($notice->created_at)->format('g:i a');
                                 @endphp
-                                <p class="m-0">{{ strtoupper($leaveType->name) }} -
-                                    {{ $remainingLeaveCount }}</p>
-                            @endforeach
-                        </div>
+                                <div class="time-label">
+                                    <span class="bg-red">{{ $NoticeDate }}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-envelope bg-blue"></i>
+                                    <div class="timeline-item">
+                                        <span class="time"><i class="fas fa-clock"></i> {{ $NoticeTime }}</span>
+                                        <h3 class="timeline-header"><a href="#">{{ $notice->name }}</a>
+                                            {{ strtoupper($notice->notice_type) }}
+                                        </h3>
 
-                        <div class="icon">
-                            <i class="fas fa-balance-scale"></i>
-                        </div>
+                                        <div class="timeline-body">
+                                            {!! $notice->description !!}
+                                        </div>
+                                        <div class="timeline-footer">
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                data-id="{{ $notice->id }}" data-toggle="modal"
+                                                data-target="#modal-info">
+                                                Read more
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                            <div>
+                                <i class="fas fa-clock bg-gray"></i>
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="box box-danger">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Team {{ $departmentName }}</h3>
-                        </div>
-                        <div class="box-body no-padding">
-                            <ul class="users-list clearfix">
-                                @foreach ($employeesByDepartment as $employee)
-                                    @if ($employee->user_id !== auth()->id())
-                                        <li>
-                                            @if (!$employee->employee_img && $employee->gender === 'male')
-                                                <img src="{{ asset('admin/images/male.jpg') }}" width="80"
-                                                    height="80" alt="User Image">
-                                            @elseif(!$employee->employee_img && $employee->gender === 'female')
-                                                <img src="{{ asset('admin/images/female.png') }}" width="80"
-                                                    height="80" alt="User Image">
-                                            @else
-                                                <img src="{{ asset('upload/' . $employee->employee_img) }}"
-                                                    width="80" height="80" alt="User Image">
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="card small-box menual-update">
+                            <div class="card-header">
+                                <h4 class="text-bold card-title">Up Coming Holidays</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Holidays</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="menual-update-1">
+                                            @if ($holidays->isNotEmpty())
+                                                @foreach ($holidays as $holiday)
+                                                    @php
+                                                        $dateRange = $holiday->date;
+                                                        [$startDate, $endDate] = explode(' - ', $dateRange);
+                                                    @endphp
+
+                                                    @if ($startDate == $endDate)
+                                                        <tr>
+                                                            <td>{{ $holiday->name }}</td>
+                                                            <td>
+                                                                <p class="badge badge-success text-white">
+                                                                    {{ \Carbon\Carbon::parse($startDate)->format('d  M') }}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <td>{{ $holiday->name }}</td>
+                                                            <td>
+                                                                <p class="badge badge-success text-white">
+                                                                    {{ \Carbon\Carbon::parse($startDate)->format('d M') }}
+                                                                    -
+                                                                    {{ \Carbon\Carbon::parse($endDate)->format('d M') }}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
                                             @endif
-                                            <a class="users-list-name"
-                                                href="javascript:;">{{ $employee->user->name }}</a>
-                                            <span class="users-list-date">{{ $departmentName }}</span>
-                                            <span
-                                                class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="box-footer text-center">
-                            <a href="javascript:void(0)" class="uppercase">View All Users</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Up Coming Holidays</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table no-margin">
-                                    <thead>
-                                        <tr>
-                                            <th>Holidays</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($holidays->isNotEmpty())
-                                            @foreach ($holidays as $holiday)
-                                                @php
-                                                    $dateRange = $holiday->date;
-                                                    [$startDate, $endDate] = explode(' - ', $dateRange);
-                                                @endphp
-
-                                                @if ($startDate == $endDate)
-                                                    <tr>
-                                                        <td>{{ $holiday->name }}</td>
-                                                        <td><span
-                                                                class="label label-success">{{ \Carbon\Carbon::parse($startDate)->format('d  M') }}</span>
-                                                        </td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td>{{ $holiday->name }}</td>
-                                                        <td>
-                                                            <span class="label label-success">
-                                                                {{ \Carbon\Carbon::parse($startDate)->format('d M') }}
-                                                                -
-                                                                {{ \Carbon\Carbon::parse($endDate)->format('d M') }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
+
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Up Coming Birthday</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table no-margin">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Birthday Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($userBirthdays->isNotEmpty())
-                                            @foreach ($userBirthdays as $user)
-                                                @if ($user->employee && $user->employee->date_of_birth)
-                                                    <tr>
-                                                        <td>{{ $user->name }}</td>
-                                                        <td><span
-                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M') }}</span>
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="card small-box menual-update">
+                            <div class="card-header">
+                                <h4 class="text-bold card-title">Up Coming Birthday</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Birthday Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="menual-update-1">
+                                            @if ($userBirthdays->isNotEmpty())
+                                                @foreach ($userBirthdays as $user)
+                                                    @if ($user->employee && $user->employee->date_of_birth)
+                                                        <tr>
+                                                            <td>{{ $user->name }}</td>
+                                                            <td>
+                                                                <p class="badge badge-success text-white">
+                                                                    {{ $user->employee->date_of_birth->format('d M') }}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        @else
-            <div class="row">
-                <div class="col-md-8  col-sm-12 col-xs-12">
-                    <div class="cstScroll small-box bg-green py-4 px-3">
-                        @if ($notices)
-                            @foreach ($notices as $notice)
-                                @php
-                                    $NoticeDate = \Carbon\Carbon::parse($notice->created_at)->format('d M Y');
-                                    $NoticeTime = \Carbon\Carbon::parse($notice->created_at)->format('g:i a');
-                                    $limitedDescription = Str::words($notice->description, 20, '...');
-                                @endphp
-                                <ul class="timeline">
-                                    <li class="time-label">
-                                        <span class="bg-red">{{ $NoticeDate }}</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-envelope bg-blue"></i>
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="fa fa-clock"></i> {{ $NoticeTime }}</span>
-
-                                            <h3 class="timeline-header">
-                                                <a
-                                                    href="#"><strong>{{ strtoupper($notice->notice_type) }}</strong></a>
-                                                {{ $notice->name }}
-                                            </h3>
-
-                                            <div class="timeline-body">
-                                                {!! $limitedDescription !!}
-                                            </div>
-                                            <div class="timeline-footer">
-                                                <button type="button" class="btn btn-info read-more-btn"
-                                                    data-id="{{ $notice->id }}" data-toggle="modal"
-                                                    data-target="#modal-info">
-                                                    Read more
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            @endforeach
-                        @endif
-                        <div class="modal modal-info fade in" id="modal-info" tabindex="-1" role="dialog"
-                            aria-labelledby="modal-infoLabel">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                        <div class="noticeHeader">
-                                            <div class="noticeName">
-                                                <h4 class="modal-title" id="modal-infoLabel"></h4>
-                                                <small class="noticeType"></small>
-                                            </div>
-                                            <div id="modal-date-time"></div>
-                                        </div>
+            <div class="col-lg-4 p-0">
+                <div class="col-lg-12">
+                    <div class="small-box">
+                        <div class="card-header">
+                            <h4 class="card-title text-bold">Today's Birthday</h4>
+                            <div class="card-tools">
+                                <!-- <span class="badge badge-danger">8 New Members</span> -->
+                            </div>
+                        </div>
+                        <div class="row align-items-center p-3">
+                            <div class="col-lg-12 p-0">
+                                <div class="user-panel mt-1">
+                                    <div class="image">
+                                        <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                                     </div>
-                                    <div class="modal-body" id="modal-description"></div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline pull-left"
-                                            data-dismiss="modal">Close</button>
+                                    <div class="info d-block">
+                                        <h5 href="#" class="text-bold d-block m-0">Mubeen Dewani
+                                        </h5>
+                                        <p class="text-primary">Birthday Today</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 pt-2 d-flex justify-content-end p-0">
+                                    <button type="button" class="btn btn-primary"></i> Wish Him</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card small-box">
+                                <div class="card-header">
+                                    <h4 class="card-title text-bold">{{ $departmentName }}</h4>
+                                    <div class="card-tools">
+                                        <a href="{{ route('employees.view') }}">
+                                            <span class="badge badge-danger">Team</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row web-development-team">
+                                        @foreach ($employeesByDepartment as $employee)
+                                            @if ($employee->user_id !== auth()->id())
+                                                <div
+                                                    class="col-lg-4 col-md-4  col-sm-6 web-development-member pt-2 text-center">
+                                                    @if (!$employee->employee_img && $employee->gender === 'male')
+                                                        <img src="{{ asset('admin/images/male.jpg') }}" width="80"
+                                                            height="80" alt="User Image">
+                                                    @elseif(!$employee->employee_img && $employee->gender === 'female')
+                                                        <img src="{{ asset('admin/images/female.png') }}" width="80"
+                                                            height="80" alt="User Image">
+                                                    @else
+                                                        <img src="{{ asset('upload/' . $employee->employee_img) }}"
+                                                            width="80" height="80" alt="User Image">
+                                                    @endif
+                                                    <a class="users-list-name"
+                                                        href="javascript:;">{{ $employee->user->name }}</a>
+                                                    <span class="users-list-date">{{ $departmentName }}</span>
+                                                    <span
+                                                        class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="small-box Manage-boxes">
+                                <div class="card-header">
+                                    <h4 class="card-title text-bold">Leave</h4>
+                                    <div class="card-tools">
+                                        <span class="badge badge-danger">8 On leave</span>
+                                    </div>
+                                </div>
+                                <div class="row leaves align-items-center p-3">
+                                    <div class="col-lg-12 p-0">
+                                        <div class="user-panel mt-1 mb-2">
+                                            <div class="image">
+                                                <img src="dist/img/user2-160x160.jpg" class="img-circle"
+                                                    alt="User Image">
+                                            </div>
+                                            <div class="content">
+                                                <div class="info d-block">
+                                                    <h5 href="#" class=" d-block m-0">Mubeen Dewani
+                                                    </h5>
+                                                    <p>Annual Leave</p>
+                                                    <p>1 May 2024 - 30 May 2024</p>
+                                                </div>
+                                                <div class="process-1 text-end">
+                                                    <p></i> Padding</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="user-panel mt-1 mb-2">
+                                            <div class="image">
+                                                <img src="dist/img/user2-160x160.jpg" class="img-circle"
+                                                    alt="User Image">
+                                            </div>
+                                            <div class="content">
+                                                <div class="info d-block">
+                                                    <h5 href="#" class=" d-block m-0">Benedict
+                                                        Thomson</h5>
+                                                    <p>Sick Leave</p>
+                                                    <p>1 May 2024 - 30 May 2024</p>
+                                                </div>
+                                                <div class="process-2 text-end">
+                                                    <p></i> Approved</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="user-panel mt-1 mb-2">
+                                            <div class="image">
+                                                <img src="dist/img/user2-160x160.jpg" class="img-circle"
+                                                    alt="User Image">
+                                            </div>
+                                            <div class="content">
+                                                <div class="info d-block">
+                                                    <h5 href="#" class=" d-block m-0">Alice Nolan
+                                                    </h5>
+                                                    <p>Annual Leave</p>
+                                                    <p>1 May 2024 - 30 May 2024</p>
+                                                </div>
+                                                <div class="process-2 text-end">
+                                                    <p></i>Approved</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-aqua py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalLeaves = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    $totalLeaves += $leaveType->default_balance;
-                                }
-                            @endphp
-                            <h4><strong>Total Leaves - {{ $totalLeaves }} </strong></h4>
-                            @foreach ($leaveTypes as $leaveType)
-                                <span class="info-box-text">
-                                    {{ $leaveType->name }} - {{ $leaveType->default_balance }}
-                                </span>
-                            @endforeach
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-red py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalAvaile = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    // dd($leaveType);
-                                    $totalAvaile += $availedLeaves->get($leaveType->id, 0);
-                                }
-                            @endphp
-                            <h4><strong>Used Leave: {{ $totalAvaile }}</strong></h4>
-                            @foreach ($leaveTypes as $leaveType)
-                                <span class="info-box-text">{{ strtoupper($leaveType->name) }} -
-                                    {{ $availedLeaves->get($leaveType->id, 0) }}</span>
-                            @endforeach
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="small-box bg-green py-4 px-3">
-                        <div class="inner">
-                            @php
-                                $totalRemaining = 0;
-                                foreach ($leaveTypes as $leaveType) {
-                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
-                                    $totalRemaining += $remainingLeaveCount;
-                                }
-                            @endphp
-
-                            <h4><strong>Remaining Leave: {{ $totalRemaining }}</strong></h4>
-
-                            @foreach ($leaveTypes as $leaveType)
-                                @php
-                                    $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
-                                @endphp
-                                <span class="info-box-text">{{ strtoupper($leaveType->name) }} -
-                                    {{ $remainingLeaveCount }}</span>
-                            @endforeach
-                        </div>
-
-                        <div class="icon">
-                            <i class="fas fa-balance-scale"></i>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="box box-danger">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Team {{ $departmentName }}</h3>
-                        </div>
-                        <div class="box-body no-padding">
-                            <ul class="users-list clearfix">
-                                <ul class="users-list clearfix">
-                                    @foreach ($employeesByDepartment as $employee)
-                                        @if ($employee->user_id !== auth()->id())
-                                            <li>
-                                                @if (!$employee->employee_img && $employee->gender === 'male')
-                                                    <img src="{{ asset('admin/images/male.jpg') }}" width="80"
-                                                        height="80" alt="User Image">
-                                                @elseif(!$employee->employee_img && $employee->gender === 'female')
-                                                    <img src="{{ asset('admin/images/female.png') }}" width="80"
-                                                        height="80" alt="User Image">
-                                                @else
-                                                    <img src="{{ asset('upload/' . $employee->employee_img) }}"
-                                                        width="80" height="80" alt="User Image">
-                                                @endif
-                                                <a class="users-list-name"
-                                                    href="javascript:;">{{ $employee->user->name }}</a>
-                                                <span class="users-list-date">{{ $departmentName }}</span>
-                                                <span
-                                                    class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            </ul>
-                        </div>
-                        <div class="box-footer text-center">
-                            <a href="javascript:void(0)" class="uppercase">View All Users</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Up Coming Holidays</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table no-margin">
-                                    <thead>
-                                        <tr>
-                                            <th>Holidays</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($holidays->isNotEmpty())
-                                            @foreach ($holidays as $holiday)
-                                                @php
-                                                    $dateRange = $holiday->date;
-                                                    [$startDate, $endDate] = explode(' - ', $dateRange);
-                                                @endphp
-
-                                                @if ($startDate == $endDate)
-                                                    <tr>
-                                                        <td>{{ $holiday->name }}</td>
-                                                        <td><span
-                                                                class="label label-success">{{ \Carbon\Carbon::parse($startDate)->format('d  M') }}</span>
-                                                        </td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td>{{ $holiday->name }}</td>
-                                                        <td>
-                                                            <span class="label label-success">
-                                                                {{ \Carbon\Carbon::parse($startDate)->format('d M') }}
-                                                                -
-                                                                {{ \Carbon\Carbon::parse($endDate)->format('d M') }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Up Coming Birthday</h3>
-                        </div>
-                        <div class="box-body">
-                            <div class="table-responsive">
-                                <table class="table no-margin">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Birthday Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($userBirthdays->isNotEmpty())
-                                            @foreach ($userBirthdays as $user)
-                                                @if ($user->employee && $user->employee->date_of_birth)
-                                                    <tr>
-                                                        <td>{{ $user->name }}</td>
-                                                        <td><span
-                                                                class="label label-success">{{ $user->employee->date_of_birth->format('d M') }}</span>
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-    @endif
+        </div>
 @endsection
 @endsection
-
 @push('js')
-<script>
-    $(document).ready(function() {
-        $('.read-more-btn').on('click', function() {
-            const noticeId = $(this).data('id');
-            $.ajax({
-                type: "GET",
-                url: `/notices/${noticeId}`,
-                success: function(data) {
-                    // console.log(data.notice_type);
-                    $('#modal-infoLabel').text(data.title);
-                    $('.noticeType').text(data.notice_type);
-                    $('#modal-date-time').text(data.notice_date + ' - ' + data.notice_time);
-                    $('#modal-description').html(data.description);
-                },
-                error: function() {
-                    $('#modal-infoLabel').text('Error');
-                    $('#modal-description').html(
-                        '<p>An error occurred while fetching the notice content.</p>');
-                }
-            });
-        });
-
-        // timer clock
-    });
-</script>
-
 <script>
     $(document).ready(function() {
 
@@ -707,13 +472,13 @@
             startTime = new Date().getTime();
             localStorage.setItem('startTime', startTime);
             clockInterval = setInterval(updateClock, 1000);
-            $('#start-time-btn').text('Pause Time');
+            // $('#start-time-btn').text('Pause Time');
             isRunning = true;
         }
 
         function stopClock() {
             clearInterval(clockInterval);
-            $('#start-time-btn').text('Resume Time');
+            // $('#start-time-btn').text('Resume Time');
             isRunning = false;
         }
 
@@ -745,7 +510,6 @@
                     },
                 })
                 .done(function(response) {
-                    toastr.success(response.message);
                     window.location.reload();
                     startClock();
                 })
@@ -764,13 +528,12 @@
 
             $.ajax({
                     url: url,
-                    method: 'PUT', // Use PUT method
+                    method: 'PUT',
                     headers: {
                         'X-CSRF-TOKEN': token
                     },
                 })
                 .done(function(response) {
-                    toastr.success(response.message);
                     window.location.reload();
                     stopClock();
                     localStorage.removeItem('startTime');

@@ -4,10 +4,10 @@
     <h1>{{ $complaint->exists ? 'Edit Complaint' : 'Create Complaint' }}</h1>
 @endsection
 @section('page-content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <div class="row justify-content-center">
-                <div class="col-md-12">
+<div class="card-body">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card small-box card-primary p-5">
                     {!! Form::model($complaint, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -68,12 +68,6 @@
                                 }, $complaintTypes);
                             @endphp
                             {!! Form::label('title', 'Complaint Types') !!}
-                            {{-- {!! Form::select(
-                                'complaint_type',
-                                ['' => 'Select Type'] + $complaintTypesFormat,
-                                old('complaint_type', $complaintTypes ?? ''),
-                                ['class' => 'form-control form-select select2'],
-                            ) !!} --}}
                             {!! Form::select(
                                 'complaint_type',
                                 ['' => 'Select Type'] + array_combine($complaintTypes, $complaintTypesFormat),
@@ -101,7 +95,7 @@
             </div>
         </div>
     </div>
-    </div>
+</div>
 @endsection
 @endsection
 @push('js')
@@ -152,7 +146,6 @@
                     }
                 })
                 .done(function(response) {
-
                     toastr.success(response.message);
                     $('#complaintHandler')[0].reset();
                 })
@@ -169,12 +162,6 @@
                     button.prop('disabled', false);
                 });
         });
-        toastr.options = {
-            "closeButton": false,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "2000"
-        }
     });
 </script>
 @endpush

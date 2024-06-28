@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('bank-details.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('bank-details.create') }}" class="btn btn-primary">
                     Insert Bank Detail
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="15%">Employee Name</th>
                         <th width="10%">Bank Name</th>
@@ -26,7 +26,7 @@
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($bankDetails) > 0)
                         @foreach ($bankDetails as $bankDetail)
                             <tr>
@@ -49,14 +49,15 @@
                                         class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                     <button class="delete-bank btn btn-danger btn-flat btn-sm"
                                         data-bank-id="{{ $bankDetail->id }}"
-                                        data-delete-route="{{ route('bank-details.destroy', ':id') }}"><i
-                                            class="fa-regular fa-trash-can"></i></button>
+                                        data-delete-route="{{ route('bank-details.destroy', ':id') }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="5">No Bank Details found.</td>
+                            <td colspan="8" class="text-center">No Bank Details found.</td>
                         </tr>
                     @endif
                 </tbody>

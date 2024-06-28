@@ -27,9 +27,9 @@ class LeaveApplicationController extends Controller
         $roleId = $user->role_id;
 
         if ($roleId === 1 || $roleId === 2) {
-            $leaveApplications = LeaveApplication::with(['leaveType', 'user'])->paginate(10);
+            $leaveApplications = LeaveApplication::with(['leaveType', 'user'])->orderBy('id', 'DESC')->paginate(5);
         } else {
-            $leaveApplications = LeaveApplication::where('user_id', $user->id)->paginate(10);
+            $leaveApplications = LeaveApplication::where('user_id', $user->id)->orderBy('id', 'DESC')->paginate(5);
         }
 
         return view('leave-application.index', compact('leaveApplications', 'roleId'));
@@ -59,52 +59,54 @@ class LeaveApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function store(Request $request)
-     {
-         $request->validate([
+    public function store(Request $request)
+    {
+        $request->validate([
             'employee_id' => 'nullable',
-             'user_id' => 'required|exists:users,id',
-             'leave_type_id' => 'required',
-             'start_date' => 'required',
-             'end_date' => 'required',
-             'reason' => 'required',
-         ]);
+            'user_id' => 'required|exists:users,id',
+            'leave_type_id' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'reason' => 'required',
+        ]);
 
-         $start_date_parsed = Carbon::createFromFormat('Y-m-d', $request->start_date);
-         $end_date_parsed = Carbon::createFromFormat('Y-m-d', $request->end_date);
-         $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
-         $total_days = 0;
-         foreach ($period as $date) {
-             if (!$date->isWeekend()) {
-                 $total_days++;
-             }
-         }
-
-         $imageName = null;
-         if ($request->hasFile('leave_image') && $request->file('leave_image')->isValid()) {
-             $imageName = time() . '.' . $request->file('leave_image')->extension();
-             $request->file('leave_image')->move(public_path('upload'), $imageName);
-         }
+        $start_date_parsed = Carbon::createFromFormat('Y-m-d', $request->start_date);
+        $end_date_parsed = Carbon::createFromFormat('Y-m-d', $request->end_date);
     
-     
+        // Create period
+        $period = CarbonPeriod::create($start_date_parsed, $end_date_parsed);
+    
+        // Calculate total leave days excluding weekends
+        $total_days = 0;
+        foreach ($period as $date) {
+            if (!$date->isWeekend()) {
+                $total_days++;
+            }
+        }
+
+        $imageName = null;
+        if ($request->hasFile('leave_image') && $request->file('leave_image')->isValid()) {
+            $imageName = time() . '.' . $request->file('leave_image')->extension();
+            $request->file('leave_image')->move(public_path('upload'), $imageName);
+        }
+
+
         $leaveApplication = LeaveApplication::create([
-             'employee_id' => null,
-             'user_id' => $request->user_id,
-             'leave_type_id' => $request->leave_type_id,
-             'start_date' => $start_date_parsed->format('Y-m-d'),
-             'end_date' => $end_date_parsed->format('Y-m-d'),
-             'reason' => $request->reason,
-             'leave_image' => $imageName,
-             'total_leave' => $total_days,
-             'status' => 'Pending',
-         ]);
+            'employee_id' => null,
+            'user_id' => $request->user_id,
+            'leave_type_id' => $request->leave_type_id,
+            'start_date' => $start_date_parsed->format('Y-m-d'),
+            'end_date' => $end_date_parsed->format('Y-m-d'),
+            'reason' => $request->reason,
+            'leave_image' => $imageName,
+            'total_leave' => $total_days,
+            'status' => 'Pending',
+        ]);
         $user = auth()->user();
         Mail::to($user->email)->send(new LeaveApplicationMail($user, $leaveApplication));
-        //  return redirect()->route('leave-applications.index')->with('message', 'Leave application created successfully');
         return response()->json(['message' => 'Leave application created successfully']);
-     }
-     
-     
+    }
+
     /** ~
      * Display the specified resource.
      *

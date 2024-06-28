@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('designation.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('designation.create') }}" class="btn btn-primary">
                     Insert Designations
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="10%">Desingnation</th>
                         <th width="16%">Desingnation</th>
@@ -23,7 +23,7 @@
                         <th width="20%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background: #fff;">
                     @if (count($designations) > 0)
                         @foreach ($designations as $designation)
                             <tr>
@@ -42,14 +42,16 @@
                                         class="btn btn-info btn-flat btn-sm"> <i class="fa fa-edit"></i></a>
                                     <button class="delete-designation btn btn-danger btn-flat btn-sm"
                                         data-designation-id="{{ $designation->id }}"
-                                        data-delete-route="{{ route('designation.destroy', ':id') }}"><i
-                                            class="fa-regular fa-trash-can"></i></button>
+                                        data-delete-route="{{ route('designation.destroy', ':id') }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
                     @endif
                 </tbody>
             </table>
+            {{ $designations->links('pagination::bootstrap-4') }}
         </div>
     </div>
 @endsection

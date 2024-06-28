@@ -4,9 +4,237 @@
     Profile Detail
 @endsection
 @section('page-content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
+    <div class="card-body profile-box">
+        <div class="row ">
+            <div class="col-md-5">
+                <div class="card small-box">
+                    <div class="row align-items-center ">
+                        <div class="col-md-5 profile-img bg-primary p-5">
+                            <div class="text-center bg-primary">
+                                <div class="image d-block">
+                                    @php
+                                        $user = auth()->user();
+                                    @endphp
+                                    @if (!$employee->employee->employee_img && $employee->employee->gender === 'male')
+                                        <img src="{{ asset('admin/images/male.jpg') }}" style="width: 100%;"
+                                            class="img-circle" alt="User Image">
+                                    @elseif (!$employee->employee->employee_img && $employee->employee->gender === 'female')
+                                        <img src="{{ asset('admin/images/female.png') }}" style="width: 100%;"
+                                            class="img-circle" alt="User Image">
+                                    @elseif($employee->employee->employee_img)
+                                        <img src="{{ asset('upload/' . $employee->employee->employee_img) }}"
+                                            style="width: 100%;" class="img-circle" alt="User Image">
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7 p-0">
+                            <div class="info text-center">
+                                <h4 class="text-bold">{{$employee->name}}</h4>
+                                <span>{{ $employee->employee->department->department_name ?? '-' }}</span><br>
+                                <span>{{ $employee->employee->designation->designation_name ?? '-' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card small-box profile-info">
+                    <div class="card-header">
+                        <h4 class="text-bold">Personal Information</h4>
+                    </div>
+                    <div class="card-body p-0 mb-4">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <tbody class="menual-update-1">
+                                    <tr>
+                                        <td class="text-bold">Name</td>
+                                        <td>{{$employee->name ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Phone</td>
+                                        <td>{{$employee->employee->phone_number ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Email Address</td>
+                                        <td>{{$employee->email ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Country</td>
+                                        <td>{{$employee->employee->country ?? ''}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">City</td>
+                                        <td>{{$employee->employee->city ?? ''}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="border-bottom"></div>
+                    <div class="card-header">
+                        <h4 class="text-bold">Bio-Graphical Informantion</h4>
+                    </div>
+                    <div class="card-body p-0 mb-4">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <tbody class="menual-update-1">
+                                    <tr>
+                                        <td class="text-bold">Date of birth</td>
+                                        <td>{{$employee->employee->date_of_birth ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Gender</td>
+                                        <td>{{$employee->employee->gender ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Martial Status</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">SOS</td>
+                                        <td>Pakistan</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Work in City</td>
+                                        <td>{{$employee->employee->city ?? '-'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">City of Residence</td>
+                                        <td>{{$employee->employee->address ?? '-'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card small-box profile-info">
+                    <div class="card-header">
+                        <h4 class="text-bold">Personal Information</h4>
+                    </div>
+                    <div class="card-body p-0 mb-4">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <tbody class="menual-update-1">
+                                    <tr>
+                                        <td class="text-bold">Sub Department</td>
+                                        <td>{{$employee->employee->department->department_name ?? '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Position</td>
+                                        <td>{{$employee->employee->designation->designation_name ?? ''}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Duty Type</td>
+                                        <td>{{$employee->job_type ?? ''}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Hire Date</td>
+                                        <td>{{$employee->employee->joining_date ?? ''}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Work Type</td>
+                                        <td>{{$employee->work_type ?? ''}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Employee Type</td>
+                                        <td>{{ $employee->employee->employeeType->type ?? '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Shift Time</td>
+                                        <td>{{ $employee->employee->shift->name ?? '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Pay Frequency</td>
+                                        <td>??</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Supervisor Name</td>
+                                        <td>??</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Ist Supervisor</td>
+                                        <td>??</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card small-box profile-info">
+                    <div class="card-header">
+                        <h4 class="text-bold">Emergency Contant</h4>
+                    </div>
+                    <div class="card-body p-0 mb-4">
+                        <div class="table-responsive">
+                            <table class="table m-0">
+                                <tbody class="menual-update-1">
+                                    <tr>
+                                        <td class="text-bold">Emergency Contact</td>
+                                        <td>{{$employee->employee->emergency_phone_number ?? '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Emergency Contact Person Name</td>
+                                        <td>{{$employee->employee->emergency_person_name ?? '' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Emergency Home Phone</td>
+                                        <td>??</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-bold">Emergency Work Phone</td>
+                                        <td>??</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="changePassword card small-box profile-info p-3">
+                    <h4 class="text-bold">Change Password</h4>
+                    <form action="{{ route('employees.changePassword', auth()->user()->id) }}" method="POST"
+                        id="changePassword">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="logout" value="{{ route('logoutUser') }}">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label for="new_password">New Password</label>
+                                    <input type="password" name="new_password" id="new_password" class="form-control">
+                                    <small>
+                                        Password must contain at least one special character, Uppercase & two numbers (@, #, !).<br>
+                                        <strong>Example:</strong> Password99@
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-12">
+                                <div class="form-group">
+                                    <label for="new_password_confirmation">Confirm New Password</label>
+                                    <input type="password" name="new_password_confirmation" id="new_password_confirmation"
+                                        class="form-control">
+                                    <span id="password-match-message" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    {{-- <div class="container">
+        <div class="row"> --}}
+            {{-- <div class="col-md-6">
                 <div class="personalInfo">
                     <h3>Employee Personal Info</h3>
                     <p><strong>Name:</strong> {{ $employee->name ?? '' }}</p>
@@ -16,8 +244,8 @@
                     <p><strong>Emergency Number:</strong> {{ $employee->employee->emergency_phone_number ?? '' }}</p>
                     <p><strong>Emergency Contact Name:</strong> {{ $employee->employee->emergency_person_name ?? '' }}</p>
                 </div>
-            </div>
-            <div class="col-md-6">
+            </div> --}}
+            {{-- <div class="col-md-6">
                 <div class="employeeDetail">
                     <h3>Employee Details</h3>
                     <p><strong>Joining Date:</strong> {{ $employee->employee->joining_date ?? '' }}</p>
@@ -30,8 +258,8 @@
                     <p><strong>Employee Type:</strong> {{ $employee->employee->employeeType->type ?? '' }}</p>
                     <p><strong>Shift:</strong> {{ $employee->employee->shift->name ?? '' }}</p>
                 </div>
-            </div>
-            <div class="col-md-6">
+            </div> --}}
+            {{-- <div class="col-md-6">
                 <div class="bankDetails">
                     <h3>Employee Bank Details</h3>
                     @if ($employee->employee && $employee->employee->bank->isNotEmpty())
@@ -45,38 +273,12 @@
                         @endforeach
                     @endif
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="changePassword">
-                    <h3>Change Password</h3>
-                    <form action="{{ route('employees.changePassword', auth()->user()->id) }}" method="POST"
-                        id="changePassword">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="logout" value="{{ route('logoutUser') }}">
-
-                        <div class="form-group">
-                            <label for="new_password">New Password</label>
-                            <input type="password" name="new_password" id="new_password" class="form-control">
-                            <small>
-                                Password must contain at least one special character, Uppercase & two numbers (@, #, !).<br>
-                                <strong>Example:</strong> Password99@
-                            </small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="new_password_confirmation">Confirm New Password</label>
-                            <input type="password" name="new_password_confirmation" id="new_password_confirmation"
-                                class="form-control">
-                            <span id="password-match-message" class="text-danger"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Change Password</button>
-                    </form>
-                </div>
+            </div> --}}
+            {{-- <div class="col-md-6">
+                
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 @endsection
 @push('js')

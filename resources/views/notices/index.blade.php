@@ -7,14 +7,14 @@
     <div class="box">
         <div class="box-header with-border">
             <h3 class="box-title">
-                <a href="{{ route('notices.create') }}" class="btn btn-block btn-primary">
+                <a href="{{ route('notices.create') }}" class="btn btn-primary">
                     Insert Notice
                 </a>
             </h3>
         </div>
         <div class="box-body">
             <table class="table table-bordered">
-                <thead style="background-color: #F8F8F8;">
+                <thead style="background-color: #fff;">
                     <tr>
                         <th width="20%">Title</th>
                         <th width="15%">Notice Type</th>
@@ -23,7 +23,7 @@
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style="background-color: #fff;">
                     @if (count($notices) > 0)
                         @foreach ($notices as $notice)
                             <tr>
@@ -47,11 +47,15 @@
                                             class="fa fa-edit"></i></a>
                                     <button class="delete-notice btn btn-danger btn-flat btn-sm"
                                         data-notice-id="{{ $notice->id }}"
-                                        data-delete-route="{{ route('notices.destroy', ':id') }}"><i
-                                            class="fa-regular fa-trash-can"></i></button>
+                                        data-delete-route="{{ route('notices.destroy', ':id') }}">
+                                        <i class="fas fa-trash-alt"></i></button>
                                 </td>
                             </tr>
                         @endforeach
+                    @else
+                        <tr>
+                            <td class="text-center" colspan="8">No Record Found!</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
@@ -65,49 +69,32 @@
     $(document).ready(function() {
         $('.delete-notice').on('click', function(e) {
             e.preventDefault();
+
             const noticeId = $(this).data('notice-id');
             const deleteRoute = $(this).data('delete-route').replace(':id', noticeId);
             const $clickedElement = $(this);
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this notice!',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const token = $('meta[name="csrf-token"]').attr('content');
+            if (confirm('Are you sure you want to delete this Award?')) {
+                const token = $('meta[name="csrf-token"]').attr('content');
 
-                    $.ajax({
-                        type: "DELETE",
-                        url: deleteRoute,
-                        headers: {
-                            'X-CSRF-TOKEN': token
-                        }
-                    }).then(function(response) {
-                        console.log(response);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                        });
-                        $clickedElement.closest('tr').fadeOut('slow', function() {
-                            $(this).css('backgroundColor', 'red').remove();
-                        });
-                    }).catch(function(xhr) {
-                        console.error(xhr);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Failed to delete Notice.',
-                        });
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    console.log(response);
+                    toastr.success(response.message);
+                    $clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).css('backgroundColor', 'red').remove();
                     });
-                }
-            });
+                }).catch(function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Failed to Delete Notice');
+                });
+            }
+
         });
         $('.notice-toggle').click(function() {
             const button = $(this);
