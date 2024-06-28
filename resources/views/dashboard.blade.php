@@ -423,7 +423,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="user-panel mt-1 mb-2">
                                             <div class="image">
                                                 <img src="dist/img/user2-160x160.jpg" class="img-circle"
