@@ -183,13 +183,13 @@ class EmployeeController extends Controller
         $employee = User::with('employee')->findOrFail($id);
         $route = route('employees.update', $employee->id);
         $formMethod = 'PUT';
-        $roles = Role::pluck('name', 'id');
-        $departments = Department::pluck('department_name', 'id');
-        $designations = Designation::pluck('designation_name', 'id');
-        $employeeShifts = Shift::all();
+        $roles = Role::find($employee->role_id);
+        $departments = Department::pluck('department_name', 'id')->toArray();
+        $designations = Designation::all();
+        $employeeShift = Shift::all();
         $employeeTypes = EmployeeType::all();
 
-        return view('employees.edit', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShifts', 'employeeTypes'));
+        return view('employees.form', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShift', 'employeeTypes'));
     }
 
     public function update(Request $request, $id)
@@ -199,7 +199,7 @@ class EmployeeController extends Controller
         $request->validate([
             'user_name' => 'required',
             'user_email' => 'required|email',
-            'user_role' => 'required',
+            // 'user_role' => 'required',
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
@@ -266,7 +266,7 @@ class EmployeeController extends Controller
         } else {
             $user->employee()->create($employeeData);
         }
-        return response()->json(['success' => 'User Updated Successfully'], 200);
+        return response()->json(['message' => 'User Updated Successfully'], 200);
     }
 
     /**

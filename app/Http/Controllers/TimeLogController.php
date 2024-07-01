@@ -21,7 +21,6 @@ class TimeLogController extends Controller
         if (isAdmin($user)) {
             $timeLog = TimeLog::with('user')->get();
             return view('time-logs.index', compact('timeLog'));
-            
         } else {
             $timeLog = TimeLog::where('user_id', $user->id)->with('user')->get();
             return view('time-logs.index', compact('timeLog'));
@@ -118,13 +117,16 @@ class TimeLogController extends Controller
             return response()->json(['message' => 'You must log the end time before starting a new log.'], 400);
         }
 
-        Timelog::create([
+        $newTimelog = Timelog::create([
             'user_id' => $userId,
             'attendance_id' => $attendance->id,
             'start_time' => now()->format('H:i:s')
         ]);
 
-        return response()->json(['message' => 'Start time logged successfully.'], 200);
+        return response()->json([
+            'message' => 'Start time logged successfully.',
+            'time_log_id' => $newTimelog->id
+        ], 200);
     }
 
     public function endTimeTracker(Request $request, TimeLog $timeLog)
@@ -141,7 +143,8 @@ class TimeLogController extends Controller
             return response()->json(['message' => 'You have not checked in today.'], 400);
         }
 
-        $timelog = Timelog::where('user_id', $userId)
+        $timelog = Timelog::where('id', $timeLog->id)
+            ->where('user_id', $userId)
             ->whereDate('created_at', $currentDate)
             ->whereNull('end_time')
             ->first();

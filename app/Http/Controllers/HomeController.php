@@ -86,8 +86,12 @@ class HomeController extends Controller
         $leaveQuery = LeaveApplication::with(['user', 'leaveType', 'employee'])->orderBy('id', 'DESC')->get();
         $notices = Notice::where('status', 'active')->orderBy('id', 'ASC')->take(10)->get();
 
-        $attendanceCount = Attendance::whereDate('attendance_date', now()->toDateString())->select('status');
-        
+        $attendanceCount = Attendance::whereDate('attendance_date', now()->toDateString())->select('status', 'check_in');
+        $timeLogId = TimeLog::whereDate('created_at', now()->toDateString())
+        ->where('user_id', auth()->id())
+        ->pluck('id')
+        ->first();
+            
         return view('dashboard', compact(
             'designation',
             'departmentName',
@@ -101,7 +105,8 @@ class HomeController extends Controller
             'leaveQuery',
             'notices',
             'activeEmployees',
-            'attendanceCount'
+            'attendanceCount',
+            'timeLogId'
         ));
     }
 

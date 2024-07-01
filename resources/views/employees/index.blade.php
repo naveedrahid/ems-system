@@ -5,6 +5,9 @@
 @endsection
 @section('page-content')
     <div class="box">
+        @php
+            $user = auth()->user();
+        @endphp
         <!-- Box header and search form -->
         <div class="box-body">
             <table class="table table-bordered" id="employees-table">
@@ -17,7 +20,7 @@
                         <th>Employee Type</th>
                         <th>Shift</th>
                         <th>Designation</th>
-                        @if (Auth::user()->role_id == 1)
+                        @if (isAdmin($user))
                             <th>Manage</th>
                         @endif
                     </tr>
@@ -122,7 +125,7 @@
                     orderable: false,
                     searchable: true
                 },
-                @if (Auth::user()->role_id == 1)
+                @if (isAdmin($user))
                     {
                         data: 'action',
                         name: 'action',

@@ -5,9 +5,9 @@
         $user = auth()->user();
     @endphp
     @if (isAdmin($user))
-        {{'Admin Dashboard'}}
+        {{ 'Admin Dashboard' }}
     @else
-        {{'Employee Dashboard'}}
+        {{ 'Employee Dashboard' }}
     @endif
 @endsection
 @section('page-content')
@@ -16,7 +16,7 @@
     @endphp
     <div class="col-lg-12 main-boxes">
         <div class="row top-boxes">
-            <div class="{{isAdmin($user) ? 'col-lg-5 col-md-5  col-sm-12' : 'col-lg-6 col-md-6  col-sm-12'}} ">
+            <div class="{{ isAdmin($user) ? 'col-lg-5 col-md-5  col-sm-12' : 'col-lg-6 col-md-6  col-sm-12' }} ">
                 <!-- small box -->
                 <div class="small-box text-left boxes">
                     <div class="inner inner-box">
@@ -39,40 +39,47 @@
                     </div>
                 </div>
             </div>
-            <div class="{{isAdmin($user) ? 'col-lg-3 col-md-3 col-sm-12' : 'col-lg-6 col-md-6  col-sm-12'}} ">
+            <div class="{{ isAdmin($user) ? 'col-lg-3 col-md-3 col-sm-12' : 'col-lg-6 col-md-6  col-sm-12' }} ">
                 <!-- small box -->
                 <div class="small-box text-left boxes work-status">
                     <div class="inner inner-box">
-                        <h5 class="text-bold">{{isAdmin($user) ? "Work Status" : "Today's Attandance"}}</h5>
+                        <h5 class="text-bold">{{ isAdmin($user) ? 'Work Status' : "Today's Attandance" }}</h5>
                         <div class="row progress-item">
                             <div class="col-lg-3 p-0">
                                 <strong>
-                                    <p class="title">{{isAdmin($user) ? "On Site" : "Total Present"}}</p>
+                                    <p class="title">{{ isAdmin($user) ? 'On Site' : 'Total Present' }}</p>
                                 </strong>
                             </div>
                             @php
-                                $onsiteJobTypeCount = $activeEmployees->filter(function ($employee){
-                                    return $employee->job_type === 'onsite';
-                                })->count();
-                                
-                                $remoteJobTypeCount = $activeEmployees->filter(function ($employee){
-                                    return $employee->job_type === 'remote';
-                                })->count();
+                                $onsiteJobTypeCount = $activeEmployees
+                                    ->filter(function ($employee) {
+                                        return $employee->job_type === 'onsite';
+                                    })
+                                    ->count();
+
+                                $remoteJobTypeCount = $activeEmployees
+                                    ->filter(function ($employee) {
+                                        return $employee->job_type === 'remote';
+                                    })
+                                    ->count();
                             @endphp
                             {{-- @dd($onsiteJobType) --}}
                             <div class="col-lg-9 pl-1 remote">
                                 <div class="progress-group">
                                     <div class="progress progress-sm">
-                                        <div class="progress-bar bg-primary" style="width: {{isAdmin($user) ? $onsiteJobTypeCount : $attendanceCount->count()}}%"></div>
+                                        <div class="progress-bar bg-primary"
+                                            style="width: {{ isAdmin($user) ? $onsiteJobTypeCount : $attendanceCount->count() }}%">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="total-employees">{{ isAdmin($user) ? $onsiteJobTypeCount : $attendanceCount->count() }} Employees</div>
+                                <div class="total-employees">
+                                    {{ isAdmin($user) ? $onsiteJobTypeCount : $attendanceCount->count() }} Employees</div>
                             </div>
                         </div>
                         <div class="row progress-item">
                             <div class="col-lg-3 p-0">
                                 <strong>
-                                    <p class="title">{{isAdmin($user) ? "Remote" : "Total Absent"}}</p>
+                                    <p class="title">{{ isAdmin($user) ? 'Remote' : 'Total Absent' }}</p>
                                 </strong>
                             </div>
                             <div class="col-lg-9 pl-1 remote">
@@ -81,10 +88,13 @@
                                 @endphp
                                 <div class="progress-group">
                                     <div class="progress progress-sm">
-                                        <div class="progress-bar bg-primary" style="width: {{isAdmin($user) ? $remoteJobTypeCount : $totalAbsent}}%"></div>
+                                        <div class="progress-bar bg-primary"
+                                            style="width: {{ isAdmin($user) ? $remoteJobTypeCount : $totalAbsent }}%">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="total-employees">{{ isAdmin($user) ? $remoteJobTypeCount : $totalAbsent}} Employees</div>
+                                <div class="total-employees">{{ isAdmin($user) ? $remoteJobTypeCount : $totalAbsent }}
+                                    Employees</div>
                             </div>
                         </div>
                     </div>
@@ -351,7 +361,13 @@
                     // Query to get employees and their associated users
                     $todayBirthdays = DB::table('employees')
                         ->join('users', 'employees.user_id', '=', 'users.id')
-                        ->select('employees.date_of_birth', 'employees.employee_img','employees.gender','employees.user_id', 'users.name')
+                        ->select(
+                            'employees.date_of_birth',
+                            'employees.employee_img',
+                            'employees.gender',
+                            'employees.user_id',
+                            'users.name',
+                        )
                         ->whereRaw("DATE_FORMAT(employees.date_of_birth, '%m-%d') = ?", [$today])
                         ->get();
                 @endphp
@@ -432,7 +448,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (isAdmin($user))    
+                        @if (isAdmin($user))
                             <div class="small-box Manage-boxes">
                                 <div class="card-header">
                                     <h4 class="card-title text-bold">Leave</h4>
@@ -456,11 +472,13 @@
                                                 <div class="user-panel mt-1 mb-2">
                                                     <div class="image">
                                                         @if (!optional($leave->employee)->employee_img && optional($leave->employee)->gender === 'male')
-                                                            <img src="{{ asset('admin/images/male.jpg') }}" width="80"
-                                                                height="80" class="img-circle" alt="User Image">
+                                                            <img src="{{ asset('admin/images/male.jpg') }}"
+                                                                width="80" height="80" class="img-circle"
+                                                                alt="User Image">
                                                         @elseif(!optional($leave->employee)->employee_img && optional($leave->employee)->gender === 'female')
-                                                            <img src="{{ asset('admin/images/female.png') }}" width="80"
-                                                                height="80" class="img-circle" alt="User Image">
+                                                            <img src="{{ asset('admin/images/female.png') }}"
+                                                                width="80" height="80" class="img-circle"
+                                                                alt="User Image">
                                                         @else
                                                             <img src="{{ asset('upload/' . optional($leave->employee)->employee_img) }}"
                                                                 alt="Employee Image" width="80" height="80"
@@ -501,99 +519,120 @@
     </div>
 @endsection
 @endsection
+
+@push('css')
+<style>
+    div#timerd button {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+</style>
+@endpush
 @push('js')
 <script>
     $(document).ready(function() {
-
-        let clockInterval;
+        let timerInterval;
         let isRunning = false;
         let startTime;
+        let elapsedTime = 0;
+        const token = $('meta[name="csrf-token"]').attr('content');
+        let timeLogId;
 
-        function updateClock() {
-            const clock = $('#clock');
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            clock.html(hours + ':' + minutes + ':' + seconds);
+        function updateTimer() {
+            const now = new Date().getTime();
+            elapsedTime = now - startTime;
+            const totalSeconds = Math.floor(elapsedTime / 1000);
+            const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            $('#timer').html(hours + ':' + minutes + ':' + seconds);
         }
 
-        function startClock() {
-            startTime = new Date().getTime();
+        function startTimer() {
+            startTime = new Date().getTime() - elapsedTime;
             localStorage.setItem('startTime', startTime);
-            clockInterval = setInterval(updateClock, 1000);
-            // $('#start-time-btn').text('Pause Time');
+            timerInterval = setInterval(updateTimer, 1000);
             isRunning = true;
+            updateButtonState('pause');
         }
 
-        function stopClock() {
-            clearInterval(clockInterval);
-            // $('#start-time-btn').text('Resume Time');
+        function stopTimer() {
+            clearInterval(timerInterval);
             isRunning = false;
+            updateButtonState('play');
         }
 
-        const storedStartTime = localStorage.getItem('startTime');
-        if (storedStartTime) {
-            startTime = parseInt(storedStartTime, 10);
-            const elapsedTime = new Date().getTime() - startTime;
-            const secondsElapsed = Math.floor(elapsedTime / 1000);
-            const secondsLeft = 86400 - secondsElapsed;
-            if (secondsLeft > 0) {
-                startClock();
+        function updateButtonState(state) {
+            const button = $('#start-time-btn, #pause-time-btn');
+            if (state === 'pause') {
+                button.attr('id', 'pause-time-btn').removeClass('play-time').addClass('pause-time').html(
+                    '<i class="fas fa-pause"></i>');
             } else {
-                stopClock();
-                localStorage.removeItem('startTime');
+                button.attr('id', 'start-time-btn').removeClass('pause-time').addClass('play-time').html(
+                    '<i class="fas fa-play"></i>');
             }
         }
 
-        $('#start-time-form').submit(function(e) {
-            e.preventDefault();
-
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-
+        function sendStartTimeRequest() {
             $.ajax({
-                    url: url,
+                    url: '{{ route('start.time') }}',
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': token
                     },
                 })
                 .done(function(response) {
-                    window.location.reload();
-                    startClock();
+                    startTimer();
+                    timeLogId = response.time_log_id; // Update timeLogId with the response
+                    localStorage.setItem('timeLogId', timeLogId);
                 })
                 .fail(function(err) {
                     console.error(err);
                     toastr.error('An error occurred while starting the time.');
                 });
-        });
+        }
 
-        // Handle end time button click
-        $('#end-time-form').submit(function(e) {
-            e.preventDefault();
-
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-
+        function sendEndTimeRequest() {
+            let timeLogId = localStorage.getItem('timeLogId');
             $.ajax({
-                    url: url,
+                    url: '{{ route('end.time', '') }}/' + timeLogId,
                     method: 'PUT',
                     headers: {
                         'X-CSRF-TOKEN': token
                     },
                 })
                 .done(function(response) {
-                    window.location.reload();
-                    stopClock();
+                    stopTimer();
                     localStorage.removeItem('startTime');
+                    localStorage.removeItem('timeLogId');
+                    timeLogId = null; // Clear the timeLogId after stopping
                 })
                 .fail(function(err) {
                     console.error(err);
                     toastr.error('An error occurred while stopping the time.');
                 });
+        }
+
+        function handleStartPause() {
+            if (isRunning) {
+                sendEndTimeRequest();
+            } else {
+                sendStartTimeRequest();
+            }
+        }
+
+        const storedStartTime = localStorage.getItem('startTime');
+        if (storedStartTime) {
+            startTime = parseInt(storedStartTime, 10);
+            elapsedTime = new Date().getTime() - startTime;
+            startTimer();
+            updateButtonState('pause');
+        }
+
+        $('#start-time-btn, #pause-time-btn').click(function() {
+            handleStartPause();
         });
-        updateClock();
     });
 </script>
 @endpush

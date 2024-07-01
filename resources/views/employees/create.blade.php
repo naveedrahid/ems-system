@@ -176,7 +176,7 @@
     </div>
 @endsection
 @endsection
-@push('js')
+{{-- @push('js')
 <script>
     $(document).ready(function() {
         $('#addEmployee').submit(function(e) {
@@ -245,4 +245,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

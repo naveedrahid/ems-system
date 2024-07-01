@@ -53,7 +53,6 @@
             <ul class="navbar-nav d-flex align-items-center ml-auto">
                 <li class="daily-timing d-flex align-items-center">
                     <div class="daily-time">
-
                         @php
                             $currentDate = now()->toDateString();
                             $userId = auth()->user()->id;
@@ -61,7 +60,7 @@
                             $attendance = DB::table('attendances')
                                 ->whereDate('attendance_date', $currentDate)
                                 ->where('user_id', $userId)
-                                ->select('check_in')
+                                ->select('check_in', 'check_out')
                                 ->first();
 
                             $timeLog = DB::table('time_logs')
@@ -69,62 +68,48 @@
                                 ->where('user_id', $userId)
                                 ->orderBy('created_at', 'desc')
                                 ->first();
+
+                            $timeLogDurations = DB::table('time_logs')
+                                ->whereDate('created_at', $currentDate)
+                                ->where('user_id', $userId)
+                                ->pluck('duration');
+
+                            $totalDurationInSeconds = $timeLogDurations
+                                ->map(function ($duration) {
+                                    $parts = explode(':', $duration);
+                                    $hours = isset($parts[0]) ? (int) $parts[0] : 0;
+                                    $minutes = isset($parts[1]) ? (int) $parts[1] : 0;
+                                    $seconds = isset($parts[2]) ? (int) $parts[2] : 0;
+
+                                    return $hours * 3600 + $minutes * 60 + $seconds;
+                                })
+                                ->sum();
+
+                            $hours = floor($totalDurationInSeconds / 3600);
+                            $minutes = floor(($totalDurationInSeconds % 3600) / 60);
+                            $seconds = $totalDurationInSeconds % 60;
+                            $totalDuration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
                         @endphp
-                        <style>
-                            .timer {
-                                display: flex;
-                                align-items: center;
-                                justify-content: space-between;
-                                gap: 6px;
-                            }
 
-                            .daily-timing .timer {
-                                font-size: 15px !important;
-                                font-weight: 600;
-                                margin: 0 10px 0 0;
-                                border: 1px solid;
-                                border-radius: 30px;
-                                padding: 3.5px 15px;
-                            }
 
-                            .daily-timing .timer i {
-                                color: #007BFF;
-                            }
-
-                            .daily-timing .btn {
-                                padding: .250rem .85rem !important;
-                                font-size: 14px !important;
-                            }
-                            #timer button:focus {
-                                outline: none !important;
-                                box-shadow: unset !important;
-                            }
-                            #timer button {
-                                border: none;
-                                background: transparent;
-                            }
-                        </style>
-                        <div class="timer" id="timer">
+                        <div class="timer" id="timerd">
                             <i class="fas fa-stopwatch"></i>
-                            <div id="clock">00:00:00</div>
                             @if ($attendance && $attendance->check_in)
-                                @if (!$timeLog || ($timeLog && $timeLog->end_time))
-                                    <form action="{{ route('start.time') }}" method="POST" id="start-time-form">
-                                        @csrf
-                                        <button type="submit" class="play-time" id="start-time-btn">
-                                            <i class="fas fa-play"></i>
-                                        </button>
-                                    </form>
-                                @elseif($timeLog->start_time && !$timeLog->end_time)
-                                    <form action="{{ route('end.time', $timeLog->id) }}" method="POST"
-                                        id="end-time-form">
-                                        @method('PUT')
-                                        @csrf
-                                        <button type="submit" id="end-time-btn" class="pause-time">
-                                            <i class="fas fa-pause"></i>
-                                        </button>
-                                    </form>
+                                @if ($attendance->check_out === null)
+                                    <div id="timer">00:00:00</div>
+                                @else
+                                    <div id="total">{{ $totalDuration }}</div>
                                 @endif
+                            @endif
+
+                            @if ($attendance && $attendance->check_in && $attendance->check_out === null)
+                                <button
+                                    id="{{ !$timeLog || ($timeLog && !$timeLog->start_time) ? 'start-time-btn' : 'pause-time-btn' }}"
+                                    class="{{ !$timeLog || ($timeLog && $timeLog->end_time) ? 'play-time' : 'pause-time' }}">
+                                    <i
+                                        class="fas fa-{{ !$timeLog || ($timeLog && $timeLog->end_time) ? 'play' : 'pause' }}"></i>
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -266,7 +251,10 @@
             <div class="logo"
                 style="width: 100%; height: 57.10px; border-bottom: 1px solid #FFF; display: flex; justify-content: center; align-items: center;">
                 <a href="{{ route('home') }}">
-                    <img src="{{asset('admin/images/pixelz-logo-white.svg')}}" class="text-center" height="43" width="110">
+                    <img src="{{ asset('admin/images/pixelz-logo-white.svg') }}" class="text-center" height="43"
+                        width="110">
+                    <img src="{{ asset('admin/images/favicon.png') }}" class="text-center mini-logo" height="50"
+                        width="30">
                 </a>
             </div>
 
@@ -817,7 +805,7 @@
                 const token = $('meta[name="csrf-token"]').attr('content');
                 const button = $('.checkinBtn');
                 button.prop('disabled', true);
-                
+
                 $.ajax({
                     url: url,
                     method: 'POST',
@@ -867,7 +855,7 @@
                 const alreadyCheckedOut = $(this).data('already-checked-out');
                 const button = $('.checkOutBtn');
                 button.prop('disabled', true);
-                
+
                 if (confirm("Are you sure you want to check out?")) {
                     if (alreadyCheckedOut === 'true') {
                         Swal.fire({

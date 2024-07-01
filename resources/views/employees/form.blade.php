@@ -17,222 +17,139 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3 form-group">
-                                <label class="form-label">Name: <span class="text text-red">*</span></label>
-                                {!! Form::label('title', 'Name') !!}
-                                {!! Form::text('user_name', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="text" name="user_name" id="user_name" class="form-control"> --}}
+                                {!! Form::label('user_name', 'Name') !!}
+                                {!! Form::text('user_name', $employee->name ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Father Name') !!}
-                                {!! Form::text('fater_name', null, ['class' => 'form-control']) !!}
-
-                                {{-- <input type="text" name="fater_name" id="fater_name" class="form-control"> --}}
+                                {!! Form::label('father_name', 'Father Name') !!}
+                                {!! Form::text('fater_name', $employee->employee->fater_name ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Email address') !!}
-                                {!! Form::email('user_email', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="email" name="user_email" id="user_email" class="form-control"> --}}
+                                {!! Form::label('user_email', 'Email address') !!}
+                                {!! Form::email('user_email', $employee->email ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'City') !!}
-                                {!! Form::text('city', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="text" name="city" id="city" class="form-control"> --}}
+                                {!! Form::label('city', 'City') !!}
+                                {!! Form::text('city', $employee->employee->city ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Phone Number') !!}
-                                {!! Form::tel('phone_number', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="tel" name="phone_number" id="phone_number" class="form-control"> --}}
+                                {!! Form::label('phone_number', 'Phone Number') !!}
+                                {!! Form::tel('phone_number', $employee->employee->phone_number ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Emergency Number') !!}
-                                {!! Form::tel('emergency_phone_number', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="tel" name="" id="emergency_phone_number" class="form-control"> --}}
+                                {!! Form::label('emergency_phone_number', 'Emergency Number') !!}
+                                {!! Form::tel('emergency_phone_number', $employee->employee->emergency_phone_number ?? '', [
+                                    'class' => 'form-control',
+                                ]) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Emergency Person Name') !!}
-                                {!! Form::text('emergency_person_name', null, ['class' => 'form-control']) !!}
-
-                                {{-- <input type="text" name="" id="emergency_person_name"
-                                        class="form-control"> --}}
+                                {!! Form::label('emergency_person_name', 'Emergency Person Name') !!}
+                                {!! Form::text('emergency_person_name', $employee->employee->emergency_person_name ?? '', [
+                                    'class' => 'form-control',
+                                ]) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Status') !!}
+                                {!! Form::label('status', 'Status') !!}
                                 {!! Form::select(
                                     'status',
                                     ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
-                                    $employee->status,
+                                    $employee->status ?? '',
                                     ['class' => 'form-control form-select select2'],
                                 ) !!}
-                                {{-- <select name="status" id="status" class="form-control form-select select2"
-                                        style="width: 100%;">
-                                        <option value="">Select Status</option>
-                                        @foreach (['active', 'deactive'] as $status)
-                                            <option value="{{ $status }}"
-                                                {{ old('status') == $status ? 'selected' : '' }}>
-                                                {{ ucfirst($status) }}</option>
-                                        @endforeach
-                                    </select> --}}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Employee Type') !!}
+                                {!! Form::label('employee_type_id', 'Employee Type') !!}
                                 {!! Form::select(
                                     'employee_type_id',
                                     ['' => 'Select Employee Type'] + $employeeTypes->pluck('type', 'id')->toArray(),
-                                    null,
+                                    $employee->employee->employee_type_id ?? '',
                                     ['class' => 'form-control form-select select2', 'id' => 'employee_type_id'],
                                 ) !!}
-                                {{-- <select name="employee_type_id" id="employee_type_id"
-                                        class="form-control form-select select2">
-                                        <option value="">Select Employee Type</option>
-                                        @foreach ($employeeTypes as $employeeType)
-                                        <option value="{{ $employeeType->id }}">{{ $employeeType->type }}</option>
-                                        @endforeach
-                                    </select> --}}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Employee Shift') !!}
-                                {!! Form::select('shift_id', ['' => 'Select Shift'] + $employeeShift->pluck('name', 'id')->toArray(), null, [
-                                    'class' => 'form-control form-select select2',
-                                    'id' => 'shift_id',
-                                ]) !!}
-                                {{-- <select name="shift_id" id="shift_id" class="form-control form-select select2">
-                                    <option value="">Select Shift</option>
-                                    @foreach ($employeeShift as $shift)
-                                    <option value="{{ $shift->id }}">{{ $shift->name }}</option>
-                                    @endforeach
-                                </select> --}}
+                                {!! Form::label('shift_id', 'Employee Shift') !!}
+                                {!! Form::select(
+                                    'shift_id',
+                                    ['' => 'Select Shift'] + $employeeShift->pluck('name', 'id')->toArray(),
+                                    $employee->employee->shift_id ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'shift_id'],
+                                ) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Work Type') !!}
-                                <?php
-                                $workTypes = ['fulltime' => 'Fulltime', 'parttime' => 'Parttime'];
-                                ?>
-
-                                {!! Form::select('work_type', ['' => 'Select Type'] + $workTypes, old('work_type'), [
-                                    'class' => 'form-control form-select select2',
-                                    'id' => 'work_type',
-                                    'style' => 'width: 100%;',
-                                ]) !!}
-                                {{-- <select name="work_type" id="work_type" class="form-control form-select select2"
-                                    style="width: 100%;">
-                                    <option value="">Select Type</option>
-                                    @foreach (['fulltime', 'parttime'] as $workType)
-                                        <option value="{{ $workType }}"
-                                            {{ old('work_type') == $workType ? 'selected' : '' }}>
-                                            {{ ucfirst($workType) }}</option>
-                                    @endforeach
-                                </select> --}}
+                                {!! Form::label('work_type', 'Work Type') !!}
+                                {!! Form::select(
+                                    'work_type',
+                                    ['' => 'Select Type', 'fulltime' => 'Fulltime', 'parttime' => 'Parttime'],
+                                    $employee->work_type ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'work_type', 'style' => 'width: 100%;'],
+                                ) !!}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Employee Image') !!}
-                                {!! Form::file('employee_img', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="file" class="form-control" name="" id="employee_img"> --}}
+                                {!! Form::label('employee_img', 'Employee Image') !!}
+                                {!! Form::file('employee_img', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Department Name') !!}
-                                {!! Form::select('department_id', ['' => 'Select Department'] + $departments, null, [
-                                    'class' => 'form-control form-select select2',
-                                    'id' => 'department_id',
-                                ]) !!}
-                                {{-- <select name="department_id" id="department_id" class="form-control form-select select2"
-                                    style="width: 100%;">
-                                    <option value="">Select Department</option>
-                                    @foreach ($departments as $id => $departmentName)
-                                        <option value="{{ $id }}">{{ $departmentName }}</option>
-                                    @endforeach
-                                </select> --}}
-                            </div>
-                            <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Designation') !!}
+                                {!! Form::label('department_id', 'Department Name') !!}
                                 {!! Form::select(
-                                    'designation_id',
-                                    ['' => 'Select Designation'] + $designations->pluck('designation_name', 'id')->toArray(),
-                                    null,
-                                    [
-                                        'class' => 'form-control form-select select2',
-                                        'id' => 'designation_id',
-                                        'style' => 'width: 100%;',
-                                        'data-department-id' => '',
-                                    ],
+                                    'department_id',
+                                    ['' => 'Select Department'] + $departments,
+                                    $employee->employee->department_id ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'department_id'],
                                 ) !!}
-
-                                {{-- <select name="designation_id" id="designation_id"
-                                    class="form-control form-select select2" style="width: 100%;">
-                                </select> --}}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Gender') !!}
-                                {!! Form::select('gender', ['' => 'Select Status', 'male' => 'Male', 'female' => 'Female'], $employee->gender, [
-                                    'class' => 'form-control form-select select2',
-                                ]) !!}
-                                {{-- <select name="gender" id="gender" class="form-control form-select select2"
+                                {!! Form::label('designation_id', 'Designation') !!}
+                                <select id="designation_id" name="designation_id" class="form-control form-select select2"
                                     style="width: 100%;">
-                                    <option value="">Select Gender</option>
-                                    @foreach (['male', 'female'] as $status)
-                                        <option value="{{ $status }}"
-                                            {{ old('status') == $status ? 'selected' : '' }}>
-                                            {{ ucfirst($status) }}</option>
+                                    <option value="">Select Designation</option>
+                                    @foreach ($designations as $designation)
+                                        <option value="{{ $designation->id }}"
+                                            data-department-id="{{ $designation->department_id }}"
+                                            {{ isset($employee->employee) && $employee->employee->designation_id == $designation->id ? 'selected' : '' }}>
+                                            {{ $designation->designation_name }}
+                                        </option>
                                     @endforeach
-                                </select> --}}
+                                </select>
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Role') !!}
-                                {!! Form::select('user_role', ['' => 'Select Department'] + $roles->pluck('name', 'id')->toArray(), null, [
-                                    'class' => 'form-control form-select select2',
-                                    'id' => 'user_role',
-                                ]) !!}
-                                {{-- <select name="user_role" id="author_feature" class="form-control form-select select2"
-                                    style="width: 100%;">
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select> --}}
+                                {!! Form::label('gender', 'Gender') !!}
+                                {!! Form::select(
+                                    'gender',
+                                    ['' => 'Select Gender', 'male' => 'Male', 'female' => 'Female'],
+                                    $employee->employee->gender ?? '',
+                                    ['class' => 'form-control form-select select2'],
+                                ) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Date of birth') !!}
-                                {!! Form::text('date_of_birth', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="date" name="" class="form-control" id="date_of_birth"
-                                placeholder="Date of Birth"> --}}
+                                {!! Form::label('role_id', 'Role') !!}
+                                {!! Form::select('user_role', [$roles->id => $roles->name], $employee->role_id ?? '', ['class' => 'form-control form-select select2', 'id' => 'user_role']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Joining Date') !!}
-                                {!! Form::date('joining_date', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="date" name="" id="joining_date" class="form-control"
-                                id="dob" placeholder="Joining Date"> --}}
+                                {!! Form::label('date_of_birth', 'Date of birth') !!}
+                                {!! Form::text('date_of_birth', $employee->employee->date_of_birth ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Address') !!}
-                                {!! Form::text('address', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="text" name="" id="address" class="form-control" id="dob"
-                                placeholder="Enter Your Address"> --}}
+                                {!! Form::label('joining_date', 'Joining Date') !!}
+                                {!! Form::date('joining_date', $employee->employee->joining_date ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Password') !!}
-                                {!! Form::password('user_password', null, ['class' => 'form-control']) !!}
-                                {{-- <input type="password" name="user_password" id="user_password" class="form-control"> --}}
+                                {!! Form::label('address', 'Address') !!}
+                                {!! Form::text('address', $employee->employee->address ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'Job Type') !!}
+                                {!! Form::label('job_type', 'Job Type') !!}
                                 {!! Form::select(
                                     'job_type',
                                     ['' => 'Select Type', 'onsite' => 'On Site', 'remote' => 'Remote', 'hybrid' => 'Hybrid'],
-                                    $employee->job_type,
+                                    $employee->job_type ?? '',
                                     ['class' => 'form-control form-select select2'],
                                 ) !!}
-                                {{-- <select name="job_type" id="job_type" class="form-control form-select select2"
-                                    style="width: 100%;">
-                                    <option value="">Select Type</option>
-                                    @foreach (['onsite', 'remote', 'hybrid'] as $jobType)
-                                        <option value="{{ $jobType }}"
-                                            {{ old('job_type') == $jobType ? 'selected' : '' }}>
-                                            {{ ucfirst($jobType) }}</option>
-                                    @endforeach
-                                </select> --}}
                             </div>
                         </div>
                     </div>
@@ -241,92 +158,130 @@
                         <a href="{{ route('employees.view') }}" class="btn btn-danger">Cancel</a>
                     </div>
                     {!! Form::close() !!}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    {{-- <form method="POST" action="{{ route('employees.store') }}" enctype="multipart/form-data"
-                        id="addEmployee">
-                        @csrf
-                        <div class="row">
-
-                            
-                        </div>
-                        <div class="box-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            <a href="" class="btn btn-danger">Cancel</a>
-                        </div>
-                    </form> --}}
                 </div>
             </div>
         </div>
     </div>
 @endsection
 @endsection
+
 @push('css')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<style>
+    span.select2-selection.select2-selection--single {
+        height: 40px;
+    }
+</style>
 @endpush
+
 @push('js')
 <script>
     $(document).ready(function() {
-        $('#addEmployee').submit(function(e) {
+        $('#addEmployee, #UpdateEmployee').submit(function(e) {
             e.preventDefault();
 
-            const user_name = $('input[name="user_name"]').val().trim();
-            const fater_name = $('input[name="fater_name"]').val().trim();
-            const user_email = $('input[name="user_email"]').val().trim();
-            const city = $('input[name="city"]').val().trim();
-            const phone_number = $('input[name="phone_number"]').val().trim();
-            const emergency_phone_number = $('input[name="emergency_phone_number"]').val().trim();
-            const emergency_person_name = $('input[name="emergency_person_name"]').val().trim();
-            const gender = $('select[name="gender"]').val().trim();
-            const date_of_birth = $('input[name="date_of_birth"]').val().trim();
-            const joining_date = $('input[name="joining_date"]').val().trim();
-            const address = $('input[name="address"]').val().trim();
-            const user_role = $('select[name="user_role"]').val().trim();
-            const status = $('select[name="status"]').val().trim();
-            const department_id = $('select[name="department_id"]').val().trim();
-            // const designation_id = $('select[name="designation_id"]').val().trim();
-            const employee_type_id = $('select[name="employee_type_id"]').val().trim();
+            const submitButton = $('input[type="submit"]');
+            const fields = [{
+                    name: 'user_name',
+                    message: 'User name is required'
+                },
+                {
+                    name: 'fater_name',
+                    message: 'Father name is required'
+                },
+                {
+                    name: 'user_email',
+                    message: 'User email is required'
+                },
+                {
+                    name: 'city',
+                    message: 'City is required'
+                },
+                {
+                    name: 'phone_number',
+                    message: 'Phone number is required'
+                },
+                {
+                    name: 'emergency_phone_number',
+                    message: 'Emergency phone number is required'
+                },
+                {
+                    name: 'emergency_person_name',
+                    message: 'Emergency person name is required'
+                },
+                {
+                    name: 'gender',
+                    message: 'Gender is required'
+                },
+                {
+                    name: 'date_of_birth',
+                    message: 'Date of birth is required'
+                },
+                {
+                    name: 'joining_date',
+                    message: 'Joining date is required'
+                },
+                {
+                    name: 'address',
+                    message: 'Address is required'
+                },
+                {
+                    name: 'status',
+                    message: 'Status is required'
+                },
+                {
+                    name: 'department_id',
+                    message: 'Department is required'
+                },
+                {
+                    name: 'employee_type_id',
+                    message: 'Employee type is required'
+                },
+                {
+                    name: 'designation_id',
+                    message: 'Designation is required'
+                },
+                {
+                    name: 'shift_id',
+                    message: 'Shift is required'
+                },
+                {
+                    name: 'work_type',
+                    message: 'Work type is required'
+                },
+                {
+                    name: 'job_type',
+                    message: 'Job type is required'
+                }
+            ];
 
-            emergency_person_name
-            if (user_name == '' || fater_name == '' || user_email == '' || city == '' || phone_number ==
-                '' || emergency_phone_number == '' || emergency_person_name == '' || gender == '' ||
-                date_of_birth == '' || joining_date == '' || address == '' || user_role == '' ||
-                status == '' || department_id == '' || employee_type_id == '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'All Fields cannot be empty.',
-                });
-                return;
+            let isValid = true;
+            fields.forEach(function(field) {
+                const fieldElement = $('[name="' + field.name + '"]');
+                if (fieldElement.length > 0) {
+                    const value = fieldElement.val().trim();
+                    if (value === '') {
+                        toastr.error(field.message);
+                        isValid = false;
+                    }
+                } else {
+                    toastr.error('Field ' + field.name + ' is missing in the form.');
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                return; // Stop form submission if validation fails
             }
 
+            submitButton.prop('disabled', true);
             const formData = new FormData(this);
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
+
             $.ajax({
                     url: url,
-                    method: 'POST',
+                    method: $(this).attr('method'),
                     data: formData,
                     processData: false,
                     contentType: false,
@@ -335,54 +290,64 @@
                     }
                 })
                 .then(function(response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                    });
-                    $('#addEmployee')[0].reset();
+                    toastr.success(response.message);
+                    submitButton.prop('disabled', false);
+                    if ($(e.target).attr('id') === 'addEmployee') {
+                        $('#addEmployee')[0].reset();
+                    }
                 })
                 .catch(function(xhr) {
                     console.error(xhr);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Failed to create Employee.',
-                    });
+                    toastr.success(response.message);
+                    submitButton.prop('disabled', false);
                 });
         });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Initialize Select2
-        $('.select2').select2();
+        $('select').select2();
+        $('#department_id, #designation_id').select2();
 
-        // Initially hide all designations
-        $('#designation_id').find('option').hide();
-        $('#designation_id').find('option[value=""]').show(); // Show the default option
+        $('#designation_id option').not(':first').each(function() {
+            const option = $(this);
+            option.data('select2-hidden', true);
+        });
 
-        // On department change
-        $('#department_id').change(function() {
-            var selectedDepartment = $(this).val();
-
-            // Hide all designations initially
-            $('#designation_id').find('option').hide();
-            $('#designation_id').find('option[value=""]').show(); // Show the default option
-
-            // Show designations matching the selected department
-            $('#designation_id').find('option').each(function() {
-                var designationDepartment = $(this).data('department-id');
-                if (designationDepartment == selectedDepartment) {
-                    $(this).show();
+        $('#designation_id').select2({
+            templateResult: function(option) {
+                if ($(option.element).data('select2-hidden')) {
+                    return null;
                 }
+                return option.text;
+            }
+        });
+
+        $('#department_id').on('change', function() {
+            const selectedDepartmentId = $(this).val();
+
+            $('#designation_id option').not(':first').each(function() {
+                const option = $(this);
+                option.data('select2-hidden', true);
             });
 
-            // Reset designation dropdown
-            $('#designation_id').val('').trigger('change');
+            if (selectedDepartmentId) {
+                $('#designation_id option').each(function() {
+                    if ($(this).data('department-id') == selectedDepartmentId) {
+                        $(this).data('select2-hidden', false);
+                    }
+                });
+            }
+
+            $('#designation_id').select2({
+                templateResult: function(option) {
+                    if ($(option.element).data('select2-hidden')) {
+                        return null;
+                    }
+                    return option.text;
+                }
+            });
         });
     });
 </script>

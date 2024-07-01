@@ -209,25 +209,25 @@ $(document).ready(function () {
 
     // update status Employee
 
-    $('#department_id').change(function () {
-        const departmentId = $(this).val();
-        if (departmentId) {
-            $.ajax({
-                url: '/get-designations/' + departmentId,
-                type: 'GET',
-                success: function (data) {
-                    $('#designation_id').empty();
-                    $('#designation_id').append('<option value="">Select Designation</option>');
-                    $.each(data, function (key, value) {
-                        $('#designation_id').append('<option value="' + key + '">' + value + '</option>');
-                    });
-                }
-            });
-        } else {
-            $('#designation_id').empty();
-            $('#designation_id').append('<option value="">Select Designation</option>');
-        }
-    });
+    // $('#department_id').change(function () {
+    //     const departmentId = $(this).val();
+    //     if (departmentId) {
+    //         $.ajax({
+    //             url: '/get-designations/' + departmentId,
+    //             type: 'GET',
+    //             success: function (data) {
+    //                 $('#designation_id').empty();
+    //                 $('#designation_id').append('<option value="">Select Designation</option>');
+    //                 $.each(data, function (key, value) {
+    //                     $('#designation_id').append('<option value="' + key + '">' + value + '</option>');
+    //                 });
+    //             }
+    //         });
+    //     } else {
+    //         $('#designation_id').empty();
+    //         $('#designation_id').append('<option value="">Select Designation</option>');
+    //     }
+    // });
 
 
 });
