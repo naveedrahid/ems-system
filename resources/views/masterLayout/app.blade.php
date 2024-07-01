@@ -105,7 +105,6 @@
 
                         @endphp
 
-
                         <div class="timer" id="timerd">
                             <i class="fas fa-stopwatch"></i>
                             @if ($attendance && $attendance->check_in)
@@ -932,7 +931,7 @@
                 }
             });
         });
-        
+
         $(document).ready(function() {
             let timerInterval;
             let isRunning = false;
