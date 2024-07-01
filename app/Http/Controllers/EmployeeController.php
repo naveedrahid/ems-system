@@ -58,7 +58,7 @@ class EmployeeController extends Controller
                 $user = auth()->user();
                 if (isAdmin($user)) {
                     return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->employee_id]) . '">
-                    <i class="fa fa-building-columns"></i></a>';
+                    <i class="fas fa-money-check-alt"></i></a>';
                 } else {
                     return $employee->name;
                 }
@@ -87,11 +87,14 @@ class EmployeeController extends Controller
         } else {
             $roles = Role::where('name', 'employee')->get();
         }
-        $departments = Department::pluck('department_name', 'id');
-        $designations = Designation::pluck('designation_name', 'id');
+        $route = route('employees.store');
+        $formMethod = 'POST';
+        $employee = new Employee();
+        $departments = Department::pluck('department_name', 'id')->toArray();
+        $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
-        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
+        return view('employees.form', compact('route','formMethod','employee','departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
     }
 
     public function getDesignations($departmentId)
@@ -178,13 +181,15 @@ class EmployeeController extends Controller
     public function edit(Request $request, $id)
     {
         $employee = User::with('employee')->findOrFail($id);
+        $route = route('employees.update', $employee->id);
+        $formMethod = 'PUT';
         $roles = Role::pluck('name', 'id');
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
         $employeeShifts = Shift::all();
         $employeeTypes = EmployeeType::all();
 
-        return view('employees.edit', compact('employee', 'roles', 'departments', 'designations', 'employeeShifts', 'employeeTypes'));
+        return view('employees.edit', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShifts', 'employeeTypes'));
     }
 
     public function update(Request $request, $id)
@@ -287,13 +292,13 @@ class EmployeeController extends Controller
     public function employeeProfile(Request $request, $id)
     {
         $user = auth()->user();
-    
+
         if (isAdmin($user)) {
             $employee = User::with(['employee.bank'])->findOrFail($id);
         } else {
             $employee = User::with(['employee.bank'])->findOrFail($user->id);
         }
-    
+
         return view('employees.profile', compact('employee'));
     }
 

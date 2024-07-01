@@ -11,6 +11,7 @@ use App\Models\LeaveType;
 use App\Models\Notice;
 use App\Models\TimeLog;
 use App\Models\User;
+use Attribute;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,8 +83,10 @@ class HomeController extends Controller
         $activeEmployees = User::where('status', 'active')->get();
         $activeEmployeeCount = $activeEmployees->count();
 
-        $leaveQuery = LeaveApplication::all();
+        $leaveQuery = LeaveApplication::with(['user', 'leaveType', 'employee'])->orderBy('id', 'DESC')->get();
         $notices = Notice::where('status', 'active')->orderBy('id', 'ASC')->take(10)->get();
+
+        $attendanceCount = Attendance::whereDate('attendance_date', now()->toDateString())->select('status');
         
         return view('dashboard', compact(
             'designation',
@@ -97,6 +100,8 @@ class HomeController extends Controller
             'activeEmployeeCount',
             'leaveQuery',
             'notices',
+            'activeEmployees',
+            'attendanceCount'
         ));
     }
 

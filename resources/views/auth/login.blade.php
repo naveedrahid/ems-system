@@ -70,7 +70,14 @@
                                 @endif --}}
                         </div>
                     </form>
-                    <div class="fack"><a href="#"><i class="fa fa-question-circle"></i>Forgot password?</a></div>
+                    <div class="fack">
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}">
+                                <i class="fa fa-question-circle"></i>
+                               {{ __('Forgot password?')}}
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </section>
         </div>

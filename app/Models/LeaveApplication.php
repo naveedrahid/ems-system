@@ -27,4 +27,8 @@ class LeaveApplication extends Model
     function user(){
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    function employee(){
+        return $this->belongsTo(Employee::class, 'user_id', 'user_id');
+    }
 }

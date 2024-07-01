@@ -21,7 +21,7 @@ class Employee extends Model
     
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function department()
@@ -40,7 +40,7 @@ class Employee extends Model
         return $this->belongsTo(Shift::class);
     }
     public function LeaveApplication(){
-        return $this->hasMany(LeaveApplication::class);
+        return $this->hasMany(LeaveApplication::class, 'user_id', 'user_id');
     }
 
     public function awards()

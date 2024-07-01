@@ -48,19 +48,6 @@
                 </li>
             </ul>
 
-            <!-- SEARCH FORM -->
-            <form class="form-inline ml-3">
-                <div class="input-group input-group-sm">
-                    <input class="form-control form-control-navbar" type="search" placeholder="Search"
-                        aria-label="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-navbar" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-
             <!-- Right navbar links -->
 
             <ul class="navbar-nav d-flex align-items-center ml-auto">
@@ -174,7 +161,7 @@
                                 <form action="{{ route('checkOut') }}" method="POST" id="checkOut"
                                     data-already-checked-out="{{ auth()->check() && auth()->user()->hasCheckedOut ? 'true' : 'false' }}">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger">Check Out</button>
+                                    <button type="submit" class="btn btn-danger checkOutBtn">Check Out</button>
                                 </form>
                             @endif
                         @endif
@@ -279,7 +266,7 @@
             <div class="logo"
                 style="width: 100%; height: 57.10px; border-bottom: 1px solid #FFF; display: flex; justify-content: center; align-items: center;">
                 <a href="{{ route('home') }}">
-                    <img src="dist/img/pixelz-logo-white.svg" class="text-center" height="43" width="110">
+                    <img src="{{asset('admin/images/pixelz-logo-white.svg')}}" class="text-center" height="43" width="110">
                 </a>
             </div>
 
@@ -828,6 +815,9 @@
                 e.preventDefault();
                 const url = $(this).attr('action');
                 const token = $('meta[name="csrf-token"]').attr('content');
+                const button = $('.checkinBtn');
+                button.prop('disabled', true);
+                
                 $.ajax({
                     url: url,
                     method: 'POST',
@@ -854,6 +844,7 @@
                             icon: "success",
                             title: "Check in successfully"
                         });
+                        button.prop('disabled', false);
                         $('.checkinBtn').addClass('checkinActive');
                         setTimeout(function() {
                             window.location.reload();
@@ -861,6 +852,7 @@
                     },
                     error: function(xhr) {
                         console.error(xhr);
+                        button.prop('disabled', false);
                     }
                 });
             });
@@ -869,10 +861,13 @@
 
             $('#checkOut').submit(function(e) {
                 e.preventDefault();
+
                 const url = $(this).attr('action');
                 const token = $('meta[name="csrf-token"]').attr('content');
                 const alreadyCheckedOut = $(this).data('already-checked-out');
-
+                const button = $('.checkOutBtn');
+                button.prop('disabled', true);
+                
                 if (confirm("Are you sure you want to check out?")) {
                     if (alreadyCheckedOut === 'true') {
                         Swal.fire({
@@ -908,6 +903,7 @@
                             'X-CSRF-TOKEN': token
                         },
                         success: function(response) {
+                            button.prop('disabled', false);
                             const Toast = Swal.mixin({
                                 toast: true,
                                 position: "top-end",
@@ -929,6 +925,7 @@
                         },
                         error: function(xhr) {
                             console.error(xhr);
+                            button.prop('disabled', false);
                         }
                     });
                 }
