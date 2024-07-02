@@ -535,6 +535,12 @@
                                         <p>Month Wise Attedance</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('time-logs.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Times Log</p>
+                                    </a>
+                                </li>
                                 @if (isAdmin($user))
                                     <li class="nav-item">
                                         <a href="{{ route('attendance.log') }}" class="nav-link">
@@ -662,7 +668,7 @@
                                 </li>
                                 @if (isAdmin($user))
                                     <li class="nav-item">
-                                        <a href="{{ route('users') }}" class="nav-link">
+                                        <a href="{{ route('users.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Users</p>
                                         </a>

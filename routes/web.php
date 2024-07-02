@@ -33,12 +33,15 @@ Route::fallback(function () {
 Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () {
     // Route::get('/admin', [HomeController::class, 'dashboard'])->name('home');
 
-    Route::get('/users', [UserController::class, 'index'])->name('users');
-    Route::get('/users/create', [UserController::class, 'create'])->name('user_create');
-    Route::post('/users/create', [UserController::class, 'store'])->name('post_user');
-    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('user_edit');
+    // Route::get('/users', [UserController::class, 'index'])->name('users');
+    // Route::get('/users/create', [UserController::class, 'create'])->name('user_create');
+    // Route::post('/users/create', [UserController::class, 'store'])->name('post_user');
+    // Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('user_edit');
+    // Route::put('/users/update/{id}', [UserController::class, 'update'])->name('users.update');
+
+    Route::resource('users', UserController::class)->except(['show']);
+
     Route::put('/user-status/{id}', [UserController::class, 'updateStatus'])->name('users.status');
-    Route::put('/users/update/{id}', [UserController::class, 'update'])->name('users.update');
 
     Route::get('/attendance/log', [AttendanceController::class, 'attendanceLog'])->name('attendance.log');
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
@@ -47,15 +50,7 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
     Route::get('/attendance/report/download', [AttendanceController::class, 'downloadAttendanceReport'])->name('attendance.report.download');
-    // Route::get('/filter-attendance-report', [AttendanceController::class, 'filterAttendanceReport'])->name('filter.attendance.report');
     Route::resource('roles', RoleController::class)->except(['show']);
-    // Route::put('/roles/status/{id}', [RoleController::class, 'updateStatus'])->name('roles.status');
-    // Route::get('/role', [RoleController::class, 'index'])->name('roles');
-    // Route::get('/role/create', [RoleController::class, 'create'])->name('role_create');
-    // Route::post('/role/create', [RoleController::class, 'store'])->name('role_store');
-    // Route::get('/role/{id}/edit', [RoleController::class, 'edit'])->name('role_edit');
-    // Route::put('/role/{id}/update', [RoleController::class, 'update'])->name('role_update');
-    // Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role_destroy');
 
     Route::resource('department', DepartmentController::class)->except(['show']);
 
@@ -106,7 +101,6 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
 
 Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::resource('time-logs', TimeLogController::class)->except(['edit', 'update', 'show', 'store', 'create']);
-    // Route::post('/dashboard/start-work/{id}', [HomeController::class, 'startTime'])->name('time.start');
     Route::post('/start-time', [TimeLogController::class, 'startTime'])->name('start.time');
     Route::put('/end-time/{time_log}', [TimeLogController::class, 'endTimeTracker'])->name('end.time');
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');

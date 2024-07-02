@@ -22,7 +22,7 @@ class UserController extends Controller
     public function index()
     {
         $employees = User::whereIn('role_id', [1, 2])->with('employee')->get();
-        return view('users.users', compact('employees'));
+        return view('users.index', compact('employees'));
     }
 
     /**
@@ -38,12 +38,15 @@ class UserController extends Controller
         } else {
             $roles = Role::where('name', 'employee')->first();
         }
+        $users = new User();
+        $route = route('users.store');
+        $formMethod = 'POST';
         $departments = Department::pluck('department_name', 'id');
         $designations = Designation::pluck('designation_name', 'id');
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
 
-        return view('employees.create', compact('departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
+        return view('users.form', compact('formMethod', 'route', 'users', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
     }
 
     public function getDesignations($departmentId)

@@ -19,12 +19,29 @@ class TimeLogController extends Controller
     {
         $user = auth()->user();
         if (isAdmin($user)) {
-            $timeLog = TimeLog::with('user')->get();
+            $timeLog = TimeLog::with('user')->orderBy('id', 'DESC')->paginate(15);
             return view('time-logs.index', compact('timeLog'));
         } else {
-            $timeLog = TimeLog::where('user_id', $user->id)->with('user')->get();
+            $timeLog = TimeLog::where('user_id', $user->id)->with('user')->orderBy('id', 'DESC')->paginate(15);
             return view('time-logs.index', compact('timeLog'));
         }
+        // $user = auth()->user();
+        // $timeLogs = [];
+        
+        // if (isAdmin($user)) {
+        //     TimeLog::with('user')->chunk(10, function ($logs) use (&$timeLogs) {
+        //         foreach ($logs as $log) {
+        //             $timeLogs[] = $log;
+        //         }
+        //     });
+        // } else {
+        //     TimeLog::where('user_id', $user->id)->with('user')->chunk(10, function ($logs) use (&$timeLogs) {
+        //         foreach ($logs as $log) {
+        //             $timeLogs[] = $log;
+        //         }
+        //     });
+        // }
+        // return view('time-logs.index', compact('timeLogs'));
     }
 
     /**

@@ -41,13 +41,14 @@
                                     <button class="delete-timelog btn btn-danger btn-flat btn-sm"
                                         data-time-id="{{ $item->id }}"
                                         data-delete-route="{{ route('time-logs.destroy', ':id') }}">
-                                        <i class="fa-regular fa-trash-can"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                {{ $timeLog->links('pagination::bootstrap-4') }}
             @else
                 <table class="table table-bordered">
                     <thead style="background-color: #F8F8F8;">
