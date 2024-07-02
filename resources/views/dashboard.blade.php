@@ -239,8 +239,9 @@
                                         <div class="col-lg-10">
                                             <div class="detail mt-2">
                                                 @foreach ($leaveTypes as $leaveType)
-                                                    <p class=" text-bold">{{ strtoupper($leaveType->name) }} -
-                                                        {{ $availedLeaves->get($leaveType->id, 0) }}</p>
+                                                    <p class=" text-bold">
+                                                        {{ $leaveType->name }} - {{ $leaveType->default_balance }}
+                                                    </p>
                                                 @endforeach
                                             </div>
                                         </div>
