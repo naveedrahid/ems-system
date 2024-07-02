@@ -215,6 +215,107 @@
                         </div>
                     </div>
                 </div>
+            @else
+                <div class="col-lg-12">
+                    <div class="row deshboard-cards">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <!-- small box -->
+                            <div class="small-box">
+                                <div class="inner leave-managment">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-lg-1">
+                                            <div class="deshboard-cards-icon">
+                                                <i class="fas fa-calendar-check" style="font-size: 25px;"></i>
+                                            </div>
+                                        </div>
+                                        @php
+                                            $totalLeaves = 0;
+                                            foreach ($leaveTypes as $leaveType) {
+                                                $totalLeaves += $leaveType->default_balance;
+                                            }
+                                        @endphp
+                                        <h4 class="card-title text-bold leave-managment-title">Total Leaves -
+                                            {{ $totalLeaves }}</h4><br>
+                                        <div class="col-lg-10">
+                                            <div class="detail mt-2">
+                                                @foreach ($leaveTypes as $leaveType)
+                                                    <p class=" text-bold">{{ strtoupper($leaveType->name) }} -
+                                                        {{ $availedLeaves->get($leaveType->id, 0) }}</p>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <!-- small box -->
+                            <div class="small-box">
+                                <div class="inner leave-managment">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-lg-1">
+                                            <div class="deshboard-cards-icon">
+                                                <i class="fas fa-history" style="font-size: 25px;"></i>
+                                            </div>
+                                        </div>
+                                        @php
+                                            $totalAvaile = 0;
+                                            foreach ($leaveTypes as $leaveType) {
+                                                // dd($leaveType);
+                                                $totalAvaile += $availedLeaves->get($leaveType->id, 0);
+                                            }
+                                        @endphp
+                                        <h4 class="card-title text-bold leave-managment-title">Used Leave -
+                                            {{ $totalAvaile }}</h4><br>
+                                        <div class="col-lg-10">
+                                            <div class="detail mt-2">
+                                                @foreach ($leaveTypes as $leaveType)
+                                                    <p class=" text-bold">{{ strtoupper($leaveType->name) }} -
+                                                        {{ $availedLeaves->get($leaveType->id, 0) }}</p>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <!-- small box -->
+                            <div class="small-box">
+                                <div class="inner leave-managment">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-lg-1">
+                                            <div class="deshboard-cards-icon">
+                                                <i class="fas fa-balance-scale" style="font-size: 25px;"></i>
+                                            </div>
+                                        </div>
+                                        @php
+                                            $totalRemaining = 0;
+                                            foreach ($leaveTypes as $leaveType) {
+                                                $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
+                                                $totalRemaining += $remainingLeaveCount;
+                                            }
+                                        @endphp
+                                        <h4 class="card-title text-bold leave-managment-title">Remaining Leave -
+                                            {{ $totalRemaining }}</h4>
+                                        <br>
+                                        <div class="col-lg-10">
+                                            <div class="detail mt-2">
+                                                @foreach ($leaveTypes as $leaveType)
+                                                    @php
+                                                        $remainingLeaveCount = $remainingLeaves->get($leaveType->id, 0);
+                                                    @endphp
+                                                    <p class=" text-bold">{{ strtoupper($leaveType->name) }} -
+                                                        {{ $remainingLeaveCount }}</p>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </div>
@@ -519,4 +620,3 @@
     </div>
 @endsection
 @endsection
-
