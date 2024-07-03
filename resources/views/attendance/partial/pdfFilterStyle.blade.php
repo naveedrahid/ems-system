@@ -77,7 +77,7 @@
         {!! $imageHtml !!}
     @endif
 
-    <h1 style="text-align: center;">{{ auth()->user()->name }}</h1>
+    <h1 style="text-align: center;">{{ $userName }}</h1>
     <h4 style="text-align: center;">Attendance Report Month of
         {{ \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y') }}</h4>
 </div>

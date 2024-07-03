@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\DocumentUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentUserController extends Controller
 {
@@ -24,7 +26,12 @@ class DocumentUserController extends Controller
      */
     public function create()
     {
-        //
+        $documentUser = new DocumentUser();
+        $route = route('documents.store');
+        $formMethod = 'POST';
+        $departments = Department::with('employees.user')->get();
+    
+        return view('documents.form', compact('documentUser', 'route', 'formMethod', 'departments'));
     }
 
     /**
@@ -35,8 +42,35 @@ class DocumentUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nic_front' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_back' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'file|mimes:pdf,doc,docx|max:2048',
+            'payslip' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'experience_letter' => 'file|mimes:pdf,doc,docx|max:2048',
+            'bill' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $documentUser = new DocumentUser();
+        $documentUser->user_id = $request->user_id;
+
+        $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
+    
+        foreach ($files as $file) {
+            if ($request->hasFile($file)) {
+                $uploadedFile = $request->file($file);
+                $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
+                $filePath = 'documents/' . $fileName;
+                Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
+                $documentUser->$file = 'storage/' . $filePath;
+            }
+        }
+    
+        $documentUser->save();
+    
+        return response()->json(['message' => 'Document saved successfully!', 'data' => $documentUser]);
     }
+
 
     /**
      * Display the specified resource.

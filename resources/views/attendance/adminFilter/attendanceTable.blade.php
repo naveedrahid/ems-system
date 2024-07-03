@@ -44,11 +44,11 @@
                                     ->first();
                             @endphp
                             {{ $employee->user->name ?? 'Unknown' }}
-                            @if($attendanceData)
-                            <a href="{{ route('attendance.edit', $attendanceData->id) }}" style="float:right;">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                        @endif
+                            @if ($attendanceData)
+                                <a href="{{ route('attendance.edit', $attendanceData->id) }}" style="float:right;">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            @endif
                         </td>
                     @endforeach
                     <td><span class="currentDate">{{ $displayDate }}</span></td>
@@ -113,7 +113,8 @@
                             <span
                                 style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">{{ $holidayName }}</span>
                         @elseif ($leavesStatus == 'Approved')
-                                <span style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">Leave</span>        
+                            <span
+                                style="padding: 3px 5px;border-radius: 3px;background-color: #f39c12; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">Leave</span>
                         @elseif (optional($attendanceData)->status)
                             <span
                                 style="padding: 3px 5px;border-radius: 3px;background-color:#367fa9; color: white; padding:3px 3px;font-size: 11px;line-height: 1.5;">

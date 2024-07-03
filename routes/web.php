@@ -6,6 +6,7 @@ use App\Http\Controllers\BankDetailController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\DocumentUserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\UserController;
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
+
+    Route::resource('documents', DocumentUserController::class)->except(['show']);
 
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 

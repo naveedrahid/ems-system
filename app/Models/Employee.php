@@ -52,4 +52,9 @@ class Employee extends Model
     {
         return $this->hasMany(BankDetail::class);
     }
+
+    public function documentUser()
+    {
+        return $this->hasOne(DocumentUser::class);
+    }
 }

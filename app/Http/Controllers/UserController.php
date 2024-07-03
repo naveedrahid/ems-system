@@ -34,19 +34,20 @@ class UserController extends Controller
     {
         $currentUser = auth()->user();
         if ($currentUser->role_id == 1) {
-            $roles = Role::all();
+            $roles = Role::pluck('name', 'id');
         } else {
             $roles = Role::where('name', 'employee')->first();
         }
-        $users = new User();
         $route = route('users.store');
         $formMethod = 'POST';
-        $departments = Department::pluck('department_name', 'id');
-        $designations = Designation::pluck('designation_name', 'id');
+        $user = new User();
+        $employee = new Employee();
+        $departments = Department::pluck('department_name', 'id')->toArray();
+        $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
 
-        return view('users.form', compact('formMethod', 'route', 'users', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
+        return view('users.form', compact('employee','formMethod', 'route', 'user', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
     }
 
     public function getDesignations($departmentId)
@@ -67,7 +68,7 @@ class UserController extends Controller
             'user_name' => 'required',
             'user_email' => 'required|email',
             'user_role' => 'required',
-            'user_password' => 'required',
+            'password' => 'required',
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
@@ -81,6 +82,10 @@ class UserController extends Controller
             'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
+            'job_type' => 'required',
+            'work_type' => 'required|in:fulltime,parttime',
+            'employee_type_id' => 'required',
+            'shift_id' => 'required'
         ]);
 
         $user = User::create([
@@ -88,6 +93,9 @@ class UserController extends Controller
             'email' => $request->user_email,
             'role_id' => $request->user_role,
             'status' => $request->status,
+            'job_type' => $request->job_type,
+            'work_type' => $request->work_type,
+            'job_type' => $request->job_type,
             'password' => Hash::make($request->user_password),
         ]);
 
@@ -118,6 +126,8 @@ class UserController extends Controller
             'designation_id' => $request->designation_id,
             'employee_img' => $imageName,
             'gender' => $request->gender,
+            'shift_id' => $request->shift_id,
+            'employee_type_id' => $request->employee_type_id,
         ]);
 
         return response()->json(['message' => 'User Created successfully created']);
@@ -141,16 +151,18 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request, User $user)
     {
-        $employee = User::with('employee')->findOrFail($id);
+        $employee = User::with('employee')->findOrFail($user->id);
+        $route = route('users.update', $user->id);
+        $formMethod = 'PUT';  // Assuming you're editing, so the method should be PUT
         $roles = Role::pluck('name', 'id');
-        $departments = Department::pluck('department_name', 'id');
-        $designations = Designation::pluck('designation_name', 'id');
-        $employeeShifts = Shift::all();
+        $departments = Department::pluck('department_name', 'id')->toArray();
+        $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
+        $employeeShift = Shift::all();
 
-        return view('employees.edit', compact('employee', 'roles', 'departments', 'designations', 'employeeTypes', 'employeeShifts'));
+        return view('users.form', compact('user', 'employee', 'roles', 'departments', 'designations', 'employeeTypes', 'employeeShift', 'route', 'formMethod'));
     }
 
     /**
@@ -161,10 +173,8 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
-
         $request->validate([
             'user_name' => 'required',
             'user_email' => 'required|email',
@@ -179,9 +189,13 @@ class UserController extends Controller
             'phone_number' => 'required',
             'emergency_phone_number' => 'required',
             'emergency_person_name' => 'required',
-            'employee_img' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'employee_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender' => 'required|in:male,female',
             'status' => 'required|in:active,deactive',
+            'job_type' => 'required',
+            'work_type' => 'required|in:fulltime,parttime',
+            'employee_type_id' => 'required',
+            'shift_id' => 'required'
         ]);
 
         $userData = [
@@ -189,14 +203,11 @@ class UserController extends Controller
             'email' => $request->user_email,
             'role_id' => $request->user_role,
             'status' => $request->status,
+            'job_type' => $request->job_type,
+            'work_type' => $request->work_type,
         ];
 
         $user->update($userData);
-
-        $role = Role::find($request->user_role);
-        if ($role) {
-            $user->role()->associate($role);
-        }
 
         $employeeData = [
             'user_id' => $user->id,
@@ -208,12 +219,14 @@ class UserController extends Controller
             'phone_number' => $request->phone_number,
             'emergency_phone_number' => $request->emergency_phone_number,
             'emergency_person_name' => $request->emergency_person_name,
-            'gender' => $request->gender,
             'department_id' => $request->department_id,
             'designation_id' => $request->designation_id,
+            'gender' => $request->gender,
+            'shift_id' => $request->shift_id,
+            'employee_type_id' => $request->employee_type_id,
         ];
 
-        if ($request->hasFile('employee_img')) {
+        if ($request->hasFile('employee_img') && $request->file('employee_img')->isValid()) {
             if ($user->employee && $user->employee->employee_img) {
                 $imagePath = public_path('upload') . '/' . $user->employee->employee_img;
                 if (file_exists($imagePath)) {
@@ -231,7 +244,13 @@ class UserController extends Controller
             $user->employee()->create($employeeData);
         }
 
-        return response()->json(['success' => 'User Updated Successfully'], 200);
+        $role = Role::find($request->user_role);
+        if ($role) {
+            $user->role()->associate($role);
+            $user->save();
+        }
+
+        return response()->json(['message' => 'User Updated Successfully'], 200);
     }
 
     /**

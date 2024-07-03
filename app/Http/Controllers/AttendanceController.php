@@ -68,7 +68,8 @@ class AttendanceController extends Controller
                 ->whereMonth('attendance_date', $month)
                 ->get();
         }
-        $leaves = LeaveApplication::where('user_id', $userId)->select('start_date', 'end_date', 'status')->get();
+
+        $leaves = LeaveApplication::whereIn('user_id', $userIds)->select('start_date', 'end_date', 'status')->get();
 
         if ($request->ajax()) {
             $html = view('attendance.adminFilter.attendanceTable', compact('users', 'employees', 'attendance', 'month', 'year', 'holidays', 'leaves'))->render();
@@ -89,7 +90,7 @@ class AttendanceController extends Controller
             ]);
         }
 
-        return view('attendance.report', compact('departments', 'employees', 'users', 'attendance', 'month', 'year', 'departmentId', 'userId'));
+        return view('attendance.report', compact('departments', 'employees', 'users', 'attendance', 'month', 'year', 'departmentId', 'userId', 'leaves'));
     }
 
     public function downloadAttendanceReport(Request $request)
@@ -125,11 +126,19 @@ class AttendanceController extends Controller
         $image = base64_encode(file_get_contents($imagePath));
         $imageHtml = '<img src="data:image/png;base64,' . $image . '" width="100" height="100"/>';
 
-        $styles = view('attendance.partial.pdfFilterStyle', compact('imageHtml', 'month', 'year'))->render();
+        $userName = null;
+        if ($userId) {
+            $user = User::find($userId);
+            if ($user) {
+                $userName = $user->name;
+            }
+        }
+        $styles = view('attendance.partial.pdfFilterStyle', compact('imageHtml', 'month', 'year', 'userName'))->render();
+        $leaves = LeaveApplication::whereIn('user_id', $userIds)->select('start_date', 'end_date', 'status')->get();
 
         $pdfContent = '';
         if (view()->exists('attendance.adminFilter.attendanceTable')) {
-            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays', 'employees'))->render();
+            $pdfContent = view('attendance.adminFilter.attendanceTable', compact('users', 'attendance', 'month', 'year', 'holidays', 'employees', 'leaves'))->render();
         }
 
         $pdfContentWithLogo = $styles . $pdfContent;
@@ -146,6 +155,7 @@ class AttendanceController extends Controller
         $user = User::where('id', auth()->user()->id)->get();
         $attendanceQuery = Attendance::where('user_id', auth()->user()->id);
         $leaves = LeaveApplication::where('user_id', auth()->user()->id)->select('start_date', 'end_date', 'status')->get();
+        
         if ($request->has('month') && $request->has('year')) {
             $month = $request->input('month');
             $year = $request->input('year');
@@ -182,8 +192,8 @@ class AttendanceController extends Controller
             $imagePath = public_path('admin/images/Pixelz360.png');
             $image = base64_encode(file_get_contents($imagePath));
             $imageHtml = '<img src="data:image/png;base64,' . $image . '" width="200" height="200"/>';
-
-            $styles = view('attendance.partial.pdfFilterStyle', compact('month', 'year', 'imageHtml'))->render();
+            $userName = auth()->user()->name;
+            $styles = view('attendance.partial.pdfFilterStyle', compact('month', 'year', 'imageHtml', 'userName'))->render();
             $html = view('attendance.employeeFilter.attendanceTable', compact('attendance', 'month', 'year', 'holidays', 'leaves'))->render();
 
             $pdfContentWithLogo = $styles . $html;

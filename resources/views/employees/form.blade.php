@@ -271,7 +271,7 @@
             });
 
             if (!isValid) {
-                return; // Stop form submission if validation fails
+                return;
             }
 
             submitButton.prop('disabled', true);

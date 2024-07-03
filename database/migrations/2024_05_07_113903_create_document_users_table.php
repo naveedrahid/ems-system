@@ -15,10 +15,14 @@ class CreateDocumentUsersTable extends Migration
     {
         Schema::create('document_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id');
             $table->foreignId('user_id');
-            $table->string('nic_img')->nullable();
-            $table->string('document_user')->nullable();
+            $table->string('nic_front');
+            $table->string('nic_back');
+            $table->string('resume')->nullable();
+            $table->string('payslip')->nullable();
+            $table->string('experience_letter')->nullable();
+            $table->string('bill')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
