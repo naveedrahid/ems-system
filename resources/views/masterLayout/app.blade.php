@@ -822,7 +822,6 @@
             let isRunning = false;
             let startTime;
             let elapsedTime = 0;
-            const token = $('meta[name="csrf-token"]').attr('content');
             let timeLogId;
 
             function updateTimer() {
@@ -838,17 +837,21 @@
             }
 
             function startTimer() {
-                startTime = new Date().getTime() - elapsedTime;
-                localStorage.setItem('startTime', startTime);
-                timerInterval = setInterval(updateTimer, 1000);
-                isRunning = true;
-                updateButtonState('pause');
+                startTime = localStorage.getItem('startTime');
+                if (startTime) {
+                    startTime = parseInt(startTime, 10);
+                    timerInterval = setInterval(updateTimer, 1000);
+                    isRunning = true;
+                    updateButtonState('pause');
+                }
             }
 
             function stopTimer() {
                 clearInterval(timerInterval);
                 isRunning = false;
                 updateButtonState('play');
+                localStorage.removeItem('startTime');
+                localStorage.removeItem('timeLogId');
             }
 
             function updateButtonState(state) {
@@ -864,42 +867,40 @@
 
             function sendStartTimeRequest() {
                 $.ajax({
-                    url: '{{ route('start.time') }}',
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                .done(function(response) {
-                    startTimer();
-                    timeLogId = response.time_log_id;
-                    localStorage.setItem('timeLogId', timeLogId);
-                })
-                .fail(function(err) {
-                    console.error(err);
-                    toastr.error('An error occurred while starting the time.');
-                });
+                        url: '{{ route('start.time') }}',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                    })
+                    .done(function(response) {
+                        startTime = new Date().getTime();
+                        localStorage.setItem('startTime', startTime);
+                        timeLogId = response.time_log_id;
+                        localStorage.setItem('timeLogId', timeLogId);
+                        startTimer();
+                    })
+                    .fail(function(err) {
+                        console.error(err);
+                        toastr.error('An error occurred while starting the time.');
+                    });
             }
 
             function sendEndTimeRequest() {
-                let timeLogId = localStorage.getItem('timeLogId');
                 $.ajax({
-                    url: '{{ route('end.time', '') }}/' + timeLogId,
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                .done(function(response) {
-                    stopTimer();
-                    localStorage.removeItem('startTime');
-                    localStorage.removeItem('timeLogId');
-                    timeLogId = null;
-                })
-                .fail(function(err) {
-                    console.error(err);
-                    toastr.error('An error occurred while stopping the time.');
-                });
+                        url: '{{ route('end.time', '') }}/' + localStorage.getItem('timeLogId'),
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                    })
+                    .done(function(response) {
+                        stopTimer();
+                    })
+                    .fail(function(err) {
+                        console.error(err);
+                        toastr.error('An error occurred while stopping the time.');
+                    });
             }
 
             function handleStartPause() {
@@ -910,21 +911,20 @@
                 }
             }
 
-            const storedStartTime = localStorage.getItem('startTime');
-            if (storedStartTime) {
-                startTime = parseInt(storedStartTime, 10);
-                elapsedTime = new Date().getTime() - startTime;
+            $('#start-time-btn, #pause-time-btn').click(handleStartPause);
+
+            // Event listener for storage changes
+            window.addEventListener('storage', function(event) {
+                if (event.key === 'startTime' || event.key === 'timeLogId') {
+                    startTimer();
+                }
+            });
+
+            // Start timer if it's already running when page loads
+            if (localStorage.getItem('startTime')) {
                 startTimer();
                 updateButtonState('pause');
             }
-
-            $('#start-time-btn').on('click', function() {
-                handleStartPause();
-            });
-
-            $('#pause-time-btn').on('click', function() {
-                handleStartPause();
-            });
 
             $('#checkin').submit(function(e) {
                 e.preventDefault();

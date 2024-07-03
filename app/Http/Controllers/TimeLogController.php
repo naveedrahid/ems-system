@@ -179,6 +179,7 @@ class TimeLogController extends Controller
             'end_time' => now()->format('H:i:s'),
             'duration' => $duration
         ]);
+        $request->session()->forget(['startTime', 'timeLogId']);
     
         return response()->json(['message' => 'End time logged successfully.'], 200);
     }
