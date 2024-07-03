@@ -155,7 +155,7 @@ class AttendanceController extends Controller
         $user = User::where('id', auth()->user()->id)->get();
         $attendanceQuery = Attendance::where('user_id', auth()->user()->id);
         $leaves = LeaveApplication::where('user_id', auth()->user()->id)->select('start_date', 'end_date', 'status')->get();
-        
+
         if ($request->has('month') && $request->has('year')) {
             $month = $request->input('month');
             $year = $request->input('year');
@@ -266,6 +266,7 @@ class AttendanceController extends Controller
         $userId = Auth::id();
         $currentDate = now()->toDateString();
         $currentTime = now();
+
         $attendance = Attendance::where('user_id', $userId)
             ->whereDate('attendance_date', $currentDate)
             ->first();
@@ -298,6 +299,17 @@ class AttendanceController extends Controller
 
         Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkInStatus, $currentTime->toTimeString(), 'Check-In'));
         return response()->json(['message' => 'Check in successfully']);
+    }
+
+    public function hasCheckedIn(){
+        $userId = Auth::id();
+        $currentDate = now()->toDateString();
+
+        $checkInAttendance = Attendance::where('user_id', $userId)
+        ->whereDate('attendance_date', $currentDate)
+        ->first();
+
+        return response()->json(['checkedIn' => $checkInAttendance ? true : false]);
     }
 
     public function checkOutUser(Request $request)

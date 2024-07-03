@@ -106,16 +106,21 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::resource('time-logs', TimeLogController::class)->except(['edit', 'update', 'show', 'store', 'create']);
     Route::post('/start-time', [TimeLogController::class, 'startTime'])->name('start.time');
     Route::put('/end-time/{time_log}', [TimeLogController::class, 'endTimeTracker'])->name('end.time');
+    Route::get('/timer-data', [TimeLogController::class, 'getTimerData'])->name('get.timer.data');
+
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('home');
     Route::resource('complaints', ComplaintController::class);
     Route::post('logout', [HomeController::class, 'logout'])->name('logoutUser');
     Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
+    Route::get('/check-in-status', [AttendanceController::class, 'hasCheckedIn']);
     Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');
+
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.view');
     Route::get('/employees/data', [EmployeeController::class, 'getData'])->name('employees.data');
     Route::get('/employees/profile/{id}', [EmployeeController::class, 'employeeProfile'])->name('employees.profile');

@@ -817,16 +817,126 @@
     </script>
     <script>
         $(document).ready(function() {
+
+            let timerInterval;
+            let isRunning = false;
+            let startTime;
+            let elapsedTime = 0;
+            const token = $('meta[name="csrf-token"]').attr('content');
+            let timeLogId;
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                elapsedTime = now - startTime;
+
+                const totalSeconds = Math.floor(elapsedTime / 1000);
+                const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+
+                $('#timer').html(`${hours}:${minutes}:${seconds}`);
+            }
+
+            function startTimer() {
+                startTime = new Date().getTime() - elapsedTime;
+                localStorage.setItem('startTime', startTime);
+                timerInterval = setInterval(updateTimer, 1000);
+                isRunning = true;
+                updateButtonState('pause');
+            }
+
+            function stopTimer() {
+                clearInterval(timerInterval);
+                isRunning = false;
+                updateButtonState('play');
+            }
+
+            function updateButtonState(state) {
+                const button = $('#start-time-btn, #pause-time-btn');
+                if (state === 'pause') {
+                    button.attr('id', 'pause-time-btn').removeClass('play-time').addClass('pause-time').html(
+                        '<i class="fas fa-pause"></i>');
+                } else {
+                    button.attr('id', 'start-time-btn').removeClass('pause-time').addClass('play-time').html(
+                        '<i class="fas fa-play"></i>');
+                }
+            }
+
+            function sendStartTimeRequest() {
+                $.ajax({
+                    url: '{{ route('start.time') }}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .done(function(response) {
+                    startTimer();
+                    timeLogId = response.time_log_id;
+                    localStorage.setItem('timeLogId', timeLogId);
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    toastr.error('An error occurred while starting the time.');
+                });
+            }
+
+            function sendEndTimeRequest() {
+                let timeLogId = localStorage.getItem('timeLogId');
+                $.ajax({
+                    url: '{{ route('end.time', '') }}/' + timeLogId,
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .done(function(response) {
+                    stopTimer();
+                    localStorage.removeItem('startTime');
+                    localStorage.removeItem('timeLogId');
+                    timeLogId = null;
+                })
+                .fail(function(err) {
+                    console.error(err);
+                    toastr.error('An error occurred while stopping the time.');
+                });
+            }
+
+            function handleStartPause() {
+                if (isRunning) {
+                    sendEndTimeRequest();
+                } else {
+                    sendStartTimeRequest();
+                }
+            }
+
+            const storedStartTime = localStorage.getItem('startTime');
+            if (storedStartTime) {
+                startTime = parseInt(storedStartTime, 10);
+                elapsedTime = new Date().getTime() - startTime;
+                startTimer();
+                updateButtonState('pause');
+            }
+
+            $('#start-time-btn').on('click', function() {
+                handleStartPause();
+            });
+
+            $('#pause-time-btn').on('click', function() {
+                handleStartPause();
+            });
+
             $('#checkin').submit(function(e) {
                 e.preventDefault();
+
                 const url = $(this).attr('action');
                 const token = $('meta[name="csrf-token"]').attr('content');
                 const button = $('.checkinBtn');
                 button.prop('disabled', true);
 
                 $.ajax({
-                    url: url,
-                    method: 'POST',
+                    url: '/check-in-status',
+                    method: 'GET',
                     data: {
                         _token: token,
                         user_id: '{{ Auth::id() }}',
@@ -835,35 +945,43 @@
                         'X-CSRF-TOKEN': token
                     },
                     success: function(response) {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: "top-end",
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.onmouseenter = Swal.stopTimer;
-                                toast.onmouseleave = Swal.resumeTimer;
-                            }
-                        });
-                        Toast.fire({
-                            icon: "success",
-                            title: "Check in successfully"
-                        });
-                        button.prop('disabled', false);
-                        $('.checkinBtn').addClass('checkinActive');
-                        setTimeout(function() {
-                            window.location.reload();
-                        }, 2500);
+                        if (response.checkedIn) {
+                            toastr.error('Already checked in for today');
+                            button.prop('disabled', false);
+                        } else {
+                            $.ajax({
+                                url: url,
+                                method: 'POST',
+                                data: {
+                                    _token: token,
+                                    user_id: '{{ Auth::id() }}',
+                                },
+                                headers: {
+                                    'X-CSRF-TOKEN': token
+                                },
+                                success: function(response) {
+                                    toastr.success('Check in successfully');
+                                    button.prop('disabled', false);
+                                    $('.checkinBtn').addClass('checkinActive');
+                                    setTimeout(function() {
+                                        sendStartTimeRequest();
+                                    }, 2500);
+                                },
+                                error: function(xhr) {
+                                    console.error(xhr);
+                                    toastr.success('Check in Failed');
+                                    button.prop('disabled', false);
+                                }
+                            });
+                        }
                     },
                     error: function(xhr) {
                         console.error(xhr);
+                        toastr.success('Check in Failed');
                         button.prop('disabled', false);
                     }
                 });
             });
-
-            // post check out request
 
             $('#checkOut').submit(function(e) {
                 e.preventDefault();
@@ -935,110 +1053,6 @@
                         }
                     });
                 }
-            });
-        });
-
-        $(document).ready(function() {
-            let timerInterval;
-            let isRunning = false;
-            let startTime;
-            let elapsedTime = 0;
-            const token = $('meta[name="csrf-token"]').attr('content');
-            let timeLogId;
-
-            function updateTimer() {
-                const now = new Date().getTime();
-                elapsedTime = now - startTime;
-                const totalSeconds = Math.floor(elapsedTime / 1000);
-                const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-                const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-                const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-                $('#timer').html(hours + ':' + minutes + ':' + seconds);
-            }
-
-            function startTimer() {
-                startTime = new Date().getTime() - elapsedTime;
-                localStorage.setItem('startTime', startTime);
-                timerInterval = setInterval(updateTimer, 1000);
-                isRunning = true;
-                updateButtonState('pause');
-            }
-
-            function stopTimer() {
-                clearInterval(timerInterval);
-                isRunning = false;
-                updateButtonState('play');
-            }
-
-            function updateButtonState(state) {
-                const button = $('#start-time-btn, #pause-time-btn');
-                if (state === 'pause') {
-                    button.attr('id', 'pause-time-btn').removeClass('play-time').addClass('pause-time').html(
-                        '<i class="fas fa-pause"></i>');
-                } else {
-                    button.attr('id', 'start-time-btn').removeClass('pause-time').addClass('play-time').html(
-                        '<i class="fas fa-play"></i>');
-                }
-            }
-
-            function sendStartTimeRequest() {
-                $.ajax({
-                        url: '{{ route('start.time') }}',
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': token
-                        },
-                    })
-                    .done(function(response) {
-                        startTimer();
-                        timeLogId = response.time_log_id; // Update timeLogId with the response
-                        localStorage.setItem('timeLogId', timeLogId);
-                    })
-                    .fail(function(err) {
-                        console.error(err);
-                        toastr.error('An error occurred while starting the time.');
-                    });
-            }
-
-            function sendEndTimeRequest() {
-                let timeLogId = localStorage.getItem('timeLogId');
-                $.ajax({
-                        url: '{{ route('end.time', '') }}/' + timeLogId,
-                        method: 'PUT',
-                        headers: {
-                            'X-CSRF-TOKEN': token
-                        },
-                    })
-                    .done(function(response) {
-                        stopTimer();
-                        localStorage.removeItem('startTime');
-                        localStorage.removeItem('timeLogId');
-                        timeLogId = null; // Clear the timeLogId after stopping
-                    })
-                    .fail(function(err) {
-                        console.error(err);
-                        toastr.error('An error occurred while stopping the time.');
-                    });
-            }
-
-            function handleStartPause() {
-                if (isRunning) {
-                    sendEndTimeRequest();
-                } else {
-                    sendStartTimeRequest();
-                }
-            }
-
-            const storedStartTime = localStorage.getItem('startTime');
-            if (storedStartTime) {
-                startTime = parseInt(storedStartTime, 10);
-                elapsedTime = new Date().getTime() - startTime;
-                startTimer();
-                updateButtonState('pause');
-            }
-
-            $('#start-time-btn, #pause-time-btn').click(function() {
-                handleStartPause();
             });
         });
     </script>
