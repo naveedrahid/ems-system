@@ -145,7 +145,7 @@ class TimeLogController extends Controller
             'time_log_id' => $newTimelog->id
         ], 200);
     }
-    
+
     public function endTimeTracker(Request $request, $timeLogId)
     {
         $userId = Auth::id();
@@ -160,6 +160,8 @@ class TimeLogController extends Controller
             return response()->json(['message' => 'You have not checked in today.'], 400);
         }
     
+        $startTime = $request->session()->get('startTime');
+    
         $timelog = Timelog::where('id', $timeLogId)
             ->where('user_id', $userId)
             ->whereDate('created_at', $currentDate)
@@ -170,7 +172,7 @@ class TimeLogController extends Controller
             return response()->json(['message' => 'No start time logged for today.'], 400);
         }
     
-        $startTimeTimestamp = $request->input('startTime'); // Pass start time from client-side
+        $startTimeTimestamp = $startTime;
         $endTimeTimestamp = now()->timestamp;
         $durationInSeconds = $endTimeTimestamp - $startTimeTimestamp;
         $duration = gmdate('H:i:s', $durationInSeconds);
@@ -179,8 +181,10 @@ class TimeLogController extends Controller
             'end_time' => now()->format('H:i:s'),
             'duration' => $duration
         ]);
+    
         $request->session()->forget(['startTime', 'timeLogId']);
     
         return response()->json(['message' => 'End time logged successfully.'], 200);
     }
+    
 }

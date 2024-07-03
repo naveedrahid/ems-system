@@ -837,9 +837,8 @@
             }
 
             function startTimer() {
-                startTime = localStorage.getItem('startTime');
+                startTime = parseInt(localStorage.getItem('startTime'), 10);
                 if (startTime) {
-                    startTime = parseInt(startTime, 10);
                     timerInterval = setInterval(updateTimer, 1000);
                     isRunning = true;
                     updateButtonState('pause');
@@ -915,7 +914,7 @@
 
             // Event listener for storage changes
             window.addEventListener('storage', function(event) {
-                if (event.key === 'startTime' || event.key === 'timeLogId') {
+                if (event.key === 'startTime') {
                     startTimer();
                 }
             });
