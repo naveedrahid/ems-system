@@ -126,13 +126,20 @@
                                     ['class' => 'form-control form-select select2'],
                                 ) !!}
                             </div>
+                            
                             <div class="mb-3 form-group">
+                              
                                 {!! Form::label('role_id', 'Role') !!}
-                                {!! Form::select('user_role', [$roles->id => $roles->name], $employee->role_id ?? '', ['class' => 'form-control form-select select2', 'id' => 'user_role']) !!}
+                                {!! Form::select(
+                                    'user_role', 
+                                    $roles->pluck('name', 'id')->toArray(), 
+                                    $employee->role_id ?? '', 
+                                    ['class' => 'form-control form-select select2', 'id' => 'user_role']
+                                ) !!}
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('date_of_birth', 'Date of birth') !!}
-                                {!! Form::text('date_of_birth', $employee->employee->date_of_birth ?? '', ['class' => 'form-control']) !!}
+                                {!! Form::date('date_of_birth', $employee->employee->date_of_birth ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('joining_date', 'Joining Date') !!}

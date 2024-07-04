@@ -25,7 +25,7 @@
                                     'department_id',
                                     $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
                                     null,
-                                    ['class' => 'form-control', 'id' => 'department_id']
+                                    ['class' => 'form-control', 'id' => 'department_id'],
                                 ) !!}
                             </div>
                         </div>
@@ -46,8 +46,8 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('nic_front', 'NIC Front Image') !!}
@@ -114,19 +114,23 @@
     span.select2-selection.select2-selection--single {
         height: 40px;
     }
+
+    a.filepond--credits {
+        display: none;
+    }
 </style>
 @endpush
 
 @push('js')
 <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
 <script src="https://unpkg.com/jquery-filepond/filepond.jquery.js"></script>
-<script src="https://unpkg.com/filepond-plugin-file-validate-size@^2/dist/filepond-plugin-file-validate-size.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size@^2/dist/filepond-plugin-file-validate-size.js">
+</script>
 <script src="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.js"></script>
 
 
 <script>
     $(document).ready(function() {
-        // Initialize FilePond
         FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
 
         const nicFront = FilePond.create(document.querySelector('input[name="nic_front"]'));
@@ -195,58 +199,56 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
-$(document).ready(function() {
-    // Initialize select2 on both selects
-    $('#department_id, #user_id').select2();
-
-    // Hide all user options initially
-    $('#user_id option').not(':first').each(function() {
-        const option = $(this);
-        option.data('select2-hidden', true);
-    });
-
-    // Update the template result to show/hide options
-    function formatState(option) {
-        if (!option.id) {
-            return option.text;
-        }
-        if ($(option.element).data('select2-hidden')) {
-            return null;
-        }
-        return option.text;
-    }
-
-    $('#user_id').select2({
-        templateResult: formatState,
-        templateSelection: formatState
-    });
-
-    // On change of department, show related users
-    $('#department_id').on('change', function() {
-        const selectedDepartmentId = $(this).val();
+    $(document).ready(function() {
+        // Initialize select2 on both selects
+        $('#department_id, #user_id').select2();
 
         // Hide all user options initially
         $('#user_id option').not(':first').each(function() {
-            $(this).data('select2-hidden', true);
+            const option = $(this);
+            option.data('select2-hidden', true);
         });
 
-        // Show only the users related to the selected department
-        if (selectedDepartmentId) {
-            $('#user_id option').each(function() {
-                if ($(this).data('department-id') == selectedDepartmentId) {
-                    $(this).data('select2-hidden', false);
-                }
-            });
+        // Update the template result to show/hide options
+        function formatState(option) {
+            if (!option.id) {
+                return option.text;
+            }
+            if ($(option.element).data('select2-hidden')) {
+                return null;
+            }
+            return option.text;
         }
 
-        // Update the select2 to reflect the changes
         $('#user_id').select2({
             templateResult: formatState,
             templateSelection: formatState
         });
+
+        // On change of department, show related users
+        $('#department_id').on('change', function() {
+            const selectedDepartmentId = $(this).val();
+
+            // Hide all user options initially
+            $('#user_id option').not(':first').each(function() {
+                $(this).data('select2-hidden', true);
+            });
+
+            // Show only the users related to the selected department
+            if (selectedDepartmentId) {
+                $('#user_id option').each(function() {
+                    if ($(this).data('department-id') == selectedDepartmentId) {
+                        $(this).data('select2-hidden', false);
+                    }
+                });
+            }
+
+            // Update the select2 to reflect the changes
+            $('#user_id').select2({
+                templateResult: formatState,
+                templateSelection: formatState
+            });
+        });
     });
-});
-
 </script>
-
 @endpush

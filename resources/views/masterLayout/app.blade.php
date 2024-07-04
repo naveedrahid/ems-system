@@ -70,42 +70,42 @@
                                 ->select('check_in', 'check_out')
                                 ->first();
 
-                            $timeLog = DB::table('time_logs')
-                                ->whereDate('created_at', $currentDate)
-                                ->where('user_id', $userId)
-                                ->orderBy('created_at', 'desc')
-                                ->first();
+                            // $timeLog = DB::table('time_logs')
+                            //     ->whereDate('created_at', $currentDate)
+                            //     ->where('user_id', $userId)
+                            //     ->orderBy('created_at', 'desc')
+                            //     ->first();
 
-                            $timeLogDurations = DB::table('time_logs')
-                                ->whereDate('created_at', $currentDate)
-                                ->where('user_id', $userId)
-                                ->pluck('duration');
+                            // $timeLogDurations = DB::table('time_logs')
+                            //     ->whereDate('created_at', $currentDate)
+                            //     ->where('user_id', $userId)
+                            //     ->pluck('duration');
 
-                            $timeLogId = DB::table('time_logs')
-                                ->whereDate('created_at', now()->toDateString())
-                                ->where('user_id', auth()->id())
-                                ->pluck('id')
-                                ->first();
+                            // $timeLogId = DB::table('time_logs')
+                            //     ->whereDate('created_at', now()->toDateString())
+                            //     ->where('user_id', auth()->id())
+                            //     ->pluck('id')
+                            //     ->first();
 
-                            $totalDurationInSeconds = $timeLogDurations
-                                ->map(function ($duration) {
-                                    $parts = explode(':', $duration);
-                                    $hours = isset($parts[0]) ? (int) $parts[0] : 0;
-                                    $minutes = isset($parts[1]) ? (int) $parts[1] : 0;
-                                    $seconds = isset($parts[2]) ? (int) $parts[2] : 0;
+                            // $totalDurationInSeconds = $timeLogDurations
+                            //     ->map(function ($duration) {
+                            //         $parts = explode(':', $duration);
+                            //         $hours = isset($parts[0]) ? (int) $parts[0] : 0;
+                            //         $minutes = isset($parts[1]) ? (int) $parts[1] : 0;
+                            //         $seconds = isset($parts[2]) ? (int) $parts[2] : 0;
 
-                                    return $hours * 3600 + $minutes * 60 + $seconds;
-                                })
-                                ->sum();
+                            //         return $hours * 3600 + $minutes * 60 + $seconds;
+                            //     })
+                            //     ->sum();
 
-                            $hours = floor($totalDurationInSeconds / 3600);
-                            $minutes = floor(($totalDurationInSeconds % 3600) / 60);
-                            $seconds = $totalDurationInSeconds % 60;
-                            $totalDuration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+                            // $hours = floor($totalDurationInSeconds / 3600);
+                            // $minutes = floor(($totalDurationInSeconds % 3600) / 60);
+                            // $seconds = $totalDurationInSeconds % 60;
+                            // $totalDuration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 
                         @endphp
 
-                        <div class="timer" id="timerd">
+                        {{-- <div class="timer" id="timerd">
                             <i class="fas fa-stopwatch"></i>
                             @if ($attendance && $attendance->check_in)
                                 @if ($attendance->check_out === null)
@@ -123,7 +123,7 @@
                                         class="fas fa-{{ !$timeLog || ($timeLog && $timeLog->end_time) ? 'play' : 'pause' }}"></i>
                                 </button>
                             @endif
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="checkin">
                         @php
@@ -336,6 +336,12 @@
                                         <a href="{{ route('bank-details.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Employee Bank Detail</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('documents.create') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Add Employee Documents</p>
                                         </a>
                                     </li>
                                 @endif
@@ -816,114 +822,114 @@
         }
     </script>
     <script>
+        // $(document).ready(function() {
+        //     let timerInterval;
+        //     let isRunning = false;
+        //     let startTime;
+        //     let elapsedTime = 0;
+        //     const token = $('meta[name="csrf-token"]').attr('content');
+        //     let timeLogId;
+
+        //     function updateTimer() {
+        //         const now = new Date().getTime();
+        //         elapsedTime = now - startTime;
+        //         const totalSeconds = Math.floor(elapsedTime / 1000);
+        //         const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        //         const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        //         const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+        //         $('#timer').html(hours + ':' + minutes + ':' + seconds);
+        //     }
+
+        //     function startTimer() {
+        //         startTime = new Date().getTime() - elapsedTime;
+        //         localStorage.setItem('startTime', startTime);
+        //         timerInterval = setInterval(updateTimer, 1000);
+        //         isRunning = true;
+        //         updateButtonState('pause');
+        //     }
+
+        //     function stopTimer() {
+        //         clearInterval(timerInterval);
+        //         isRunning = false;
+        //         updateButtonState('play');
+        //     }
+
+        //     function updateButtonState(state) {
+        //         const button = $('#start-time-btn, #pause-time-btn');
+        //         if (state === 'pause') {
+        //             button.attr('id', 'pause-time-btn').removeClass('play-time').addClass('pause-time')
+        //                 .html(
+        //                     '<i class="fas fa-pause"></i>');
+        //         } else {
+        //             button.attr('id', 'start-time-btn').removeClass('pause-time').addClass('play-time')
+        //                 .html(
+        //                     '<i class="fas fa-play"></i>');
+        //         }
+        //     }
+
+        //     function sendStartTimeRequest() {
+        //         $.ajax({
+        //                 url: '{{ route('start.time') }}',
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': token
+        //                 },
+        //             })
+        //             .done(function(response) {
+        //                 startTimer();
+        //                 timeLogId = response.time_log_id; // Update timeLogId with the response
+        //                 localStorage.setItem('timeLogId', timeLogId);
+        //             })
+        //             .fail(function(err) {
+        //                 console.error(err);
+        //                 toastr.error('An error occurred while starting the time.');
+        //             });
+        //     }
+
+        //     function sendEndTimeRequest() {
+        //         let timeLogId = localStorage.getItem('timeLogId');
+        //         $.ajax({
+        //                 url: '{{ route('end.time', '') }}/' + timeLogId,
+        //                 method: 'PUT',
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': token
+        //                 },
+        //             })
+        //             .done(function(response) {
+        //                 stopTimer();
+        //                 localStorage.removeItem('startTime');
+        //                 localStorage.removeItem('timeLogId');
+        //                 timeLogId = null; // Clear the timeLogId after stopping
+        //             })
+        //             .fail(function(err) {
+        //                 console.error(err);
+        //                 toastr.error('An error occurred while stopping the time.');
+        //             });
+        //     }
+
+        //     function handleStartPause() {
+        //         if (isRunning) {
+        //             sendEndTimeRequest();
+        //         } else {
+        //             sendStartTimeRequest();
+        //         }
+        //     }
+        //     const storedStartTime = localStorage.getItem('startTime');
+        //     if (storedStartTime) {
+        //         startTime = parseInt(storedStartTime, 10);
+        //         elapsedTime = new Date().getTime() - startTime;
+        //         startTimer();
+        //         updateButtonState('pause');
+        //     }
+        //     $('#start-time-btn, #pause-time-btn').click(function() {
+        //         handleStartPause();
+        //     });
+        // });
+
         $(document).ready(function() {
 
-            let timerInterval;
-            let isRunning = false;
-            let startTime;
-            let elapsedTime = 0;
-            let timeLogId;
 
-            function updateTimer() {
-                const now = new Date().getTime();
-                elapsedTime = now - startTime;
 
-                const totalSeconds = Math.floor(elapsedTime / 1000);
-                const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-                const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-                const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-
-                $('#timer').html(`${hours}:${minutes}:${seconds}`);
-            }
-
-            function startTimer() {
-                startTime = parseInt(localStorage.getItem('startTime'), 10);
-                if (startTime) {
-                    timerInterval = setInterval(updateTimer, 1000);
-                    isRunning = true;
-                    updateButtonState('pause');
-                }
-            }
-
-            function stopTimer() {
-                clearInterval(timerInterval);
-                isRunning = false;
-                updateButtonState('play');
-                localStorage.removeItem('startTime');
-                localStorage.removeItem('timeLogId');
-            }
-
-            function updateButtonState(state) {
-                const button = $('#start-time-btn, #pause-time-btn');
-                if (state === 'pause') {
-                    button.attr('id', 'pause-time-btn').removeClass('play-time').addClass('pause-time').html(
-                        '<i class="fas fa-pause"></i>');
-                } else {
-                    button.attr('id', 'start-time-btn').removeClass('pause-time').addClass('play-time').html(
-                        '<i class="fas fa-play"></i>');
-                }
-            }
-
-            function sendStartTimeRequest() {
-                $.ajax({
-                        url: '{{ route('start.time') }}',
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                    })
-                    .done(function(response) {
-                        startTime = new Date().getTime();
-                        localStorage.setItem('startTime', startTime);
-                        timeLogId = response.time_log_id;
-                        localStorage.setItem('timeLogId', timeLogId);
-                        startTimer();
-                    })
-                    .fail(function(err) {
-                        console.error(err);
-                        toastr.error('An error occurred while starting the time.');
-                    });
-            }
-
-            function sendEndTimeRequest() {
-                $.ajax({
-                        url: '{{ route('end.time', '') }}/' + localStorage.getItem('timeLogId'),
-                        method: 'PUT',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                    })
-                    .done(function(response) {
-                        stopTimer();
-                    })
-                    .fail(function(err) {
-                        console.error(err);
-                        toastr.error('An error occurred while stopping the time.');
-                    });
-            }
-
-            function handleStartPause() {
-                if (isRunning) {
-                    sendEndTimeRequest();
-                } else {
-                    sendStartTimeRequest();
-                }
-            }
-
-            $('#start-time-btn, #pause-time-btn').click(handleStartPause);
-
-            // Event listener for storage changes
-            window.addEventListener('storage', function(event) {
-                if (event.key === 'startTime') {
-                    startTimer();
-                }
-            });
-
-            // Start timer if it's already running when page loads
-            if (localStorage.getItem('startTime')) {
-                startTimer();
-                updateButtonState('pause');
-            }
 
             $('#checkin').submit(function(e) {
                 e.preventDefault();

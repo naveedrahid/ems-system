@@ -54,7 +54,7 @@
         $('#departmentData, #departmentDataUpdate').submit(function(e) {
             e.preventDefault();
 
-            const dp_name = $('input[name="department_name"]').val().trim();
+            const dp    _name = $('input[name="department_name"]').val().trim();
             const dp_status = $('select[name="status"]').val().trim();
             
             if (dp_name === '' || dp_status === '') {
