@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\DocumentUser;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentUserController extends Controller
@@ -16,7 +18,9 @@ class DocumentUserController extends Controller
      */
     public function index()
     {
-        //
+        $documentUsers = DocumentUser::with('user')->paginate(10);
+
+        return view('documents.index', compact('documentUsers'));
     }
 
     /**
@@ -26,12 +30,13 @@ class DocumentUserController extends Controller
      */
     public function create()
     {
-        $documentUser = new DocumentUser();
+        $document = new DocumentUser();
         $route = route('documents.store');
         $formMethod = 'POST';
         $departments = Department::with('employees.user')->get();
-    
-        return view('documents.form', compact('documentUser', 'route', 'formMethod', 'departments'));
+        $users = User::all();
+
+        return view('documents.form', compact('document', 'route', 'formMethod', 'departments', 'users'));
     }
 
     /**
@@ -43,32 +48,34 @@ class DocumentUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nic_front' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'nic_back' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resume' => 'file|mimes:pdf,doc,docx|max:2048',
-            'payslip' => 'file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'experience_letter' => 'file|mimes:pdf,doc,docx|max:2048',
-            'bill' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'user_id' => 'required|exists:users,id',
+            'department_id' => 'required|exists:departments,id',
+            'nic_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'payslip' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'experience_letter' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $documentUser = new DocumentUser();
-        $documentUser->user_id = $request->user_id;
+        $document = new DocumentUser();
+        $document->user_id = $request->user_id;
+        $document->department_id = $request->department_id;
 
         $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
-    
+
         foreach ($files as $file) {
             if ($request->hasFile($file)) {
                 $uploadedFile = $request->file($file);
                 $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-                $filePath = 'documents/' . $fileName;
-                Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
-                $documentUser->$file = 'storage/' . $filePath;
+                $filePath = $uploadedFile->storeAs('user_docs', $fileName, 'public');
+                $document->$file = 'storage/' . $filePath;
             }
         }
-    
-        $documentUser->save();
-    
-        return response()->json(['message' => 'Document saved successfully!', 'data' => $documentUser]);
+
+        $document->save();
+
+        return response()->json(['message' => 'Document saved successfully!', 'data' => $document]);
     }
 
 
@@ -78,7 +85,7 @@ class DocumentUserController extends Controller
      * @param  \App\Models\DocumentUser  $documentUser
      * @return \Illuminate\Http\Response
      */
-    public function show(DocumentUser $documentUser)
+    public function show(DocumentUser $document)
     {
         //
     }
@@ -89,9 +96,13 @@ class DocumentUserController extends Controller
      * @param  \App\Models\DocumentUser  $documentUser
      * @return \Illuminate\Http\Response
      */
-    public function edit(DocumentUser $documentUser)
+    public function edit(DocumentUser $document)
     {
-        //
+        $route = route('documents.update', $document->id);
+        $formMethod = 'PUT';
+        $departments = Department::with('employees.user')->get();
+        $users = User::all();
+        return view('documents.form', compact('users', 'document', 'route', 'formMethod', 'departments'));
     }
 
     /**
@@ -101,10 +112,46 @@ class DocumentUserController extends Controller
      * @param  \App\Models\DocumentUser  $documentUser
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, DocumentUser $documentUser)
+    // public function update(Request $request, DocumentUser $document)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'department_id' => 'required|exists:departments,id',
+            'nic_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'payslip' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'experience_letter' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $document = DocumentUser::findOrFail($id);
+        $document->user_id = $request->user_id;
+        $document->department_id = $request->department_id;
+
+        $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
+
+        foreach ($files as $file) {
+            if ($request->hasFile($file)) {
+                if ($document->$file) {
+                    $oldFilePath = str_replace('storage/', '', $document->$file);
+                    Storage::disk('public')->delete($oldFilePath);
+                }
+
+                $uploadedFile = $request->file($file);
+                $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
+                $filePath = $uploadedFile->storeAs('user_docs', $fileName, 'public');
+                $document->$file = 'storage/' . $filePath;
+            }
+        }
+
+        $document->save();
+
+        return response()->json(['message' => 'Document updated successfully!', 'data' => $document]);
     }
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -112,8 +159,13 @@ class DocumentUserController extends Controller
      * @param  \App\Models\DocumentUser  $documentUser
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DocumentUser $documentUser)
+    public function destroy(DocumentUser $document)
     {
-        //
+        // if ($document->job_img && Storage::disk('public')->exists($document->job_img)) {
+        //     Storage::disk('public')->delete($document->job_img);
+        // }
+        $document->delete();
+
+        return response()->json(['message' => 'Record and associated images deleted successfully.']);
     }
 }

@@ -15,7 +15,8 @@ class CreateDocumentUsersTable extends Migration
     {
         Schema::create('document_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+            $table->integer('user_id');
+            $table->integer('department_id');
             $table->string('nic_front');
             $table->string('nic_back');
             $table->string('resume')->nullable();

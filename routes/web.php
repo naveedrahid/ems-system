@@ -11,6 +11,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobPortalControllers\CandidateController;
+use App\Http\Controllers\JobPortalControllers\JobController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NoticeController;
@@ -32,6 +34,20 @@ Route::fallback(function () {
 });
 
 Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () {
+
+    // Job Portals Routses
+    Route::prefix('portal')->group(function () {
+        Route::resource('jobs', JobController::class)->except(['show']);
+        Route::get('/candidates', [CandidateController::class, 'index'])->name('candidates.index');
+        Route::get('/candidates/data', [CandidateController::class, 'getData'])->name('candidates.data');
+        Route::get('/candidates/{candidate}', [CandidateController::class, 'show'])->name('candidates.show');
+        Route::post('/candidates/status/{candidate}', [CandidateController::class, 'candidateStatus'])->name('candidates.status');
+        Route::delete('/candidates/{candidate}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
+    });
+
+
+
+
     // Route::get('/admin', [HomeController::class, 'dashboard'])->name('home');
 
     // Route::get('/users', [UserController::class, 'index'])->name('users');
@@ -131,4 +147,10 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('leave-policy', [PolicyController::class, 'index'])->name('policy.index');
     Route::get('notices', [NoticeController::class, 'index'])->name('notices.index');
     Route::get('notices/{notice}', [NoticeController::class, 'show'])->name('notices.show');
+});
+
+Route::prefix('candidates/portal/apply')->group(function () {
+    Route::post('/form-submit', [CandidateController::class, 'store'])->name('candidates.store');
+    Route::get('/form', [CandidateController::class, 'create'])->name('candidates.create');
+    Route::get('/jobs', [JobController::class, 'showJobsCandidate']);
 });

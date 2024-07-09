@@ -569,6 +569,7 @@
                                 </li>
                             </ul>
                         </li>
+                        @if (isAdmin($user))
                         <li class="nav-item">
                             <a href="javascript:;" class="nav-link">
                                 <i class="nav-icon far fa-credit-card"></i>
@@ -579,7 +580,7 @@
                             </a>
                         </li>
                         <li class="nav-item has-treeview">
-                            <a href="javascript:;" class="nav-link">
+                            <a href="{{route('jobs.index')}}" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>
                                     Jobs
@@ -596,6 +597,7 @@
                                 </p>
                             </a>
                         </li>
+                        @endif;
                         <li class="nav-item has-treeview">
                             <a href="javascript:;" class="nav-link">
                                 <i class="nav-icon fas fa-calendar-alt"></i>

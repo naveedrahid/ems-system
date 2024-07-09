@@ -26,6 +26,11 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class, 'user_id');
     }
 
+    public function documents()
+    {
+        return $this->hasOne(Employee::class, 'user_id');
+    }
+
     public function leaveApplication()
     {
         return $this->hasMany(LeaveApplication::class, 'user_id');
