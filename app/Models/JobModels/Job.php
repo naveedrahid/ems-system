@@ -13,7 +13,11 @@ class Job extends Model
 
     protected $guarded = ['id'];
 
-    public function candidate(){
+    public function candidates(){
+        return $this->hasMany(Candidate::class);
+    }
+
+    public function interviewerRemarks(){
         return $this->hasMany(Candidate::class);
     }
 }

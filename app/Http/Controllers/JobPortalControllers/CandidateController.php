@@ -17,13 +17,8 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        $candidates = Candidate::paginate(15);
+        $candidates = Candidate::with('scheduleInterviews')->paginate(15);
         $applicationStatuses = Candidate::candidate_application_status();
-        // $applicationStatuses = collect($applicationStatuses);
-        // $combinedData = [
-        //     'candidates' => $candidates,
-        //     'applicationStatuses' => $applicationStatuses,
-        // ];
 
         return view('job-portal.candidates.index', compact('candidates', 'applicationStatuses'));
     }
@@ -100,12 +95,12 @@ class CandidateController extends Controller
             'job_id' => 'required',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:255',
+            'email' => 'required|email|unique:candidates,email',
+            'phone' => 'required|numeric|digits:11',
             'age' => 'required|integer|min:18',
             'city' => 'required|string|max:255',
             'gender' => 'required|string|max:10',
-            'marital_status' => 'required|string|max:10',
+            'marital_status' => 'required|string',
             'total_experience' => 'required|integer|min:0',
             'current_salary' => 'required|numeric|min:0',
             'expected_salary' => 'required|numeric|min:0',
@@ -166,7 +161,8 @@ class CandidateController extends Controller
 
         $candidate->save();
     
-        return redirect()->back()->with('message', 'Candidate created successfully.');
+        // return redirect()->back()->with('message', 'Candidate created successfully.');
+        return response()->json(['message' => 'Application submit successfully'], 200);
     }
 
     /**
@@ -228,9 +224,13 @@ class CandidateController extends Controller
         return response()->json(['message' => 'Candidate status has been updated.'], 200);
     }
     
-    // public function previewCandidate(Candidate $candidate)
-    // {
-        
-    //     return view();
-    // }
+    public function checkEmailPhone(Request $request)
+    {
+        $emailExists = Candidate::where('email', $request->email)->exists();
+        $phoneExists = Candidate::where('phone', $request->phone)->exists();
+        return response()->json([
+            'emailExists' => $emailExists,
+            'phoneExists' => $phoneExists,
+        ]);
+    }
 }

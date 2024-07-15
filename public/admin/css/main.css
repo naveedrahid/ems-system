@@ -235,10 +235,63 @@ button.btn.btn-app.btnPdf i {
 }
 ul.pagination {
     justify-content: center;
+    margin-top:30px !important;
 }
 
-
-
+.data-table table {
+    font-size: 13px !important;
+}
+.data-table table tr>td, .data-table table tr>th{
+    padding: 10px 21px !important;
+}
+.data-table table thead tr {
+    background-color: #FAFAFA;
+}
+.badges {
+    padding: 3.20px 10px;
+    font-size: 10px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.active-badge {
+    background-color: #D6FFE3;
+    outline: 1px solid #00ff4f4f;
+    color: #22C55E;
+}
+.pandind-badge {
+    background-color: #FFF8DE;
+    outline: 1px solid #FFE892;
+    color: #F59E0B;
+}
+.deactive-badge {
+    background-color: #FFF1F1;
+    outline: 1px solid #FFCFCF;
+    color: #EF4444;
+}
+.new-badge {
+    background-color: #D1E5FF;
+    outline: 1px solid #3b82f678;
+    color: #3B82F6;
+}
+.data-table table .manage-process {
+    display: flex;
+    gap: 13px;
+}
+.data-table table .manage-process .edit-item {
+    color: #000;
+}
+.data-table table .manage-process .delete-item {
+    color: #000;
+}
+.data-table table td:nth-last-child(1) {
+    border-bottom: 0 !important;
+}
+.data-table .card-header {
+    padding: .35rem 1.25rem !important;
+}
+.data-table .card-header h4 {
+    font-size: 18px !important;
+} 
 
 
 

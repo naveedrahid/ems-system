@@ -21,8 +21,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
     {{-- <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/2.0.8/dataTables.bootstrap5.min.css"> --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
@@ -589,7 +587,7 @@
                             </a>
                         </li>
                         <li class="nav-item has-treeview">
-                            <a href="javascript:;" class="nav-link">
+                            <a href="{{route('candidates.index')}}" class="nav-link">
                                 <i class="nav-icon fas fa-user-tie"></i>
                                 <p>
                                     Candidates

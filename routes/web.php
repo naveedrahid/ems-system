@@ -12,7 +12,9 @@ use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobPortalControllers\CandidateController;
+use App\Http\Controllers\JobPortalControllers\InterviewerRemarkController;
 use App\Http\Controllers\JobPortalControllers\JobController;
+use App\Http\Controllers\JobPortalControllers\ScheduleInterviewController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\NoticeController;
@@ -20,6 +22,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\TimeLogController;
+use App\Models\JobModels\ScheduleInterview;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -37,12 +40,24 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
 
     // Job Portals Routses
     Route::prefix('portal')->group(function () {
+
         Route::resource('jobs', JobController::class)->except(['show']);
+
         Route::get('/candidates', [CandidateController::class, 'index'])->name('candidates.index');
         Route::get('/candidates/data', [CandidateController::class, 'getData'])->name('candidates.data');
         Route::get('/candidates/{candidate}', [CandidateController::class, 'show'])->name('candidates.show');
         Route::post('/candidates/status/{candidate}', [CandidateController::class, 'candidateStatus'])->name('candidates.status');
         Route::delete('/candidates/{candidate}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
+        
+        Route::resource('schedule-interviews', ScheduleInterviewController::class)->except(['edit', 'update', 'destroy']);
+        Route::get('/schedule-interviews/{schedule_interview}/remarks', [ScheduleInterviewController::class, 'interviewerRemarks'])->name('schedule-interviews.remarks');
+        
+        Route::resource('interviewer-remarks', InterviewerRemarkController::class);
+
+        Route::patch('/interviewer-remark/selected/{id}', [InterviewerRemarkController::class, 'selectedCandidateRemarks'])->name('selected.remarks');
+        Route::patch('/interviewer-remark/rejected/{id}', [InterviewerRemarkController::class, 'rejectedCandidateRemarks'])->name('rejected.remarks');
+        Route::patch('/interviewer-remark/status/{interviewer_remark}', [InterviewerRemarkController::class, 'candidateStatus'])->name('interviewer.status');
+        
     });
 
 
@@ -150,7 +165,8 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
 });
 
 Route::prefix('candidates/portal/apply')->group(function () {
+    Route::post('/check-email-phone', [CandidateController::class, 'checkEmailPhone'])->name('check.email.phone');
     Route::post('/form-submit', [CandidateController::class, 'store'])->name('candidates.store');
     Route::get('/form', [CandidateController::class, 'create'])->name('candidates.create');
-    Route::get('/jobs', [JobController::class, 'showJobsCandidate']);
+    Route::get('/jobs', [JobController::class, 'showJobsCandidate'])->name('jobs.data');
 });

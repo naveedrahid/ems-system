@@ -92,4 +92,9 @@ class Candidate extends Model
     {
         return $this->belongsTo(Job::class);
     }
+
+    public function scheduleInterviews()
+    {
+        return $this->hasMany(scheduleInterview::class);
+    }
 }

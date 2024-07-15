@@ -12,9 +12,10 @@
                         <th width="10%">Date</th>
                         <th width="20%">Name</th>
                         <th width="20%">Email</th>
-                        <th width="10%">Gender</th>
+                        <th width="5%">Gender</th>
+                        <th width="15%">Interview Levels</th>
                         <th width="20%">Status</th>
-                        <th width="20%">Manage</th>
+                        <th width="10%">Manage</th>
                     </tr>
                 </thead>
                 @if ($candidates->count() > 0)
@@ -25,6 +26,20 @@
                                 <td>{{ $candidate->first_name . ' ' . $candidate->last_name }}</td>
                                 <td>{{ $candidate->email }}</td>
                                 <td>{{ $candidate->gender }}</td>
+                                <td>
+                                    @if ($candidate->scheduleInterviews->isEmpty())
+                                        No interviews
+                                    @else
+                                        @foreach ($candidate->scheduleInterviews as $interview)
+                                        @php
+                                            $level = $interview->interview_type;
+                                        @endphp
+                                            <div class="btn btn-block btn-outline-{{ ($level == 'initial') ? 'primary' : ($level == 'technical' ? 'dark' : 'success') }} btn-sm">
+                                                {{ ucfirst($level) }} complete
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </td>
                                 {{-- <td>
                                     @if ($candidate->resume)
                                         <a target="_blank" href="{{ asset('storage/' . $candidate->resume) }}">View CV</a>
@@ -90,7 +105,7 @@
                                     <button class="delete-candidate btn btn-danger btn-flat btn-sm"
                                         data-id="{{ $candidate->id }}"
                                         data-delete-route="{{ route('candidates.destroy', $candidate->id) }}">
-                                        Move trash <i class="fas fa-trash-alt"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                     <a href="{{ route('candidates.show', $candidate->id) }}"
                                         class="btn btn-info btn-flat btn-sm">
@@ -240,7 +255,7 @@
                     button.prop('disabled', false);
                     toastr.error('Failed to delete candidate');
                 });
-            }else{
+            } else {
                 button.prop('disabled', false);
             }
         });
