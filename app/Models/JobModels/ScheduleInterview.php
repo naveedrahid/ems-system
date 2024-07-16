@@ -34,4 +34,7 @@ class ScheduleInterview extends Model
     public function interviewerRemarks(){
         return $this->hasMany(InterviewerRemark::class, 'schedule_interview_id');
     }
+    public function jobOffer(){
+        return $this->hasOne(JobOffer::class);
+    }
 }

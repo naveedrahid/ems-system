@@ -40,7 +40,7 @@
                                         </a>
                                         @if ($schedule_interview->interviewerRemarks->isEmpty())
                                         @else
-                                            <a href="{{ route('schedule-interviews.show', $schedule_interview->id) }}"
+                                            <a href="{{ route('schedule-interviews.remarks', $schedule_interview->id) }}"
                                                 target="_blank">
                                                 <div class="edit-item"><i class="fas fa-eye"></i> Remark</div>
                                             </a>
@@ -57,11 +57,11 @@
                                         @endphp
                                         @if ($status === 'Rejected')
                                             <span class="label label-danger">{{ $status }}</span>
-                                        @else
-                                            <span class="label label-succes">{{ $status }}</span>
+                                        @elseif($status === 'Selected')
+                                            <span class="label label-success">{{ $status }}</span>
+                                        @elseif($status === 'Pending')
+                                            <span class="label label-warning">Pending</span>
                                         @endif
-                                    @else
-                                        <span class="label label-warning">Pending</span>
                                     @endif
                                 </td>
                                 <td>

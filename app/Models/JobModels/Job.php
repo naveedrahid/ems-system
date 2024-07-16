@@ -20,4 +20,8 @@ class Job extends Model
     public function interviewerRemarks(){
         return $this->hasMany(Candidate::class);
     }
+
+    public function jobOffer(){
+        return $this->hasOne(JobOffer::class);
+    }
 }

@@ -140,13 +140,10 @@ class ScheduleInterviewController extends Controller
 
     public function interviewerRemarks(ScheduleInterview $schedule_interview)
     {
-        // Eager load interviewerRemarks for the given ScheduleInterview instance
-        $schedule_interview->load('interviewerRemarks');
-        
-        // Debug the loaded data
-        dd($schedule_interview->interviewerRemarks);
-        
-        return view('job-portal.schedule-interviews.remarks', compact('schedule_interview'));
+        $interviewer_remarks = InterviewerRemark::where('schedule_interview_id', $schedule_interview->id)->get();
+    
+        return view('job-portal.schedule-interviews.remarks', compact('schedule_interview', 'interviewer_remarks'));
     }
+    
     
 }

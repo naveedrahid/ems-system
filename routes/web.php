@@ -14,6 +14,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobPortalControllers\CandidateController;
 use App\Http\Controllers\JobPortalControllers\InterviewerRemarkController;
 use App\Http\Controllers\JobPortalControllers\JobController;
+use App\Http\Controllers\JobPortalControllers\JobOfferController;
 use App\Http\Controllers\JobPortalControllers\ScheduleInterviewController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveTypeController;
@@ -53,6 +54,8 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
         Route::get('/schedule-interviews/{schedule_interview}/remarks', [ScheduleInterviewController::class, 'interviewerRemarks'])->name('schedule-interviews.remarks');
         
         Route::resource('interviewer-remarks', InterviewerRemarkController::class);
+
+        Route::resource('job-offers', JobOfferController::class);
 
         Route::patch('/interviewer-remark/selected/{id}', [InterviewerRemarkController::class, 'selectedCandidateRemarks'])->name('selected.remarks');
         Route::patch('/interviewer-remark/rejected/{id}', [InterviewerRemarkController::class, 'rejectedCandidateRemarks'])->name('rejected.remarks');

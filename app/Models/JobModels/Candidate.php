@@ -97,4 +97,8 @@ class Candidate extends Model
     {
         return $this->hasMany(scheduleInterview::class);
     }
+
+    public function jobOffer(){
+        return $this->hasOne(JobOffer::class);
+    }
 }
