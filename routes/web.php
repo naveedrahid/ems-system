@@ -56,7 +56,8 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
         Route::resource('interviewer-remarks', InterviewerRemarkController::class);
 
         Route::resource('job-offers', JobOfferController::class);
-
+        Route::post('/job-offers/send-email/{job_offer}', [JobOfferController::class, 'sendEmail'])->name('job-offers.send-email');
+        
         Route::patch('/interviewer-remark/selected/{id}', [InterviewerRemarkController::class, 'selectedCandidateRemarks'])->name('selected.remarks');
         Route::patch('/interviewer-remark/rejected/{id}', [InterviewerRemarkController::class, 'rejectedCandidateRemarks'])->name('rejected.remarks');
         Route::patch('/interviewer-remark/status/{interviewer_remark}', [InterviewerRemarkController::class, 'candidateStatus'])->name('interviewer.status');

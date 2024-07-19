@@ -25,14 +25,14 @@
                                     'department_id',
                                     $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
                                     null,
-                                    ['class' => 'form-control', 'id' => 'department_id'],
+                                    ['class' => 'form-control select2', 'id' => 'department_id'],
                                 ) !!}
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('user_id', 'Select User') !!}
-                                <select name="user_id" id="user_id" class="form-control">
+                                <select name="user_id" id="user_id" class="form-control select2">
                                     <option value="">Select User</option>
                                     @foreach ($departments as $department)
                                         @foreach ($department->employees as $employee)
@@ -325,7 +325,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#department_id, #user_id').select2();
+        $('.select2').select2();
 
         function formatState(option) {
             if (!option.id) {

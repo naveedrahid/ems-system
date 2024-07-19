@@ -1,8 +1,8 @@
 @extends('masterLayout.app')
 @section('main')
-@section('page-title')
+    {{-- @section('page-title')
     Manage Designation
-@endsection
+@endsection --}}
 @section('page-content')
     <div class="row">
         <div class="col-12">
@@ -11,7 +11,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="header-title">
-                                <h4 class="text-bold">Total Designationa: <small>50</small>  </h4>
+                                <h4 class="text-bold">Manage Designation</h4>
                             </div>
                         </div>
                         <div class="col-md-6 text-right">
@@ -42,7 +42,7 @@
                                     <tr>
                                         <td>{{ $designation->created_at->toFormattedDateString() }}</td>
                                         <td>{{ $designation->designation_name }}</td>
-                                        <td>{{ $designation->department->department_name }}</td>
+                                        <td>{{ $designation->department->department_name ?? '' }}</td>
                                         <td>
                                             <a href="#" class="status-toggle" data-id="{{ $designation->id }}"
                                                 data-status="{{ $designation->status }}">
@@ -103,48 +103,14 @@
                 });
             }
         });
-        // $('.status-toggle').click(function() {
-        //     const button = $(this);
-        //     const id = button.data('id');
-        //     const status = button.data('status');
-        //     const newStatus = status === 'active' ? 'deactive' : 'active';
-        //     const statusIcon = status === 'active' ? 'down' : 'up';
-        //     const btnClass = status === 'active' ? 'danger' : 'info';
-        //     const btnSts = $('.status-toggle');
-        //     btnSts.prop('disabled', true);
-        //     $.ajax({
-        //             url: '/update-status/' + id,
-        //             method: 'PUT',
-        //             data: {
-        //                 status: newStatus
-        //             },
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //             },
-        //         })
-        //         .then((response) => {
-        //             button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger'))
-        //                 .addClass('btn-' + btnClass);
-        //             button.find('i').removeClass('fa-thumbs-' + (status === 'active' ?
-        //                 'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
-        //             toastr.success(response.message);
-        //             button.data('status', newStatus);
-        //             btnSts.prop('disabled', false);
-        //         }).catch((err) => {
-        //             console.log(err);
-        //             toastr.error('Faild to status Designation');
-        //             btnSts.prop('disabled', false);
-        //         });
-        // });
         $('.status-toggle').click(function(event) {
             event.preventDefault();
             const button = $(this);
-            // const btnSpan = $('.status-toggle span');
             const id = button.data('id');
             const status = button.data('status');
             const newStatus = status === 'active' ? 'deactive' : 'active';
-            const btnSpan = $('.badges');
-            btnSpan.removeClass((status === 'active' ? 'active' : 'deactive') + '-badge')
+            const btnSpan = button.find('span');
+            btnSpan.removeClass(status + '-badge')
                 .addClass(newStatus + '-badge');
             button.prop('disabled', true);
             $.ajax({
@@ -160,12 +126,12 @@
                     button.find('span').text(newStatus.charAt(0).toUpperCase() + newStatus
                         .slice(1));
                     button.data('status', newStatus);
-                    btnSts.prop('disabled', false);
+                    button.prop('disabled', false);
                 },
                 error: function(err) {
                     console.log(err);
                     alert('Failed to update status.');
-                    btnSts.prop('disabled', false);
+                    button.prop('disabled', false);
                 }
             });
         });

@@ -24,4 +24,8 @@ class JobOffer extends Model
     public function scheduleInterview() {
         return $this->belongsTo(ScheduleInterview::class);
     }
+
+    public function interviewerRemarks(){
+        return $this->hasMany(InterviewerRemark::class);
+    }
 }

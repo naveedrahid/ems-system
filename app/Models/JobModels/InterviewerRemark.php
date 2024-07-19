@@ -37,4 +37,8 @@ class InterviewerRemark extends Model
     public function scheduleInterview() {
         return $this->belongsTo(ScheduleInterview::class, 'schedule_interview_id');
     }
+
+    public function jobOffer()  {
+        return $this->belongsTo(JobOffer::class);
+    }
 }

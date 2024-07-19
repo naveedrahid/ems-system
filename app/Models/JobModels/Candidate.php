@@ -19,7 +19,6 @@ class Candidate extends Model
             'Pending',
             'Selected',
             'Rejected',
-            'Interview Scheduled',
         ];
     }
 
