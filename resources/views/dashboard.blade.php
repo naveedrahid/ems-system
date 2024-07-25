@@ -498,7 +498,7 @@
                                         </div>
                                         <div class="info d-block">
                                             <h5 href="#" class="text-bold d-block m-0 d-flex align-items-center">
-                                                {{ $todayBirthday->name }} <img src="{{asset('admin/images/cake.png')}}" class="img-fluid ml-4" alt="">
+                                                {{ $todayBirthday->name }} <img src="{{asset('admin/images/cake.png')}}" class="img-fluid ml-4" alt="" style="width: 24px !important;">
                                             </h5>
                                             <p class="text-primary">Birthday Today </p>
                                         </div>
