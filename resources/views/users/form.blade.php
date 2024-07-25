@@ -34,8 +34,11 @@
                                 {!! Form::email('user_email', $employee->email ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('title', 'City') !!}
-                                {!! Form::text('city', $employee->employee->city ?? '', ['class' => 'form-control']) !!}
+                                {!! Form::label('country', 'Country *') !!}
+                                {!! Form::select('country', ['' => 'Select Country'] + $countries, old('country', $user->country_id), [
+                                    'class' => 'form-control form-select select2',
+                                    'id' => 'country',
+                                ]) !!}
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('title', 'Phone Number') !!}
@@ -131,6 +134,15 @@
                                 </select>
                             </div>
                             <div class="mb-3 form-group">
+                                {!! Form::label('title', 'City') !!}
+                                {!! Form::select(
+                                    'city',
+                                    ['' => 'Select City'] + (isset($cities[$user->country_id]) ? $cities[$user->country_id]->toArray() : []),
+                                    old('city', $user->city),
+                                    ['class' => 'form-control form-select select2', 'id' => 'city'],
+                                ) !!}
+                            </div>
+                            <div class="mb-3 form-group">
                                 {!! Form::label('title', 'Gender') !!}
                                 {!! Form::select(
                                     'gender',
@@ -220,6 +232,10 @@
                     message: 'User email is required'
                 },
                 {
+                    name: 'country',
+                    message: 'City is required'
+                },
+                {
                     name: 'city',
                     message: 'City is required'
                 },
@@ -288,7 +304,7 @@
                 let password = $('input[name="password"]').val();
                 if (!password) {
                     toastr.error('Password is required');
-                    return; 
+                    return;
                 }
             }
 
@@ -388,6 +404,35 @@
                     return option.text;
                 }
             });
+        });
+    });
+
+    $(document).ready(function() {
+        const cities = @json($cities);
+
+        function populateCities(countryId, selectedCityId = null) {
+            const countryCities = cities[countryId] || {};
+            const $citySelect = $('#city');
+            $citySelect.empty().append(new Option('Select City', ''));
+
+            $.each(countryCities, function(cityId, cityName) {
+                $citySelect.append(new Option(cityName, cityId));
+            });
+
+            if (selectedCityId) {
+                $citySelect.val(selectedCityId);
+            }
+        }
+
+        const initialCountryId = $('#country').val();
+        const initialCityId = '{{ old('city', $user->city) }}';
+        if (initialCountryId) {
+            populateCities(initialCountryId, initialCityId);
+        }
+
+        $('#country').on('change', function() {
+            const countryId = $(this).val();
+            populateCities(countryId);
         });
     });
 </script>

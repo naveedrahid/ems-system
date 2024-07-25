@@ -34,12 +34,13 @@
                         </thead>
                         <tbody style="background: #fff;">
                             @forelse ($interviewer_remarks as $interviewer_remark)
+                                {{-- @if ($schedule_interview->interviewer_id === auth()->user()->id) --}}
                                 <tr>
                                     <td>
                                         {{ $interviewer_remark->created_at ? $interviewer_remark->created_at->toFormattedDateString() : '' }}
                                     </td>
                                     <td>{{ $interviewer_remark->job->title }}</td>
-                                    <td>{{$interviewer_remark->scheduleInterview->interview_type}}</td>
+                                    <td>{{ $interviewer_remark->scheduleInterview->interview_type }}</td>
                                     <td>{{ $interviewer_remark->candidate->first_name . ' ' . $interviewer_remark->candidate->last_name }}
                                     </td>
                                     <td>
@@ -88,12 +89,14 @@
                                             </button>
                                         @elseif($selected && !$rejected)
                                             <button type="button" class="btn btn-default badges pass" data-toggle="modal"
-                                                data-target="#selectedNotes">
+                                                data-target="#selectedNotes"
+                                                data-notes="{{ $interviewer_remark->selected_notes }}">
                                                 Selected Notes
                                             </button>
                                         @elseif(!$selected && $rejected)
                                             <button type="button" class="btn btn-default badges reject" data-toggle="modal"
-                                                data-target="#rejectedNotes">
+                                                data-target="#rejectedNotes"
+                                                data-notes="{{ $interviewer_remark->rejected_notes }}">
                                                 Rejected Notes
                                             </button>
                                         @endif
@@ -106,6 +109,7 @@
                                         </div>
                                     </td>
                                 </tr>
+
                             @empty
                                 <tr>
                                     <td class="text-center" colspan="8">Data not found.</td>
@@ -129,7 +133,7 @@
                 </div>
                 {!! Form::model($interviewer_remark, [
                     'url' => route('selected.remarks', $interviewer_remark->id),
-                    'method' => 'PATCH',
+                    'method' => 'PUT',
                     'id' => 'selectedNotesHandler',
                 ]) !!}
                 <div class="modal-body">
@@ -137,17 +141,14 @@
                         <div id="loadingSpinner" style="display: none; text-align: center;">
                             <i class="fas fa-spinner fa-spin fa-3x"></i>
                         </div>
-
                         @method('PATCH')
 
-                        <div class="mb-3 form-group">
-                            {!! Form::textarea('selected_notes', old('selected_notes'), [
-                                'id' => 'selected_notes',
-                                'cols' => 30,
-                                'rows' => 10,
-                                'class' => 'form-control',
-                            ]) !!}
-                        </div>
+                        {!! Form::textarea('selected_notes',null, [
+                            'id' => 'selected_notes',
+                            'cols' => 30,
+                            'rows' => 10,
+                            'class' => 'form-control',
+                        ]) !!}
 
                     </div>
                 </div>
@@ -184,7 +185,7 @@
                         @method('PATCH')
 
                         <div class="mb-3 form-group">
-                            {!! Form::textarea('rejected_notes', old('rejected_notes'), [
+                            {!! Form::textarea('rejected_notes', null, [
                                 'id' => 'rejected_notes',
                                 'cols' => 30,
                                 'rows' => 10,
@@ -296,6 +297,24 @@
 @endpush
 
 @push('js')
+<script>
+    $(document).ready(function() {
+        $('#selectedNotes').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var notes = button.data('notes');
+            var modal = $(this);
+            modal.find('#selected_notes').val(notes);
+        });
+
+        $('#rejectedNotes').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var notes = button.data('notes');
+            var modal = $(this);
+            modal.find('#rejected_notes').val(notes);
+        });
+    });
+</script>
+
 <script>
     $(document).ready(function() {
         $('.status-toggle').click(function(e) {

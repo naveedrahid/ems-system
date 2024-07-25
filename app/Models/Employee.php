@@ -9,11 +9,11 @@ class Employee extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'shift_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
-    ];
+    // protected $fillable = [
+    //     'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'shift_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
+    // ];
 
-    // protected $guarded = ['id'];
+    protected $guarded = ['id'];
 
     protected $dates = [
         'date_of_birth',

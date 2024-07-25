@@ -36,7 +36,7 @@ class JobController extends Controller
         $designations = Designation::pluck('designation_name', 'id');
         $shifts = Shift::pluck('name', 'id');
 
-        $encryptedJobIds = $jobs->mapWithKeys(function($job){
+        $encryptedJobIds = $jobs->mapWithKeys(function ($job) {
             return [$job->id => encrypt($job->id)];
         });
 
@@ -77,48 +77,56 @@ class JobController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'title' => 'required',
-    //         'department_id' => 'required',
-    //         'designation_id' => 'required',
-    //         'shift_id' => 'required',
-    //         'employment_type' => 'required',
-    //         'location' => 'required',
-    //         'salary_range' => 'required',
-    //         'closing_date' => 'required',
-    //         'description' => 'required',
-    //         'job_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     ]);
+    public function store(Request $request)
+    {
+        
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+        $request->validate([
+            'title' => 'required',
+            'department_id' => 'required',
+            'designation_id' => 'required',
+            'shift_id' => 'required',
+            'employment_type' => 'required',
+            'location' => 'required',
+            'salary_range' => 'required',
+            'closing_date' => 'required',
+            'description' => 'required',
+            'job_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-    //     $filePath = null;
+        $filePath = null;
 
-    //     if ($request->hasFile('job_img')) {
-    //         $uploadedFile = $request->file('job_img');
-    //         $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-    //         $filePath = 'job_images/' . $fileName;
-    //         Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
-    //         $filePath = 'storage/' . $filePath;
-    //     }
+        if ($request->hasFile('job_img')) {
+            $uploadedFile = $request->file('job_img');
+            $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
+            $filePath = 'job_images/' . $fileName;
+            Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
+            $filePath = 'storage/' . $filePath;
+        }
 
-    //     Job::create([
-    //         'created_by' => auth()->user()->id,
-    //         'title' => $request->title,
-    //         'department_id' => $request->department_id,
-    //         'designation_id' => $request->designation_id,
-    //         'shift_id' => $request->shift_id,
-    //         'employment_type' => $request->employment_type,
-    //         'location' => $request->location,
-    //         'salary_range' => $request->salary_range,
-    //         'closing_date' => $request->closing_date,
-    //         'description' => $request->description,
-    //         'job_img' => $filePath,
-    //     ]);
+        $job = Job::create([
+            'created_by' => $user->id,
+            'title' => $request->title,
+            'department_id' => $request->department_id,
+            'designation_id' => $request->designation_id,
+            'shift_id' => $request->shift_id,
+            'employment_type' => $request->employment_type,
+            'location' => $request->location,
+            'salary_range' => $request->salary_range,
+            'closing_date' => $request->closing_date,
+            'description' => $request->description,
+            'job_img' => $filePath,
+        ]);
 
-    //     // return redirect()->route('home')->with('message', 'Record created');
-    //     return response()->json(['message' => 'job created successfully'], 200);
-    // }
+        // return redirect()->route('home')->with('message', 'Record created');
+        return response()->json([
+            'message' => 'Job created successfully',
+            'job' => $job
+        ], 201);
+    }
 
     /**
      * Display the specified resource.
@@ -168,49 +176,49 @@ class JobController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    // public function update(Request $request, Job $job)
-    // {
-    //     $validatedData = $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'department_id' => 'required|exists:departments,id',
-    //         'designation_id' => 'required|exists:designations,id',
-    //         'shift_id' => 'required|exists:shifts,id',
-    //         'employment_type' => 'required|string|in:full_time,part_time',
-    //         'location' => 'required|string|max:255',
-    //         'salary_range' => 'required|string|max:255',
-    //         'closing_date' => 'required|date',
-    //         'description' => 'nullable|string',
-    //         'job_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     ]);
+    public function update(Request $request, Job $job)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+            'designation_id' => 'required|exists:designations,id',
+            'shift_id' => 'required|exists:shifts,id',
+            'employment_type' => 'required|string|in:full_time,part_time',
+            'location' => 'required|string|max:255',
+            'salary_range' => 'required|string|max:255',
+            'closing_date' => 'required|date',
+            'description' => 'nullable|string',
+            'job_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-    //     $job->title = $validatedData['title'];
-    //     $job->department_id = $validatedData['department_id'];
-    //     $job->designation_id = $validatedData['designation_id'];
-    //     $job->shift_id = $validatedData['shift_id'];
-    //     $job->employment_type = $validatedData['employment_type'];
-    //     $job->location = $validatedData['location'];
-    //     $job->salary_range = $validatedData['salary_range'];
-    //     $job->closing_date = $validatedData['closing_date'];
-    //     $job->description = $validatedData['description'];
+        $job->title = $validatedData['title'];
+        $job->department_id = $validatedData['department_id'];
+        $job->designation_id = $validatedData['designation_id'];
+        $job->shift_id = $validatedData['shift_id'];
+        $job->employment_type = $validatedData['employment_type'];
+        $job->location = $validatedData['location'];
+        $job->salary_range = $validatedData['salary_range'];
+        $job->closing_date = $validatedData['closing_date'];
+        $job->description = $validatedData['description'];
 
-    //     if ($request->hasFile('job_img')) {
-    //         if ($job->job_img && Storage::disk('public')->exists(str_replace('storage/', '', $job->job_img))) {
-    //             Storage::disk('public')->delete(str_replace('storage/', '', $job->job_img));
-    //         }
-        
-    //         $uploadedFile = $request->file('job_img');
-    //         $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-    //         $filePath = 'job_images/' . $fileName;
-    //         Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
-        
-    //         $job->job_img = 'storage/' . $filePath;
-    //     }
+        if ($request->hasFile('job_img')) {
+            if ($job->job_img && Storage::disk('public')->exists(str_replace('storage/', '', $job->job_img))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $job->job_img));
+            }
 
-    //     $job->save();
+            $uploadedFile = $request->file('job_img');
+            $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
+            $filePath = 'job_images/' . $fileName;
+            Storage::disk('public')->put($filePath, file_get_contents($uploadedFile));
 
-    //     return response()->json(['message' => 'Job Update successfully'], 200);
-    // }
-    
+            $job->job_img = 'storage/' . $filePath;
+        }
+
+        $job->save();
+
+        return response()->json(['message' => 'Job Update successfully'], 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

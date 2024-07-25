@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Role;
@@ -12,6 +14,7 @@ use App\Models\EmployeeType;
 use App\Models\Shift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\DataTables;
 
 class EmployeeController extends Controller
@@ -94,7 +97,16 @@ class EmployeeController extends Controller
         $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
-        return view('employees.form', compact('route','formMethod','employee','departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
+        $countries = Cache::remember('countries', 60 * 60, function () {
+            return Country::pluck('name', 'id')->toArray();
+        });
+        $cities = Cache::remember('cities', 60 * 60, function () {
+            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
+                return $cityGroup->pluck('name', 'id');
+            });
+        });
+        
+        return view('employees.form', compact('route','formMethod','employee','departments', 'designations', 'roles', 'employeeTypes', 'employeeShift', 'countries', 'cities'));
     }
 
     public function getDesignations($departmentId)
@@ -115,10 +127,11 @@ class EmployeeController extends Controller
             'user_name' => 'required',
             'user_email' => 'required|email',
             'user_role' => 'required',
-            'user_password' => 'required',
+            'password' => 'required',
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
+            'country' => 'required',
             'city' => 'required',
             'address' => 'required',
             'department_id' => 'required',
@@ -142,7 +155,9 @@ class EmployeeController extends Controller
             'job_type' => $request->job_type,
             'work_type' => $request->work_type,
             'status' => $request->status,
-            'password' => Hash::make($request->user_password),
+            'city' => $request->city,
+            'country' => $request->country,
+            'password' => Hash::make($request->password),
         ]);
 
         $role = Role::where('name', 'employee')->first();
@@ -162,7 +177,6 @@ class EmployeeController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'joining_date' => $request->joining_date,
             'fater_name' => $request->fater_name,
-            'city' => $request->city,
             'address' => $request->address,
             'phone_number' => $request->phone_number,
             'emergency_phone_number' => $request->emergency_phone_number,
@@ -188,8 +202,16 @@ class EmployeeController extends Controller
         $designations = Designation::all();
         $employeeShift = Shift::all();
         $employeeTypes = EmployeeType::all();
+        $countries = Cache::remember('countries', 60 * 60, function () {
+            return Country::pluck('name', 'id')->toArray();
+        });
+        $cities = Cache::remember('cities', 60 * 60, function () {
+            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
+                return $cityGroup->pluck('name', 'id');
+            });
+        });
 
-        return view('employees.form', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShift', 'employeeTypes'));
+        return view('employees.form', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
     }
 
     public function update(Request $request, $id)
@@ -199,10 +221,10 @@ class EmployeeController extends Controller
         $request->validate([
             'user_name' => 'required',
             'user_email' => 'required|email',
-            // 'user_role' => 'required',
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
+            'country' => 'required',
             'city' => 'required',
             'address' => 'required',
             'department_id' => 'required',
@@ -224,6 +246,8 @@ class EmployeeController extends Controller
             'status' => $request->status,
             'job_type' => $request->job_type,
             'work_type' => $request->work_type,
+            'city' => $request->city,
+            'country' => $request->country,
         ];
         $user->update($userData);
 
@@ -237,7 +261,6 @@ class EmployeeController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'joining_date' => $request->joining_date,
             'fater_name' => $request->fater_name,
-            'city' => $request->city,
             'address' => $request->address,
             'phone_number' => $request->phone_number,
             'emergency_phone_number' => $request->emergency_phone_number,

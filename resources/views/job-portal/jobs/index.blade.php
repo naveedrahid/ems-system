@@ -37,10 +37,10 @@
                                 {{-- @php
                                         $jobImg = str_replace('public/', 'storage/', $job->job_images) ?? '';
                                     @endphp --}}
-                                <p>{!! $job->description !!}</p>
+                                <div class="jobDESC">{!! $job->description !!}</div>
 
                             </div>
-                            <div class="">
+                            <div class="jobtns">
                                 <button class="delete-job btn btn-danger btn-flat btn-sm" data-job-id="{{ $job->id }}"
                                     data-delete-route="{{ route('jobs.destroy', ':id') }}">
                                     Delete <i class="fas fa-trash-alt"></i>
@@ -60,26 +60,56 @@
 @endsection
 @push('css')
 <style>
-    .jobWrapper {
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: #0000006e 0px 0px 20px 0px;
-        background: #fff;
-        margin-bottom: 30px;
+    .jobWrapper img {
+        height: 300px;
+        width: 100%;
+        object-fit: cover;
+        object-position: center center;
+    }
+    .jobDESC {
+        height: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.4s ease;
     }
 
+    .jobWrapper:hover .jobDESC {
+        opacity: 1;
+        visibility: visible;
+        height: 100%;
+        transition: 0.4s ease;
+    }
+
+    .jobWrapper,
+    .jobWrapper:hover {
+        transition: 0.4s ease;
+    }
+    .jobtns {
+        background: #777;
+        padding: 10px 20px;
+        border-radius: 0px 0px 10px 10px;
+        justify-content: center;
+    }
+    .jobtns a,
+    .jobtns button {
+        width: 100px;
+        margin: 0px 20px;
+    }
+    .jobWrapper {
+        padding: 30px;
+        border-radius: 10px 10px 0px 0px;
+        box-shadow: #0000006e 0px 0px 20px 0px;
+        background: #fff;
+    }
     .jobWrapper p {
         color: #000;
         font-size: 18px !important;
     }
-
     .jobWrapper h4 {
         text-decoration: underline;
         margin: 20px 0px;
         font-weight: 700;
     }
-
-    .col-md-6 {}
 
     .jobWrapper~div {
         display: flex;

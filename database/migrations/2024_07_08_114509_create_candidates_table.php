@@ -22,6 +22,7 @@ class CreateCandidatesTable extends Migration
             $table->string('email')->unique();
             $table->string('phone');
             $table->string('age');
+            $table->string('country');
             $table->string('city');
             $table->string('gender');
             $table->string('marital_status');

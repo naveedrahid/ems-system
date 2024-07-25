@@ -17,7 +17,6 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3 form-group">
@@ -33,8 +32,11 @@
                                 {!! Form::email('user_email', $employee->email ?? '', ['class' => 'form-control']) !!}
                             </div>
                             <div class="mb-3 form-group">
-                                {!! Form::label('city', 'City') !!}
-                                {!! Form::text('city', $employee->employee->city ?? '', ['class' => 'form-control']) !!}
+                                {!! Form::label('country', 'Country *') !!}
+                                {!! Form::select('country', ['' => 'Select Country'] + $countries, old('country', $employee->country ?? ''), [
+                                    'class' => 'form-control form-select select2',
+                                    'id' => 'country',
+                                ]) !!}
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('phone_number', 'Phone Number') !!}
@@ -118,6 +120,15 @@
                                 </select>
                             </div>
                             <div class="mb-3 form-group">
+                                {!! Form::label('city', 'City') !!}
+                                {!! Form::select(
+                                    'city',
+                                    ['' => 'Select City'] + (isset($cities[$employee->country_id]) ? $cities[$employee->country_id]->toArray() : []),
+                                    old('city', $employee->city),
+                                    ['class' => 'form-control form-select select2', 'id' => 'city'],
+                                ) !!}
+                            </div>
+                            <div class="mb-3 form-group">
                                 {!! Form::label('gender', 'Gender') !!}
                                 {!! Form::select(
                                     'gender',
@@ -126,16 +137,22 @@
                                     ['class' => 'form-control form-select select2'],
                                 ) !!}
                             </div>
-                            
                             <div class="mb-3 form-group">
-                              
-                                {!! Form::label('role_id', 'Role') !!}
+                                {!! Form::label('gender', 'Gender') !!}
                                 {!! Form::select(
-                                    'user_role', 
-                                    $roles->pluck('name', 'id')->toArray(), 
-                                    $employee->role_id ?? '', 
-                                    ['class' => 'form-control form-select select2', 'id' => 'user_role']
+                                    'gender',
+                                    ['' => 'Select Gender', 'male' => 'Male', 'female' => 'Female'],
+                                    $employee->employee->gender ?? '',
+                                    ['class' => 'form-control form-select select2'],
                                 ) !!}
+                            </div>
+                            <div class="mb-3 form-group">
+
+                                {!! Form::label('role_id', 'Role') !!}
+                                {!! Form::select('user_role', $roles->pluck('name', 'id')->toArray(), $employee->role_id ?? '', [
+                                    'class' => 'form-control form-select select2',
+                                    'id' => 'user_role',
+                                ]) !!}
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('date_of_birth', 'Date of birth') !!}
@@ -158,6 +175,12 @@
                                     ['class' => 'form-control form-select select2'],
                                 ) !!}
                             </div>
+                            @if ($formMethod === 'POST')
+                                <div class="mb-3 form-group">
+                                    {!! Form::label('title', 'Password') !!}
+                                    {!! Form::password('password', ['class' => 'form-control']) !!}
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="box-footer">
@@ -199,6 +222,10 @@
                 {
                     name: 'user_email',
                     message: 'User email is required'
+                },
+                {
+                    name: 'country',
+                    message: 'Country is required'
                 },
                 {
                     name: 'city',
@@ -355,6 +382,35 @@
                     return option.text;
                 }
             });
+        });
+    });
+
+    $(document).ready(function() {
+        const cities = @json($cities);
+
+        function populateCities(countryId, selectedCityId = null) {
+            const countryCities = cities[countryId] || {};
+            const $citySelect = $('#city');
+            $citySelect.empty().append(new Option('Select City', ''));
+
+            $.each(countryCities, function(cityId, cityName) {
+                $citySelect.append(new Option(cityName, cityId));
+            });
+
+            if (selectedCityId) {
+                $citySelect.val(selectedCityId);
+            }
+        }
+
+        const initialCountryId = $('#country').val();
+        const initialCityId = '{{ old('city', $employee->city) }}';
+        if (initialCountryId) {
+            populateCities(initialCountryId, initialCityId);
+        }
+
+        $('#country').on('change', function() {
+            const countryId = $(this).val();
+            populateCities(countryId);
         });
     });
 </script>

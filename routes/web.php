@@ -49,19 +49,18 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
         Route::get('/candidates/{candidate}', [CandidateController::class, 'show'])->name('candidates.show');
         Route::post('/candidates/status/{candidate}', [CandidateController::class, 'candidateStatus'])->name('candidates.status');
         Route::delete('/candidates/{candidate}', [CandidateController::class, 'destroy'])->name('candidates.destroy');
-        
+
         Route::resource('schedule-interviews', ScheduleInterviewController::class)->except(['edit', 'update', 'destroy']);
         Route::get('/schedule-interviews/{schedule_interview}/remarks', [ScheduleInterviewController::class, 'interviewerRemarks'])->name('schedule-interviews.remarks');
-        
+
         Route::resource('interviewer-remarks', InterviewerRemarkController::class);
 
         Route::resource('job-offers', JobOfferController::class);
         Route::post('/job-offers/send-email/{job_offer}', [JobOfferController::class, 'sendEmail'])->name('job-offers.send-email');
-        
+
         Route::patch('/interviewer-remark/selected/{id}', [InterviewerRemarkController::class, 'selectedCandidateRemarks'])->name('selected.remarks');
         Route::patch('/interviewer-remark/rejected/{id}', [InterviewerRemarkController::class, 'rejectedCandidateRemarks'])->name('rejected.remarks');
         Route::patch('/interviewer-remark/status/{interviewer_remark}', [InterviewerRemarkController::class, 'candidateStatus'])->name('interviewer.status');
-        
     });
 
 
@@ -100,6 +99,7 @@ Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
 
     Route::resource('documents', DocumentUserController::class)->except(['show']);
+    Route::post('/documents/upload', [DocumentUserController::class, 'upload'])->name('documents.upload');
 
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
@@ -151,7 +151,7 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'AttendanceShow'])->name('attendance');
     Route::post('/checkin', [AttendanceController::class, 'checkInuser'])->name('checkIn');
     Route::get('/check-in-status', [AttendanceController::class, 'hasCheckedIn']);
-    Route::post('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
+    Route::patch('/checkOut', [AttendanceController::class, 'checkOutUser'])->name('checkOut');
     Route::get('download-pdf', [AttendanceController::class, 'downloadPdf'])->name('download-pdf');
     Route::get('/attendance/filter', [AttendanceController::class, 'AttendanceWithFilter'])->name('attendance.filter');
     Route::get('/attendance/daily-report', [AttendanceController::class, 'dailyReport'])->name('daily.report');

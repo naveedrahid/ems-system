@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\JobPortalControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\JobModels\Candidate;
 use App\Models\JobModels\Job;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -71,15 +73,19 @@ class CandidateController extends Controller
                 $job = Job::find($jobId);
                 $jobTitle = $job ? $job->title : null;
             } catch (DecryptException $e) {
-                abort(404); // Handle decryption error if necessary
+                abort(404);
             }
         }
 
         $candidate = new Candidate();
         $jobs = Job::pluck('id');
-        $cities = Candidate::cities();
+        $countries = Country::all()->pluck('name', 'id')->toArray();
+        
+        $cities = City::all()->groupBy('country_id')->map(function($cityGroup) {
+            return $cityGroup->pluck('name', 'id');
+        });
 
-        return view('job-portal.candidates.create', compact('candidate', 'jobs', 'cities', 'jobTitle', 'job'));
+        return view('job-portal.candidates.create', compact('candidate', 'jobs', 'jobTitle', 'job', 'cities', 'countries'));
     }
 
 
@@ -98,7 +104,8 @@ class CandidateController extends Controller
             'email' => 'required|email|unique:candidates,email',
             'phone' => 'required|numeric|digits:11',
             'age' => 'required|integer|min:18',
-            'city' => 'required|string|max:255',
+            'country' => 'required',
+            'city' => 'required',
             'gender' => 'required|string|max:10',
             'marital_status' => 'required|string',
             'total_experience' => 'required|integer|min:0',
@@ -114,13 +121,13 @@ class CandidateController extends Controller
             'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
             'cover_letter' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
-    
+
         try {
             $jobId = decrypt($validatedData['job_id']);
         } catch (DecryptException $e) {
             return redirect()->back()->withErrors(['job_id' => 'Invalid job ID.']);
         }
-        
+
         $candidate = new Candidate();
 
         if ($request->hasFile('resume')) {
@@ -144,6 +151,7 @@ class CandidateController extends Controller
         $candidate->email = $validatedData['email'];
         $candidate->phone = $validatedData['phone'];
         $candidate->age = $validatedData['age'];
+        $candidate->country = $validatedData['country'];
         $candidate->city = $validatedData['city'];
         $candidate->gender = $validatedData['gender'];
         $candidate->marital_status = $validatedData['marital_status'];
@@ -160,7 +168,7 @@ class CandidateController extends Controller
         $candidate->application_status = 'Pending';
 
         $candidate->save();
-    
+
         // return redirect()->back()->with('message', 'Candidate created successfully.');
         return response()->json(['message' => 'Application submit successfully'], 200);
     }
@@ -174,9 +182,10 @@ class CandidateController extends Controller
     public function show($id)
     {
         $candidateWithJob = Candidate::with('job')->find($id);
-        // $title = $candidateWithJob->job->title;
+        $cityName = City::where('id', $candidateWithJob->city)->pluck('name')->first();
+        $countryName = Country::where('id', $candidateWithJob->country)->pluck('name')->first();
         // dd($title);
-        return view('job-portal.candidates.show', compact('candidateWithJob'));
+        return view('job-portal.candidates.show', compact('candidateWithJob', 'cityName', 'countryName'));
     }
 
     /**
@@ -223,7 +232,7 @@ class CandidateController extends Controller
         $candidate->save();
         return response()->json(['message' => 'Candidate status has been updated.'], 200);
     }
-    
+
     public function checkEmailPhone(Request $request)
     {
         $emailExists = Candidate::where('email', $request->email)->exists();

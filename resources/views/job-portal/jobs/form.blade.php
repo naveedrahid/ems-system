@@ -7,7 +7,10 @@
     <div class="card-body">
         <div class="row justify-content-center">
             <div class="col-md-12">
-                <div class="card small-box card-primary p-5">
+                <div class="card small-box card-primary p-5 position-relative">
+                    <div id="loadingSpinner" style="display: none; text-align: center;">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    </div>
                     {!! Form::model($job, [
                         'url' => $route,
                         'method' => $formMethod,
@@ -135,6 +138,23 @@
     a.filepond--credits {
         display: none;
     }
+    div#loadingSpinner {
+            position: fixed;
+            left: 0;
+            right: 0;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            z-index: 99;
+            background: #00000036;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        div#loadingSpinner i {
+            color: #007bff;
+        }
 </style>
 @endpush
 
@@ -395,6 +415,7 @@
             const token = $('meta[name="csrf-token"]').attr('content');
             const button = $('input[type="submit"]');
             button.prop('disabled', true);
+            $('#loadingSpinner').show();
 
             $.ajax({
                     url: url,
@@ -407,6 +428,7 @@
                     }
                 })
                 .then((response) => {
+                    $('#loadingSpinner').hide();
                     toastr.success(response.message);
                     button.prop('disabled', false);
                     if ($(e.target).attr('id') === 'createJobHandler') {
@@ -414,6 +436,7 @@
                         job_img.removeFiles();
                     }
                 }).catch((err) => {
+                    $('#loadingSpinner').hide();
                     console.error(err, 'Job create failed');
                     toastr.error(response.message);
                     button.prop('disabled', false);

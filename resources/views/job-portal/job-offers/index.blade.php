@@ -4,7 +4,10 @@
     Manage Job Offer
 @endsection
 @section('page-content')
-    <div class="row">
+    <div class="row position-relative">
+        <div id="loadingSpinner" style="display: none; text-align: center;">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+        </div>
         <div class="col-12">
             <div class="card data-table small-box">
                 <div class="card-header">
@@ -17,7 +20,7 @@
                         <div class="col-md-6 text-right">
                             <div class="box-header pl-1">
                                 <h3 class="box-title">
-                                    <a href="{{ route('designation.create') }}" class="btn btn-success text-bold">
+                                    <a href="{{ route('job-offers.create') }}" class="btn btn-success text-bold">
                                         Add <i class="fas fa-plus" style="font-size: 13px;"></i>
                                     </a>
                                 </h3>
@@ -43,25 +46,14 @@
                                 <tr>
                                     <td>{{ $job_offer->created_at->toFormattedDateString() }}</td>
                                     <td>{{ $job_offer->job->title }}</td>
-                                    <td>{{ $job_offer->candidate->first_name . ' ' . $job_offer->candidate->last_name }}</td>
+                                    <td>{{ $job_offer->candidate->first_name . ' ' . $job_offer->candidate->last_name }}
+                                    </td>
                                     <td>{{ $job_offer->candidate_salary }}</td>
                                     <td>{!! $job_offer->candidate_offer !!}</td>
-                                    {{-- <td>
-                                        <form action="{{ route('job-offers.send-email', $job_offer->id) }}" method="POST">
-                                            @csrf
-                                        <a href="#" class="status-toggle" data-id="1" data-status="active">
-                                            <span class="badges active-badge">
-                                                Send Email <i class="far fa-paper-plane"></i>
-                                            </span>
-                                        </a>
-                                    </td> --}}
                                     <td>
-                                        
-                                        
-                                            <button id="sendJobOfferEmail" class="status-toggle" data-id="{{ $job_offer->id }}">
-                                                <i class="far fa-paper-plane"></i> Send Email
-                                            </button>
-                                        
+                                        <button id="sendJobOfferEmail" class="status-toggle" data-id="{{ $job_offer->id }}">
+                                            <i class="far fa-paper-plane"></i> Send Email
+                                        </button>
                                     </td>
                                     <td>
                                         <div class="manage-process">
@@ -79,7 +71,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9">No Job Offer Found!</td>
+                                    <td colspan="9" class="text-center">No Job Offer Found!</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -90,34 +82,68 @@
     </div>
 @endsection
 @endsection
+
+@push('css')
+    <style>
+        div#loadingSpinner {
+            position: fixed;
+            left: 0;
+            right: 0;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            z-index: 99;
+            background: #00000036;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        div#loadingSpinner i {
+            color: #007bff;
+        }
+        #sendJobOfferEmail{
+            background:transparent;
+            border:none;
+            padding:0;
+        }
+    </style>
+@endpush
+
 @push('js')
 <script>
-    $(document).ready(function(){
-        $('#sendJobOfferEmail').click(function(e){
+    $(document).ready(function() {
+        $('#sendJobOfferEmail').click(function(e) {
             e.preventDefault();
 
-            var jobId = $(this).data('id');
-            console.log('Job ID:', jobId); // Debugging statement
-
+            const jobId = $(this).data('id');
+            $(this).prop('disabled', true);
+            const token = $('meta[name="csrf-token"]').attr('content');           
+            $('#loadingSpinner').show();
             $.ajax({
                 method: 'POST',
                 url: '/portal/job-offers/send-email/' + jobId,
                 data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    console.log('Response:', response); // Debugging statement
-                    alert(response.message);
-                },
-                error: function(xhr) {
-                    console.log('Error:', xhr.responseText); // Debugging statement
-                    alert('An error occurred while sending the email.');
+                    _token: token
                 }
+                // success: function(response) {
+                //     alert(response.message);
+                // },
+                // error: function(xhr) {
+                //     alert('An error occurred while sending the email.');
+                // }
+            })
+            .then((response) => {
+                $('#loadingSpinner').hide();
+                $(this).prop('disabled', false);
+                toastr.success(response.message);
+            }).catch((err) => {
+                $(this).prop('disabled', false);
+                $('#loadingSpinner').hide();
+                console.error(err);
+                toastr.error('Failed Offer Email.');
             });
         });
     });
 </script>
-
-
-
 @endpush

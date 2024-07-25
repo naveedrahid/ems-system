@@ -65,16 +65,18 @@ if (!function_exists('getUpcomingBirthdays')) {
 
 // Calculate Over Time
 
-function calculateOvertime($check_out)
-{
-    $checkOutTime = Carbon::parse($check_out);
-    $startTime = Carbon::createFromTime(17, 20, 0);
+if (!function_exists('calculateOvertime')) {
+    function calculateOvertime($check_out)
+    {
+        $checkOutTime = Carbon::parse($check_out);
+        $startTime = Carbon::createFromTime(17, 20, 0);
 
-    if ($checkOutTime->greaterThan($startTime)) {
-        $overtime = $checkOutTime->diff($startTime);
-        return $overtime->h . "h : " . $overtime->i . "m";
-    } else {
-        return "-";
+        if ($checkOutTime->greaterThan($startTime)) {
+            $overtime = $checkOutTime->diff($startTime);
+            return $overtime->h . "h : " . $overtime->i . "m";
+        } else {
+            return "-";
+        }
     }
 }
 

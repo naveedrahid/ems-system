@@ -29,6 +29,7 @@
                 <tbody style="background: #fff;">
                     @if ($schedule_interviews->count() > 0)
                         @foreach ($schedule_interviews as $schedule_interview)
+                            {{-- @dd($schedule_interview->interviewerRemarks) --}}
                             <tr>
                                 <td>{{ $schedule_interview->created_at->toFormattedDateString() }}</td>
                                 <td>
@@ -38,12 +39,21 @@
                                             target="_blank">
                                             <div class="edit-item"><i class="fas fa-eye"></i> Profile</div>
                                         </a>
-                                        @if ($schedule_interview->interviewerRemarks->isEmpty())
-                                        @else
-                                            <a href="{{ route('schedule-interviews.remarks', $schedule_interview->id) }}"
-                                                target="_blank">
-                                                <div class="edit-item"><i class="fas fa-eye"></i> Remark</div>
-                                            </a>
+                                        @if ($schedule_interview->interviewerRemarks->isNotEmpty())
+                                            @php
+                                                $interviewerRemark = $schedule_interview->interviewerRemarks->first();
+                                                $selectedNotes = $interviewerRemark->selected_notes;
+                                                $rejectedNotes = $interviewerRemark->rejected_notes;
+                                            @endphp
+
+                                            @if (is_null($selectedNotes) && is_null($rejectedNotes))
+                                                <!-- No remarks -->
+                                            @elseif($selectedNotes || $rejectedNotes)
+                                                <a href="{{ route('schedule-interviews.remarks', $schedule_interview->id) }}"
+                                                    target="_blank">
+                                                    <div class="edit-item"><i class="fas fa-eye"></i> Remark</div>
+                                                </a>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>

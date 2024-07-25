@@ -18,6 +18,7 @@ class CreateJobOffersTable extends Migration
             $table->integer('job_id');
             $table->integer('candidate_id');
             $table->text('candidate_offer')->nullable();
+            $table->text('candidate_email_body')->nullable();
             $table->string('candidate_salary');
             $table->softDeletes();
             $table->timestamps();

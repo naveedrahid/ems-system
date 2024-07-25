@@ -75,7 +75,8 @@ class JobOfferController extends Controller
             'job_id' => 'required',
             'candidate_id' => 'required',
             'candidate_offer' => 'required',
-            'candidate_salary' => 'required|numeric'
+            'candidate_salary' => 'required|numeric',
+            'candidate_email_body' => 'nullable'
         ]);
 
         if ($validator->fails()) {
@@ -145,7 +146,8 @@ class JobOfferController extends Controller
             'job_id' => 'required',
             'candidate_id' => 'required',
             'candidate_offer' => 'required',
-            'candidate_salary' => 'required|numeric'
+            'candidate_salary' => 'required|numeric',
+            'candidate_email_body' => 'nullable'
         ]);
 
         if ($validator->fails()) {
@@ -179,15 +181,12 @@ class JobOfferController extends Controller
             ];
             $jobTitle = $job_offer->job->title;
     
-            // Send the email
             Mail::to($candidateDetails->email)->send(new JobOfferEmail($candidateDetails, $jobTitle, $job_offer));
     
             return response()->json(['message' => 'Job offer sent successfully!']);
         } catch (\Exception $e) {
-            // Log the error message
             Log::error('Email send error: ' . $e->getMessage());
     
-            // Return error response
             return response()->json(['message' => 'Failed to send job offer email.'], 500);
         }
     }

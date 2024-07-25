@@ -128,7 +128,7 @@
                     </div>
                     <div class="box-footer">
                         {!! Form::submit($schedule_interview->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary setDisabled']) !!}
-                        <a href="{{ route('jobs.index') }}" class="btn btn-danger">Cancel</a>
+                        <a href="{{ route('schedule-interviews.index') }}" class="btn btn-danger">Cancel</a>
                     </div>
                     {!! Form::close() !!}
                 </div>

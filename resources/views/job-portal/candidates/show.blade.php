@@ -29,8 +29,12 @@
                                         <td>{{ $candidateWithJob->age ?? '' }}</td>
                                     </tr>
                                     <tr>
+                                        <td class="text-bold">Country</td>
+                                        <td>{{ $countryName ?? '' }}</td>
+                                    </tr>
+                                    <tr>
                                         <td class="text-bold">City</td>
-                                        <td>{{ $candidateWithJob->city ?? '' }}</td>
+                                        <td>{{ $cityName ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Gender</td>
@@ -38,10 +42,6 @@
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Address</td>
-                                        <td>=</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">Country</td>
                                         <td>=</td>
                                     </tr>
                                     <tr>

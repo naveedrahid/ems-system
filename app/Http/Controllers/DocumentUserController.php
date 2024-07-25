@@ -52,9 +52,9 @@ class DocumentUserController extends Controller
             'department_id' => 'required|exists:departments,id',
             'nic_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'nic_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resume' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'required|file|mimes:pdf,doc,docx',
             'payslip' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'experience_letter' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'experience_letter' => 'required|file|mimes:pdf,doc,docx',
             'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -77,7 +77,6 @@ class DocumentUserController extends Controller
 
         return response()->json(['message' => 'Document saved successfully!', 'data' => $document]);
     }
-
 
     /**
      * Display the specified resource.
@@ -118,11 +117,11 @@ class DocumentUserController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'department_id' => 'required|exists:departments,id',
-            'nic_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'nic_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resume' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'required|file|mimes:pdf,doc,docx',
             'payslip' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'experience_letter' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'experience_letter' => 'required|file|mimes:pdf,doc,docx',
             'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -168,4 +167,19 @@ class DocumentUserController extends Controller
 
         return response()->json(['message' => 'Record and associated images deleted successfully.']);
     }
+
+    public function upload(Request $request)
+    {
+        // Handle file uploads
+        $validated = $request->validate([
+            'file' => 'required|file|mimes:jpg,png,pdf|max:2048',
+        ]);
+    
+        // Store the file
+        $path = $request->file('file')->store('user_docs');
+    
+        return response()->json(['path' => $path], 200);
+    }
+    
 }
+

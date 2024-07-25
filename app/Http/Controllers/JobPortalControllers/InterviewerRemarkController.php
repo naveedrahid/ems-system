@@ -102,7 +102,6 @@ class InterviewerRemarkController extends Controller
         return response()->json(['status' => $nextStatus]);
     }
 
-
     public function selectedCandidateRemarks(Request $request, $id)
     {
         $interviewer_remarks = InterviewerRemark::findOrFail($id);

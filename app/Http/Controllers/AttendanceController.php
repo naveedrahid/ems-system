@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmployeeAttendanceMail;
 use App\Models\LeaveApplication;
+use App\Models\Shift;
 
 class AttendanceController extends Controller
 {
@@ -210,11 +211,33 @@ class AttendanceController extends Controller
 
     public function attendanceLog()
     {
-        $users = User::with('role')->get();
-        $attendance = Attendance::paginate(15);
-        return view('attendance.log', compact('users', 'attendance'));
-    }
+        // Fetch all users
+        $users = User::all();
+    
+        // Fetch all attendance records for the current month
+        $startDate = Carbon::now()->startOfMonth();
 
+        $endDate = Carbon::now()->endOfDay();
+
+        $attendance = Attendance::whereBetween('attendance_date', [$startDate, $endDate])
+                                ->orderBy('attendance_date', 'ASC')
+                                ->get();
+    
+        // Fetch all holiday records
+        $holidays = Holiday::all();
+    
+        // Fetch all leave applications
+        $leaves = LeaveApplication::all();
+    
+        // Get all dates for the current month
+        $allDates = Carbon::parse($startDate)->toPeriod($endDate, '1 day');
+    
+        // Group attendance records by date
+        $attendanceByDate = $attendance->groupBy('attendance_date');
+    
+        return view('attendance.log', compact('attendance', 'users', 'attendanceByDate', 'allDates', 'holidays', 'leaves'));
+    }
+    
     public function AttendanceShow()
     {
         $currentUser = auth()->user()->id;
@@ -274,16 +297,27 @@ class AttendanceController extends Controller
         if ($attendance) {
             return response()->json(['message' => 'Already checked in for today']);
         }
+        
+        $employee = Employee::where('user_id', $userId)->first();
+
+        if (!$employee || !$employee->shift_id)
+            return response()->json(['message' => 'No shift assigned']);
+
+            $shift = Shift::find($employee->shift_id);
+
+        if (!$shift)
+            return response()->json(['message' => 'Shift not found']);
 
         $checkInStatus = null;
-        $lateInTime = Carbon::createFromTime(8, 21);
-        $earlyInTime = Carbon::createFromTime(8, 0);
+        $grassTime = Carbon::parse($shift->opening)->addMinutes(21);
+        $openingTime = Carbon::parse($shift->opening);
+        $closingTime = Carbon::parse($shift->closing);
 
-        if ($currentTime->greaterThan($lateInTime)) {
+        if ($currentTime->greaterThan($grassTime)) {
             $checkInStatus = 'Late In';
-        } elseif ($currentTime->greaterThan($earlyInTime) && $currentTime->lessThan($lateInTime)) {
+        } elseif ($currentTime->greaterThan($openingTime) && $currentTime->lessThan($grassTime)) {
             $checkInStatus = 'In';
-        } elseif ($currentTime->lessThan($earlyInTime)) {
+        } elseif ($currentTime->lessThan($openingTime)) {
             $checkInStatus = 'Early In';
         }
 
@@ -301,64 +335,80 @@ class AttendanceController extends Controller
         return response()->json(['message' => 'Check in successfully']);
     }
 
-    public function hasCheckedIn(){
+    public function hasCheckedIn()
+    {
         $userId = Auth::id();
         $currentDate = now()->toDateString();
 
         $checkInAttendance = Attendance::where('user_id', $userId)
-        ->whereDate('attendance_date', $currentDate)
-        ->first();
+            ->whereDate('attendance_date', $currentDate)
+            ->first();
 
         return response()->json(['checkedIn' => $checkInAttendance ? true : false]);
     }
 
     public function checkOutUser(Request $request)
     {
-        $user_id = $request->user_id;
-        $user = User::findOrFail($user_id);
-        $date = now()->format('Y-m-d');
-        $time = now()->format('H:i:s');
-        $existingAttendance = Attendance::where('user_id', $user_id)
-            ->where('attendance_date', $date)
+        $userId = Auth::id();
+        $user = User::findOrFail($userId);
+    
+        $currentDate = now()->toDateString();
+        $currentTime = now();
+    
+        $existingAttendance = Attendance::where('user_id', $userId)
+            ->where('attendance_date', $currentDate)
             ->first();
-
+    
         if ($existingAttendance && $existingAttendance->check_out) {
             return response()->json(['message' => 'You have already checked out.']);
         }
-
-        $checkOutTime = now();
-        $earlyCheckOutTime = Carbon::createFromTime(17, 0, 0);
-        $lateCheckOutTime = Carbon::createFromTime(17, 20, 0);
-
-        if ($checkOutTime->between($earlyCheckOutTime, $lateCheckOutTime)) {
-            $checkOutStatus = 'Out';
-        } elseif ($checkOutTime->lessThanOrEqualTo($earlyCheckOutTime)) {
+    
+        $employee = Employee::where('user_id', $userId)->first();
+    
+        if (!$employee || !$employee->shift_id) {
+            return response()->json(['message' => 'No shift assigned']);
+        }
+    
+        $shift = Shift::find($employee->shift_id);
+    
+        if (!$shift) {
+            return response()->json(['message' => 'Shift not found']);
+        }
+    
+        $checkOutStatus = null;
+        $graceTime = Carbon::parse($shift->closing)->addMinutes(21);
+        $closingTime = Carbon::parse($shift->closing);
+    
+        if ($currentTime->lessThan($closingTime)) {
             $checkOutStatus = 'Early Out';
-        } else {
+        } elseif ($currentTime->greaterThan($closingTime) && $currentTime->lessThan($graceTime)) {
+            $checkOutStatus = 'Out';
+        } elseif ($currentTime->greaterThan($graceTime)) {
             $checkOutStatus = 'Late Out';
         }
-
+    
         $totalOvertime = null;
         if ($checkOutStatus === 'Late Out') {
-            $officeClosingDateTime = Carbon::createFromTime(17, 20, 0);
-            $checkOutDateTime = Carbon::parse($date . ' ' . $time);
-            $overtime = $checkOutDateTime->diff($officeClosingDateTime)->format('%H:%I');
+            $checkOutDateTime = Carbon::parse($currentDate . ' ' . $currentTime->toTimeString());
+            $overtime = $checkOutDateTime->diff($graceTime)->format('%H:%I');
             $totalOvertime = $overtime;
         }
-
-        Attendance::updateOrCreate(
-            ['user_id' => $user_id, 'attendance_date' => $date],
-            [
-                'check_out' => $time,
-                'status' => 'present',
+    
+        if ($existingAttendance) {
+            $existingAttendance->update([
+                'check_out' => $currentTime,
                 'check_out_status' => $checkOutStatus,
                 'total_overtime' => $totalOvertime,
-            ]
-        );
-
-        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkOutStatus, $time, 'Check-Out'));
+            ]);
+        } else {
+            return response()->json(['message' => 'Attendance record not found.']);
+        }
+    
+        Mail::to($user->email)->send(new EmployeeAttendanceMail($user, $checkOutStatus, $currentTime->toTimeString(), 'Check-Out'));
+    
         return response()->json(['message' => 'Check out successfully']);
     }
+    
 
     public function create()
     {

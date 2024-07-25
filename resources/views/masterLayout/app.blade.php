@@ -178,8 +178,7 @@
                                 <div class="media-body">
                                     <h3 class="dropdown-item-title">
                                         Brad Diesel
-                                        <span class="float-right text-sm text-danger"><i
-                                                class="fas fa-star"></i></span>
+                                        <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
                                     </h3>
                                     <p class="text-sm">Call me whenever you can...</p>
                                     <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
@@ -568,33 +567,84 @@
                             </ul>
                         </li>
                         @if (isAdmin($user))
-                        <li class="nav-item">
-                            <a href="javascript:;" class="nav-link">
-                                <i class="nav-icon far fa-credit-card"></i>
-                                <p>
-                                    Payroll
-                                    <span class="right badge badge-success">Coming Soon</span>
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="{{route('jobs.index')}}" class="nav-link">
-                                <i class="nav-icon fas fa-briefcase"></i>
-                                <p>
-                                    Jobs
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="{{route('candidates.index')}}" class="nav-link">
-                                <i class="nav-icon fas fa-user-tie"></i>
-                                <p>
-                                    Candidates
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                        </li>
+                            <li class="nav-item has-treeview">
+                                <a href="javascript:;" class="nav-link">
+                                    <i class="nav-icon fas fa-briefcase"></i>
+                                    <p>
+                                        Jobs Managment
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('jobs.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Jobs</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('jobs.create') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Add new jobs</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('schedule-interviews.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Schedule Interviews</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('schedule-interviews.create') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Create Schedule Interviews</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview">
+                                <a href="{{ route('interviewer-remarks.index') }}" class="nav-link">
+                                    <i class="nav-icon fas fa-briefcase"></i>
+                                    <p>
+                                        Interviewer Remarks
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item has-treeview">
+                                <a href="javascript:;" class="nav-link">
+                                    <i class="nav-icon fas fa-user-tie"></i>
+                                    <p>
+                                        Candidates
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('candidates.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View candidates</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview">
+                                <a href="{{route('job-offers.index')}}" class="nav-link">
+                                    <i class="fas fa-coins"></i>
+                                    <p>
+                                        Job Offer
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:;" class="nav-link">
+                                    <i class="nav-icon far fa-credit-card"></i>
+                                    <p>
+                                        Payroll
+                                        <span class="right badge badge-success">Coming Soon</span>
+                                    </p>
+                                </a>
+                            </li>
                         @endif;
                         <li class="nav-item has-treeview">
                             <a href="javascript:;" class="nav-link">
@@ -969,7 +1019,7 @@
                                     button.prop('disabled', false);
                                     $('.checkinBtn').addClass('checkinActive');
                                     setTimeout(function() {
-                                        sendStartTimeRequest();
+                                        window.location.reload();
                                     }, 2500);
                                 },
                                 error: function(xhr) {
@@ -1023,7 +1073,7 @@
 
                     $.ajax({
                         url: url,
-                        method: 'POST',
+                        method: 'PATCH',
                         data: {
                             _token: token,
                             user_id: userId,

@@ -23,8 +23,8 @@
                         <th width="10%">Check Out</th>
                         <th width="10%">Check Out Status</th>
                         <th width="10%">Total Hours</th>
-                        <th width="5%">OT</th>
-                        <th width="5%">status</th>
+                        {{-- <th width="5%">OT</th> --}}
+                        <th width="10%">status</th>
                     </tr>
                 </thead>
                 <tbody style="background-color: #fff;">
@@ -99,13 +99,13 @@
                                     -
                                 @endif
                             </td>
-                            <td>
+                            {{-- <td>
                                 @if ($attendanceData && $attendanceData->check_out)
                                     {{ calculateOvertime($attendanceData->check_out) }}
                                 @else
                                     -
                                 @endif
-                            </td>
+                            </td> --}}
                             <td>
                                 @if ($isFutureDate)
                                 @elseif ($weekend)

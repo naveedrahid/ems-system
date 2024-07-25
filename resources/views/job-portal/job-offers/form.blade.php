@@ -52,10 +52,25 @@
                         <div class="col-md-12 col-lg-12 col-12">
                             <div class="mb-3 form-group">
                                 {!! Form::label('candidate_offer', 'Candidate Offer') !!}
-                                <p><small><b>Note:</b> This field is used for composing the email body that will be sent to
+                                <p><small><b>Note:</b> This field is used for composing the pdf body that will be sent to
                                         the candidate. You can style it as you wish using HTML.</small></p>
                                 {!! Form::textarea('candidate_offer', 
                                 old('candidate_offer', $job_offer->candidate_offer), 
+                                [
+                                    'id' => 'candidateOfferEditor',
+                                    'cols' => 30,
+                                    'rows' => 10,
+                                    'class' => 'form-control',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-12 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('candidate_email_body', 'Email Body Content') !!}
+                                <p><small><b>Note:</b> This field is used for composing the email body that will be sent to
+                                        the candidate. You can style it as you wish using HTML.</small></p>
+                                {!! Form::textarea('candidate_email_body', 
+                                old('candidate_email_body', $job_offer->candidate_email_body), 
                                 [
                                     'id' => 'candidateOfferEditor',
                                     'cols' => 30,
@@ -104,7 +119,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     tinymce.init({
-        selector: 'textarea#candidateOfferEditor',
+        selector: 'textarea#candidateOfferEditor, textarea#candidate_email_body',
         branding: true,
         plugins: 'code table lists',
         menubar: true,

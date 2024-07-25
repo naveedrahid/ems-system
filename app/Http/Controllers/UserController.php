@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
@@ -11,6 +13,7 @@ use App\Models\Shift;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Hash;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -33,11 +36,10 @@ class UserController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        if ($currentUser->role_id == 1) {
-            $roles = Role::pluck('name', 'id');
-        } else {
-            $roles = Role::where('name', 'employee')->first();
-        }
+        $roles = ($currentUser->role_id == 1)
+            ? Role::pluck('name', 'id')
+            : Role::where('name', 'employee')->pluck('name', 'id');
+
         $route = route('users.store');
         $formMethod = 'POST';
         $user = new User();
@@ -46,8 +48,16 @@ class UserController extends Controller
         $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
+        $countries = Cache::remember('countries', 60 * 60, function () {
+            return Country::pluck('name', 'id')->toArray();
+        });
+        $cities = Cache::remember('cities', 60 * 60, function () {
+            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
+                return $cityGroup->pluck('name', 'id');
+            });
+        });
 
-        return view('users.form', compact('employee','formMethod', 'route', 'user', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift'));
+        return view('users.form', compact('employee', 'formMethod', 'route', 'user', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift', 'countries', 'cities'));
     }
 
     public function getDesignations($departmentId)
@@ -72,6 +82,7 @@ class UserController extends Controller
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
+            'country' => 'required',
             'city' => 'required',
             'address' => 'required',
             'department_id' => 'required',
@@ -96,6 +107,8 @@ class UserController extends Controller
             'job_type' => $request->job_type,
             'work_type' => $request->work_type,
             'job_type' => $request->job_type,
+            'city' => $request->city,
+            'country' => $request->country,
             'password' => Hash::make($request->user_password),
         ]);
 
@@ -117,7 +130,6 @@ class UserController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'joining_date' => $request->joining_date,
             'fater_name' => $request->fater_name,
-            'city' => $request->city,
             'address' => $request->address,
             'phone_number' => $request->phone_number,
             'emergency_phone_number' => $request->emergency_phone_number,
@@ -132,7 +144,6 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User Created successfully created']);
     }
-
 
     /**
      * Display the specified resource.
@@ -161,8 +172,16 @@ class UserController extends Controller
         $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
+        $countries = Cache::remember('countries', 60 * 60, function () {
+            return Country::pluck('name', 'id')->toArray();
+        });
+        $cities = Cache::remember('cities', 60 * 60, function () {
+            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
+                return $cityGroup->pluck('name', 'id');
+            });
+        });
 
-        return view('users.form', compact('user', 'employee', 'roles', 'departments', 'designations', 'employeeTypes', 'employeeShift', 'route', 'formMethod'));
+        return view('users.form', compact('user', 'employee', 'roles', 'departments', 'designations', 'employeeTypes', 'employeeShift', 'route', 'formMethod', 'countries', 'cities'));
     }
 
     /**
@@ -182,6 +201,7 @@ class UserController extends Controller
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
+            'country' => 'required',
             'city' => 'required',
             'address' => 'required',
             'department_id' => 'required',
@@ -205,6 +225,8 @@ class UserController extends Controller
             'status' => $request->status,
             'job_type' => $request->job_type,
             'work_type' => $request->work_type,
+            'city' => $request->city,
+            'country' => $request->country,
         ];
 
         $user->update($userData);
@@ -214,7 +236,6 @@ class UserController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'joining_date' => $request->joining_date,
             'fater_name' => $request->fater_name,
-            'city' => $request->city,
             'address' => $request->address,
             'phone_number' => $request->phone_number,
             'emergency_phone_number' => $request->emergency_phone_number,

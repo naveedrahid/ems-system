@@ -473,7 +473,6 @@
                         ->whereRaw("DATE_FORMAT(employees.date_of_birth, '%m-%d') = ?", [$today])
                         ->get();
                 @endphp
-                {{-- @dd($todayBirthday) --}}
 
                 @if ($todayBirthdays)
                     @foreach ($todayBirthdays as $todayBirthday)
@@ -498,10 +497,10 @@
                                             @endif
                                         </div>
                                         <div class="info d-block">
-                                            <h5 href="#" class="text-bold d-block m-0">
-                                                {{ $todayBirthday->name }}
+                                            <h5 href="#" class="text-bold d-block m-0 d-flex align-items-center">
+                                                {{ $todayBirthday->name }} <img src="{{asset('admin/images/cake.png')}}" class="img-fluid ml-4" alt="">
                                             </h5>
-                                            <p class="text-primary">Birthday Today</p>
+                                            <p class="text-primary">Birthday Today </p>
                                         </div>
                                     </div>
                                     <div class="col-lg-12 pt-2 d-flex justify-content-end p-0">

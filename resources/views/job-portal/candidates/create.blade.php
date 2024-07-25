@@ -134,17 +134,14 @@
                                         </div>
                                         <div class="col-md-4 pl-0">
                                             <div class="form-group">
-                                                <label for="address">Country *</label>
-                                                <select class="form-control" id="country">
-                                                    <option selected>Pakistan</option>
-                                                    <option>Australia</option>
-                                                </select>
+                                                {!! Form::label('country', 'Country *') !!}
+                                                {!! Form::select('country', ['' => 'Select Country'] + $countries, null, ['class' => 'form-control form-select select2', 'id' => 'country']) !!}
                                             </div>
                                         </div>
                                         <div class="col-md-6 pl-0">
                                             <div class="form-group">
                                                 {!! Form::label('city', 'City *') !!}
-                                                {!! Form::select('city', array_combine($cities, $cities), null, ['class' => 'form-control form-select select2']) !!}
+                                                {!! Form::select('city', ['' => 'Select City'], null, ['class' => 'form-control form-select select2', 'id' => 'city']) !!}
                                             </div>
                                         </div>
                                         <div class="col-md-5 pl-0">
@@ -341,7 +338,7 @@
                 const email = $('input[name="email"]').val().trim();
                 const phone = $('input[name="phone"]').val().trim();
                 const age = $('input[name="age"]').val().trim();
-                // const country = $('select[name="country"]').val().trim();
+                const country = $('select[name="country"]').val().trim();
                 const city = $('select[name="city"]').val().trim();
                 const gender = $('select[name="gender"]').val().trim();
                 const marital_status = $('select[name="marital_status"]').val().trim();
@@ -442,6 +439,21 @@
 
         });
     </script>
+<script>
+    $(document).ready(function() {
+        const cities = @json($cities);
+        // console.log(cities);
+        $('#country').on('change', function() {
+            const countryId = $(this).val();
+            const countryCities = cities[countryId] || {};
+
+            $('#city').empty();
+            $.each(countryCities, function(cityId, cityName) {
+                $('#city').append(new Option(cityName, cityId));
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

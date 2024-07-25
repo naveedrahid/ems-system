@@ -22,6 +22,8 @@ class CreateUsersTable extends Migration
             $table->string('job_type');
             $table->string('work_type');
             $table->foreignId('role_id');
+            $table->string('city');
+            $table->string('country');
             $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
