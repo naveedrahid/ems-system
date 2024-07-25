@@ -45,10 +45,16 @@
                             @endphp
                             {{ $employee->user->name ?? 'Unknown' }}
                             @if ($attendanceData)
+                            @if (optional($attendanceData)->check_in == null)
+                                <a href="{{ route('attendance.edit', $attendanceData->id) }}" style="float:right;">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            @elseif(optional($attendanceData)->check_out == null)
                                 <a href="{{ route('attendance.edit', $attendanceData->id) }}" style="float:right;">
                                     <i class="fa fa-edit"></i>
                                 </a>
                             @endif
+                        @endif
                         </td>
                     @endforeach
                     <td><span class="currentDate">{{ $displayDate }}</span></td>

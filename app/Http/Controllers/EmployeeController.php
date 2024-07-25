@@ -33,6 +33,7 @@ class EmployeeController extends Controller
     {
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
             ->with('employee.department', 'employee.designation', 'employee.employeeType')
+            ->where('users.role_id', '!=', 0)
             ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
             ->get();
         return DataTables::of($employees)
@@ -97,14 +98,10 @@ class EmployeeController extends Controller
         $designations = Designation::all();
         $employeeTypes = EmployeeType::all();
         $employeeShift = Shift::all();
-        $countries = Cache::remember('countries', 60 * 60, function () {
-            return Country::pluck('name', 'id')->toArray();
-        });
-        $cities = Cache::remember('cities', 60 * 60, function () {
-            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
-                return $cityGroup->pluck('name', 'id');
-            });
-        });
+        $countries = Country::pluck('name', 'id')->toArray();
+        $cities = City::all()->groupBy('country_id')->map(function ($cityGroup) {
+            return $cityGroup->pluck('name', 'id');
+        })->toArray();
         
         return view('employees.form', compact('route','formMethod','employee','departments', 'designations', 'roles', 'employeeTypes', 'employeeShift', 'countries', 'cities'));
     }
@@ -202,14 +199,10 @@ class EmployeeController extends Controller
         $designations = Designation::all();
         $employeeShift = Shift::all();
         $employeeTypes = EmployeeType::all();
-        $countries = Cache::remember('countries', 60 * 60, function () {
-            return Country::pluck('name', 'id')->toArray();
-        });
-        $cities = Cache::remember('cities', 60 * 60, function () {
-            return City::all()->groupBy('country_id')->map(function ($cityGroup) {
-                return $cityGroup->pluck('name', 'id');
-            });
-        });
+        $countries = Country::pluck('name', 'id')->toArray();
+        $cities = City::all()->groupBy('country_id')->map(function ($cityGroup) {
+            return $cityGroup->pluck('name', 'id');
+        })->toArray();
 
         return view('employees.form', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
     }

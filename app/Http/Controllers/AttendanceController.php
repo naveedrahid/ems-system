@@ -409,7 +409,6 @@ class AttendanceController extends Controller
         return response()->json(['message' => 'Check out successfully']);
     }
     
-
     public function create()
     {
         $attendance = new Attendance();
@@ -425,8 +424,6 @@ class AttendanceController extends Controller
         $request->validate([
             'user_id' => 'required',
             'attendance_date' => 'required',
-            'check_in' => 'required',
-            'check_out' => 'required',
         ]);
 
         $letInTime = Carbon::createFromTime(8, 21);
@@ -487,8 +484,6 @@ class AttendanceController extends Controller
         $request->validate([
             'user_id' => 'required',
             'attendance_date' => 'required',
-            'check_in' => 'required',
-            'check_out' => 'required',
         ]);
 
         $letInTime = Carbon::createFromTime(8, 21);

@@ -11,9 +11,12 @@
                     <div class="col-md-12">
                         {!! Form::model($department, [
                             'url' => $department->exists ? route('department.update', $department->id) : route('department.store'),
-                            'method' => $department->exists ? 'PUT' : 'POST',
+                            'method' => $formMethod,
                             'id' => $department->exists ? 'departmentDataUpdate' : 'departmentData',
                         ]) !!}
+                        @if ($formMethod === 'PUT')
+                            @method('PUT')
+                        @endif
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3 form-group">
@@ -54,7 +57,7 @@
         $('#departmentData, #departmentDataUpdate').submit(function(e) {
             e.preventDefault();
 
-            const dp    _name = $('input[name="department_name"]').val().trim();
+            const dp_name = $('input[name="department_name"]').val().trim();
             const dp_status = $('select[name="status"]').val().trim();
             
             if (dp_name === '' || dp_status === '') {

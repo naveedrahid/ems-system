@@ -90,15 +90,6 @@
                 hasError = true;
             }
 
-            if (check_in == '') {
-                toastr.error('check in is required.');
-                hasError = true;
-            }
-            if (check_out == '') {
-                toastr.error('check out is required.');
-                hasError = true;
-            }
-
             if (hasError) return;
 
             const formData = new FormData(this);

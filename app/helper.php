@@ -6,7 +6,7 @@ use Carbon\Carbon;
 if (!function_exists('isAdmin')) {
     function isAdmin($user)
     {
-        return $user->role_id === 1 || $user->role_id === 2;
+        return $user->role_id === 0 || $user->role_id === 1 || $user->role_id === 2;
     }
 }
 

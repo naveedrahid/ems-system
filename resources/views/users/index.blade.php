@@ -12,6 +12,9 @@
                 </a>
             </h3>
         </div>
+        @php
+            $roleId = auth()->user()->role_id;
+        @endphp
         <div class="box-body">
             <table class="table table-bordered">
                 <thead style="background-color: #fff;">
@@ -19,13 +22,16 @@
                         <th width="20%">Name</th>
                         <th width="20%">Email</th>
                         <th width="10%">Role</th>
-                        <th width="10%">Status</th>
+                        @if ($roleId == 0)
+                            <th width="10%">Status</th>
+                        @endif
                         <th width="10%">Manage</th>
                     </tr>
                 </thead>
                 <tbody style="background: #fff;">
                     @if ($employees->count() > 0)
                         @foreach ($employees as $employee)
+                            {{-- @dd($employee) --}}
                             <tr>
                                 <td>{{ $employee->name }}</td>
                                 <td>{{ $employee->email }}</td>
@@ -36,16 +42,22 @@
                                         {{ $employee->role->name }}
                                     @endif
                                 </td>
+                                @if ($roleId == 0)
+                                    <td>
+                                        <button
+                                            class="user-toggle btn btn-{{ $employee->status === 'active' ? 'info' : 'danger' }} btn-sm"
+                                            data-id="{{ $employee->id }}" data-status="{{ $employee->status }}">
+                                            <i
+                                                class="fa fa-thumbs-{{ $employee->status === 'active' ? 'up' : 'down' }}"></i>
+                                        </button>
+                                    </td>
+                                @endif
                                 <td>
-                                    <button
-                                        class="user-toggle btn btn-{{ $employee->status === 'active' ? 'info' : 'danger' }} btn-sm"
-                                        data-id="{{ $employee->id }}" data-status="{{ $employee->status }}">
-                                        <i class="fa fa-thumbs-{{ $employee->status === 'active' ? 'up' : 'down' }}"></i>
-                                    </button>
-                                </td>
-                                <td>
-                                    <a href="{{ route('users.edit', $employee->id) }}" class="btn btn-info btn-flat btn-sm">
-                                        <i class="fa fa-edit"></i></a>
+                                    @if ($roleId == 0 || $employee->role_id == $roleId)
+                                        <a href="{{ route('users.edit', $employee->id) }}"
+                                            class="btn btn-info btn-flat btn-sm">
+                                            <i class="fa fa-edit"></i></a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

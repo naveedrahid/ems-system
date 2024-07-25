@@ -37,7 +37,7 @@ Route::fallback(function () {
     return redirect('/login');
 });
 
-Route::middleware(['auth', 'role:1,2', 'check.user.status'])->group(function () {
+Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function () {
 
     // Job Portals Routses
     Route::prefix('portal')->group(function () {
