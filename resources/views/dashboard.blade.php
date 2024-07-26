@@ -24,18 +24,6 @@
                         <small>
                             {{ $designation }} - {{ $departmentName }} Department
                         </small>
-                        <p>Since your last login on the system, there were:</p>
-                        <ul>
-                            <a href="">
-                                <li>21 New Request</li>
-                            </a>
-                            <a href="">
-                                <li>15 New Report</li>
-                            </a>
-                            <a href="">
-                                <li>45 New Message</li>
-                            </a>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -415,7 +403,6 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12">
@@ -436,14 +423,23 @@
                                         @if ($userBirthdays->isNotEmpty())
                                             @foreach ($userBirthdays as $user)
                                                 @if ($user->employee && $user->employee->date_of_birth)
-                                                    <tr>
-                                                        <td>{{ $user->name }}</td>
-                                                        <td>
-                                                            <p class="badge badge-success text-white">
-                                                                {{ $user->employee->date_of_birth->format('d M') }}
-                                                            </p>
-                                                        </td>
-                                                    </tr>
+                                                    @php
+                                                        $currentDate = date('m-d');
+                                                        $userBirthday = date(
+                                                            'm-d',
+                                                            strtotime($user->employee->date_of_birth),
+                                                        );
+                                                    @endphp
+                                                    @if ($currentDate !== $userBirthday)
+                                                        <tr>
+                                                            <td>{{ $user->name }}</td>
+                                                            <td>
+                                                                <p class="badge badge-success text-white">
+                                                                    {{ date('d M', strtotime($user->employee->date_of_birth)) }}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 @endif
                                             @endforeach
                                         @endif
@@ -498,7 +494,9 @@
                                         </div>
                                         <div class="info d-block">
                                             <h5 href="#" class="text-bold d-block m-0 d-flex align-items-center">
-                                                {{ $todayBirthday->name }} <img src="{{asset('admin/images/cake.png')}}" class="img-fluid ml-4" alt="" style="width: 24px !important;">
+                                                {{ $todayBirthday->name }} <img
+                                                    src="{{ asset('admin/images/cake.png') }}" class="img-fluid ml-4"
+                                                    alt="" style="width: 24px !important;">
                                             </h5>
                                             <p class="text-primary">Birthday Today </p>
                                         </div>

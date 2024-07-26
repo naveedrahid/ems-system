@@ -38,10 +38,9 @@ class BankDetailController extends Controller
             $employee = Employee::with('user')->find($employeeId);
             if ($employee) {
                 $employeeName = optional($employee->user)->name;
-                $userId = optional($employee->user)->id;
+                $userId = $employee->user_id ?? null;
             }
         }
-    
         $employees = Employee::with('user')->get(['id', 'user_id']);
         $employees = $employees->map(function ($employee) {
             return [
@@ -55,8 +54,7 @@ class BankDetailController extends Controller
         $formMethod = 'POST';
     
         return view('bank-details.form', compact('bankDetail', 'employees', 'route', 'formMethod', 'employeeName', 'employeeId', 'userId'));
-    }    
-
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -66,6 +64,7 @@ class BankDetailController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->toArray());
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
             'employee_id' => 'required',

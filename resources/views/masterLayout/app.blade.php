@@ -329,16 +329,16 @@
                                     </a>
                                 </li>
                                 @if (isAdmin($user))
+                                <li class="nav-item">
+                                    <a href="{{ route('documents.create') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Employee Documents</p>
+                                    </a>
+                                </li>
                                     <li class="nav-item">
                                         <a href="{{ route('bank-details.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Employee Bank Detail</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('documents.create') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Add Employee Documents</p>
                                         </a>
                                     </li>
                                 @endif
@@ -355,15 +355,15 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('department.index') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>View Department</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('department.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Add Department</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('department.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Department</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -378,15 +378,15 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('designation.index') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>View Desginations</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('designation.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Add Desginations</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('designation.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Desginations</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -401,15 +401,15 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('shifts.index') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>View Shifts</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('shifts.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Add New Shifts</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('shifts.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Shifts</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -425,15 +425,15 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ route('complaints.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>View Complaint</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a href="{{ route('complaints.create') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Add New Complaint</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('complaints.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>View Complaint</p>
                                     </a>
                                 </li>
                             </ul>
@@ -449,15 +449,15 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('awards.index') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>View Awards</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('awards.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Add New Awards</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('awards.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Awards</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -472,15 +472,15 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('notices.index') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>View Notice</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('notices.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Add New Notice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('notices.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Notice</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -498,13 +498,13 @@
                                 <li class="nav-item">
                                     <a href="javascript:;" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>View Payslips</p>
+                                        <p>Create Payslips</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="javascript:;" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Create Payslips</p>
+                                        <p>View Payslips</p>
                                     </a>
                                 </li>
                             </ul>
@@ -577,15 +577,21 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
+                                        <a href="{{ route('jobs.create') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Add new jobs</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="{{ route('jobs.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>View Jobs</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('jobs.create') }}" class="nav-link">
+                                        <a href="{{ route('schedule-interviews.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Add new jobs</p>
+                                            <p>Create Schedule Interviews</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -595,46 +601,28 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('schedule-interviews.create') }}" class="nav-link">
+                                        <a href="{{ route('interviewer-remarks.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Create Schedule Interviews</p>
+                                            <p>
+                                                Interviewer Remarks
+                                            </p>
                                         </a>
                                     </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item has-treeview">
-                                <a href="{{ route('interviewer-remarks.index') }}" class="nav-link">
-                                    <i class="nav-icon fas fa-briefcase"></i>
-                                    <p>
-                                        Interviewer Remarks
-                                    </p>
-                                </a>
-                            </li>
-                            <li class="nav-item has-treeview">
-                                <a href="javascript:;" class="nav-link">
-                                    <i class="nav-icon fas fa-user-tie"></i>
-                                    <p>
-                                        Candidates
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="{{ route('candidates.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>View candidates</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{route('job-offers.index')}}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                Job Offer
+                                            </p>
+                                        </a>
+                                    </li>
                                 </ul>
-                            </li>
-                            <li class="nav-item has-treeview">
-                                <a href="{{route('job-offers.index')}}" class="nav-link">
-                                    <i class="fas fa-coins"></i>
-                                    <p>
-                                        Job Offer
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
                             </li>
                             <li class="nav-item">
                                 <a href="javascript:;" class="nav-link">
@@ -665,6 +653,14 @@
                                     <a href="{{ route('leave-applications.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>All Leave</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('holidays.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            Holidays
+                                        </p>
                                     </a>
                                 </li>
                                 @if (isAdmin($user))
@@ -743,24 +739,6 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="{{ route('holidays.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-gifts"></i>
-                                <p>
-                                    Holidays
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="javascript:;" class="nav-link">
-                                <i class="nav-icon fas fa-cog"></i>
-                                <p>
-                                    Settings
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
                         </li>
                         <li class="nav-item has-treeview">
                             <a href="javascript:;" class="nav-link">

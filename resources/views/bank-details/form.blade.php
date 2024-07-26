@@ -20,9 +20,9 @@
                     <div class="row">
                         <div class="col-md-4 col-12">
                             <div class="mb-3 form-group">
+                                {!! Form::hidden('user_id', $userId, ['id' => 'user_id']) !!}
 
-                                {!! Form::hidden('user_id', $userId ?? '', ['id' => 'user_id']) !!}
-                                {!! Form::label('title', 'Select Employee') !!}
+                                {!! Form::label('title', 'Employee Name') !!}
 
                                 @if ($employeeId && $employeeName)
                                     {!! Form::hidden('employee_id', $employeeId ?? '', ['id' => 'employee_id']) !!}
@@ -36,7 +36,7 @@
                                 @else
                                     {!! Form::select(
                                         'employee_id',
-                                        ['' => 'Select User Name'] + $employees->pluck('name', 'id')->toArray(),
+                                        ['' => 'Select Employee'] + $employees->pluck('name', 'id')->toArray(),
                                         $employeeId ?? null,
                                         ['class' => 'form-control form-select select2', 'id' => 'employee_id'],
                                     ) !!}
@@ -118,23 +118,55 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        function setUserFromEmployeeId(selectedEmployeeId) {
-            var selectedEmployee = {!! json_encode($employees->toArray()) !!}.find(function(employee) {
-                return employee.id == selectedEmployeeId;
-            });
+        // Mapping of employee_id to user_id
+        var employeeUserMap = @json($employees->pluck('user_id', 'id')->toArray());
 
-            if (selectedEmployee) {
-                $('#user_id').val(selectedEmployee.user_id);
-            } else {
-                $('#user_id').val('');
-            }
+        function setUserFromEmployeeId(selectedEmployeeId) {
+            var userId = employeeUserMap[selectedEmployeeId] || '';
+            $('#user_id').val(userId);
         }
 
-        $('select[name="employee_id"]').change(function() {
-            setUserFromEmployeeId($(this).val());
-        });
+        var urlParams = new URLSearchParams(window.location.search);
+        var employeeIdParam = urlParams.get('employee_id');
 
-        setUserFromEmployeeId($('select[name="employee_id"]').val());
+        if (!employeeIdParam) {
+            $('select[name="employee_id"]').change(function() {
+                setUserFromEmployeeId($(this).val());
+            });
+
+            setUserFromEmployeeId($('select[name="employee_id"]').val());
+        }
+    });
+</script>
+
+
+
+
+<script>
+    $(document).ready(function() {
+
+        // function setUserFromEmployeeId(selectedEmployeeId) {
+        //     console.log(selectedEmployeeId);
+        //     var employees = {!! json_encode($employees->toArray()) !!};
+        //     var selectedEmployee = employees.find(function(employee) {
+        //         return employee.id == selectedEmployeeId;
+        //     });
+
+        //     if (selectedEmployee) {
+        //         console.log('Setting user_id:', selectedEmployee.user_id); // Debug log
+        //         $('#user_id').val(selectedEmployee.user_id);
+        //     } else {
+        //         console.log('Setting user_id to empty'); // Debug log
+        //         $('#user_id').val('');
+        //     }
+        // }
+
+        // $('select[name="employee_id"]').change(function() {
+        //     setUserFromEmployeeId($(this).val());
+        // });
+
+        // setUserFromEmployeeId($('select[name="employee_id"]').val());
+
 
         $('#addBankDetails, #updateBankDetails').submit(function(e) {
             e.preventDefault();
@@ -150,11 +182,11 @@
             const branch_code = $('input[name="branch_code"]').val().trim();
             const branch_address = $('textarea[name="branch_address"]').val().trim();
             const status = $('select[name="status"]').val().trim();
+            const user_id = $('#user_id').val().trim();
 
             const submitButton = $(this).find('input[type="submit"]');
             submitButton.prop('disabled', true);
             let hasError = false;
-
 
             if (employee_id === '') {
                 toastr.error('Employee is required.');
@@ -194,7 +226,10 @@
                 return;
             }
 
+            // Append user_id to the form data
             const formData = new FormData(this);
+            formData.append('user_id', user_id);
+
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
@@ -216,12 +251,13 @@
                 })
                 .fail(function(xhr) {
                     console.error(xhr);
-                    toastr.success(response.message);
+                    toastr.error(xhr.responseJSON.message);
                 })
                 .always(function() {
                     submitButton.prop('disabled', false);
                 });
         });
+
     });
 </script>
 @endpush

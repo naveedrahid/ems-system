@@ -12,6 +12,9 @@
                 </a>
             </h3>
         </div>
+        @php
+            $user = auth()->user();
+        @endphp
         <div class="box-body">
             <table class="table table-bordered">
                 <thead style="background-color: #fff;">
@@ -23,7 +26,7 @@
                         <th width="20%">Reason</th>
                         <th width="5%">Days</th>
                         <th width="10%">Leave Status</th>
-                        @if (Auth::user()->role_id == 1)
+                        @if (isAdmin($user))
                             <th width="15%">Manage</th>
                         @endif
                     </tr>
@@ -31,9 +34,6 @@
                 <tbody style="background: #fff;">
                     @if ($leaveApplications->count() > 0)
                         @foreach ($leaveApplications as $leaveApplication)
-                            @php
-                                $user = auth()->user();
-                            @endphp
                             <tr>
                                 <td>{{ $leaveApplication->user->name ?? '' }}</td>
                                 <td>{{ $leaveApplication->leaveType->name ?? '' }}</td>
@@ -107,6 +107,7 @@
 @push('js')
 <script>
     $(document).ready(function() {
+
         $('.status-change').click(function(e) {
             e.preventDefault();
             const newStatus = $(this).data('status');
@@ -154,6 +155,33 @@
                     buttons.prop('disabled', false);
                 }
             });
+        });
+
+        $('.delete-leave-application').on('click', function(e) {
+            e.preventDefault();
+
+            const leaveId = $(this).data('leave-app-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', leaveId);
+            const token = $('meta[name="csrf-token"]').attr('content');
+            const clickedElement = $(this);
+
+            if (confirm('Are you sure? You will not be able to recover this holiday!')) {
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    toastr.success(response.message);
+                    clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).css('backgroundColor', 'red').remove();
+                    });
+                }).catch(function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Failed to delete Holiday');
+                });
+            }
         });
     });
 </script>

@@ -224,7 +224,7 @@ class LeaveApplicationController extends Controller
 
         $leave_application->delete();
 
-        return response()->json(['success' => 'Leave Application deleted successfully'], 200);
+        return response()->json(['message' => 'Leave Application deleted successfully'], 200);
     }
 
     public function updateStatus(LeaveApplication $leave_application)
