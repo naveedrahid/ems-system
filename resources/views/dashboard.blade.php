@@ -537,7 +537,7 @@
                                                         width="80" height="80" alt="User Image">
                                                 @endif
                                                 <a class="users-list-name"
-                                                    href="javascript:;">{{ $employee->user->name }}</a>
+                                                    href="javascript:;">{{ $employee->user->name ?? '' }}</a>
                                                 <span class="users-list-date">{{ $departmentName }}</span>
                                                 <span
                                                     class="users-list-date">{{ optional($employee->designation)->designation_name }}</span>
