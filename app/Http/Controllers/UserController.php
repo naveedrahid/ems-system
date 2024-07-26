@@ -70,6 +70,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->toArray());
         $request->validate([
             'user_name' => 'required',
             'user_email' => 'required|email',
@@ -78,8 +79,8 @@ class UserController extends Controller
             'date_of_birth' => 'required',
             'joining_date' => 'required',
             'fater_name' => 'required',
-            'country' => 'required',
-            'city' => 'required',
+            'country' => 'required|string',
+            'city' => 'required|string',
             'address' => 'required',
             'department_id' => 'required',
             'designation_id' => 'required',
@@ -136,6 +137,7 @@ class UserController extends Controller
             'gender' => $request->gender,
             'shift_id' => $request->shift_id,
             'employee_type_id' => $request->employee_type_id,
+            'city' => $request->city,
         ]);
 
         return response()->json(['message' => 'User Created successfully created']);

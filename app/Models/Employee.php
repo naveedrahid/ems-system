@@ -9,11 +9,26 @@ class Employee extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'shift_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
-    // ];
+    protected $fillable = [
+        'user_id', 'department_id', 'date_of_birth','designation_id', 'employee_type_id', 'shift_id', 'joining_date', 'fater_name', 'city', 'address', 'phone_number', 'emergency_phone_number', 'emergency_person_name', 'employee_img','gender',
+    ];
 
-    protected $guarded = ['id'];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employee) {
+            // Generate the employee_id_card_num
+            $employee->employee_id_card_num = Employee::generateEmployeeIdCardNum();
+        });
+    }
+
+    public static function generateEmployeeIdCardNum()
+    {
+        $lastEmployee = Employee::orderBy('id', 'desc')->first();
+        $nextId = $lastEmployee ? $lastEmployee->id + 1 : 1;
+        return 'PXL-EM-' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+    }
 
     protected $dates = [
         'date_of_birth',

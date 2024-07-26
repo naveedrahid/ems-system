@@ -15,7 +15,7 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('department_id');
             $table->foreignId('designation_id');
             $table->foreignId('employee_type_id');
@@ -30,6 +30,7 @@ class CreateEmployeesTable extends Migration
             $table->string('emergency_person_name')->nullable();
             $table->string('employee_img')->nullable();
             $table->enum('gender', ['male', 'female'])->default('male');
+            $table->string('employee_id_card_num')->unique();
             $table->timestamps();
         });
     }

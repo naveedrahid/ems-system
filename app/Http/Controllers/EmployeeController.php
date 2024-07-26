@@ -184,6 +184,7 @@ class EmployeeController extends Controller
             'gender' => $request->gender,
             'employee_type_id' => $request->employee_type_id,
             'shift_id' => $request->shift_id,
+            'city' => $request->city
         ]);
 
         return response()->json(['message' => 'Employee Created successfully created']);
