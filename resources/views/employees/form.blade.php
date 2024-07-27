@@ -127,16 +127,7 @@
                                     old('city', $employee->city),
                                     ['class' => 'form-control form-select select2', 'id' => 'city'],
                                 ) !!}
-                            </div>
-                            <div class="mb-3 form-group">
-                                {!! Form::label('gender', 'Gender') !!}
-                                {!! Form::select(
-                                    'gender',
-                                    ['' => 'Select Gender', 'male' => 'Male', 'female' => 'Female'],
-                                    $employee->employee->gender ?? '',
-                                    ['class' => 'form-control form-select select2'],
-                                ) !!}
-                            </div>
+                            </div>  
                             <div class="mb-3 form-group">
                                 {!! Form::label('gender', 'Gender') !!}
                                 {!! Form::select(
