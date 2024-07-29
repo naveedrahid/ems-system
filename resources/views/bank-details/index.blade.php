@@ -14,13 +14,13 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="header-title">
-                                <h4 class="text-bold">Manage Department</h4>
+                                <h4 class="text-bold">All Bank Details</h4>
                             </div>
                         </div>
                         <div class="col-md-6 text-right">
                             <div class="box-header pl-1">
                                 <h3 class="box-title">
-                                    <a href="{{ route('department.create') }}" class="btn btn-success text-bold">
+                                    <a href="{{ route('bank-details.create') }}" class="btn btn-success text-bold">
                                         Add <i class="fas fa-plus" style="font-size: 13px;"></i>
                                     </a>
                                 </h3>

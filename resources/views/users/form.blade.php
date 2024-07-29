@@ -283,7 +283,7 @@
         </div>
     </div>
     <div class="box-footer">
-        {!! Form::submit($user->exists ? 'update' : 'create', ['class' => 'btn btn-primary']) !!}
+        {!! Form::submit($user->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary']) !!}
         <a href="{{ route('users.index') }}" class="btn btn-danger">Cancel</a>
     </div>
     {!! Form::close() !!}

@@ -17,7 +17,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="header-title">
-                                <h4 class="text-bold">Manage Notices</h4>
+                                <h4 class="text-bold">All Employees</h4>
                             </div>
                         </div>
                         <div class="col-md-6 text-right">

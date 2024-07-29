@@ -94,8 +94,6 @@ class EmployeeController extends Controller
         $currentUser = auth()->user();
         if ($currentUser->role_id === 0) {
             $roles = Role::pluck('name', 'id');
-        } else {
-            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
         }
         $route = route('employees.store');
         $formMethod = 'POST';

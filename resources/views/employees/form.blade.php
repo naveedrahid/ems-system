@@ -14,9 +14,6 @@
         @method('PUT')
     @endif
 
-    @php
-        $user = auth()->user();
-    @endphp
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card small-box card-primary">
@@ -113,12 +110,10 @@
                         <div class="col-md-6 col-12">
                             <div class="mb-3 form-group">
                                 {!! Form::label('role_id', 'Role') !!}
-                                @if (isAdmin($user))
-                                    {!! Form::select('user_role', $roles, $employee->role_id ?? '', [
-                                        'class' => 'form-control form-select select2',
-                                        'id' => 'user_role',
-                                    ]) !!}
-                                @endif
+                                {!! Form::text('user_role', $employee->employee->address ?? '', [
+                                    'class' => 'form-control',
+                                    'readonly',
+                                ]) !!}
                             </div>
                         </div>
                     </div>
@@ -283,7 +278,7 @@
         </div>
     </div>
     <div class="box-footer">
-        {!! Form::submit($employee->exists ? 'update' : 'create', ['class' => 'btn btn-primary setDisabled']) !!}
+        {!! Form::submit($employee->exists ? 'Update' : 'Create', ['class' => 'btn btn-primary setDisabled']) !!}
         <a href="{{ route('employees.view') }}" class="btn btn-danger">Cancel</a>
     </div>
     {!! Form::close() !!}
