@@ -188,6 +188,7 @@
                 'copy', 'excel', 'pdf'
             ]
         });
+        console.log(employees.data);
     });
 
     $(document).ready(function() {

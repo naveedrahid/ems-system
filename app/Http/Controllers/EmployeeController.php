@@ -31,20 +31,27 @@ class EmployeeController extends Controller
 
     public function getData()
     {
+        $userId = auth()->user()->id;
         $employees = User::join('employees', 'users.id', '=', 'employees.user_id')
             ->with('employee.department', 'employee.designation', 'employee.employeeType')
             ->where('users.role_id', '!=', 0)
             ->select(['users.*', 'employees.employee_img', 'employees.gender', 'employees.id as employee_id'])
             ->get();
         return DataTables::of($employees)
-            ->addColumn('action', function ($employee) {
-
-                return '<div class="manage-process"><a href="#" class="status-toggle empoyee-toggle" data-id="' . $employee->id . '" data-status="' . $employee->status . '">
-                        <span class="badges ' . ($employee->status === 'active' ? 'active-badge' : ($employee->status === 'pending' ? 'pending-badge' : 'deactive-badge')) . '">' . ucfirst($employee->status) . '</span>
-                    </a><a href="' . route('employees.edit', $employee->id) . '" class="edit-item">
-                    <i class="fa fa-edit"></i> edit</a><a href="' . route('employees.profile', $employee->id) . '" class="edit-item">
-                    <i class="far fa-eye"></i> View
-                </a></div>';
+            ->addColumn('action', function ($employee) use ($userId) {
+                
+                $action = '<div class="manage-process">';
+                if ($employee->id !== $userId) {
+                    $statusClass = $employee->status === 'active' ? 'active-badge' : ($employee->status === 'pending' ? 'pending-badge' : 'deactive-badge');
+                    $action .= '<a href="#" class="status-toggle empoyee-toggle" data-id="' . $employee->id . '" data-status="' . $employee->status . '">
+                        <span class="badges ' . $statusClass . '">' . ucfirst($employee->status) . '</span>
+                    </a>';
+                }
+                $action .= '<a href="' . route('employees.edit', $employee->id) . '" class="edit-item">
+                <i class="fa fa-edit"></i> edit</a>
+                <a href="' . route('employees.profile', $employee->id) . '" class="edit-item">
+                <i class="far fa-eye"></i> View</a></div>';
+                return $action;
             })
             ->editColumn('employee_img', function ($employee) {
                 if (empty($employee->employee->employee_img)) {
