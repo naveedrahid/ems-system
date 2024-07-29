@@ -34,7 +34,7 @@
                                 {!! Form::label('user_id', 'Select User') !!}
                                 <select name="user_id" id="user_id" class="form-control select2">
                                     <option value="">Select User</option>
-                                    @foreach ($departments as $department)
+                                    {{-- @foreach ($departments as $department)
                                         @foreach ($department->employees as $employee)
                                             <option value="{{ $employee->user->id ?? '' }}"
                                                 data-department-id="{{ $department->id ?? '' }}"
@@ -42,7 +42,7 @@
                                                 {{ $employee->user->name ?? ''}}
                                             </option>
                                         @endforeach
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                             </div>
                         </div>
