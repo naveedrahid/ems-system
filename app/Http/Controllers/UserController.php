@@ -36,9 +36,11 @@ class UserController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        $roles = ($currentUser->role_id == 1)
-            ? Role::pluck('name', 'id')
-            : Role::where('name', 'employee')->pluck('name', 'id');
+        if ($currentUser->role_id === 0) {
+            $roles = Role::pluck('name', 'id');
+        } else {
+            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
+        }
 
         $route = route('users.store');
         $formMethod = 'POST';
@@ -162,10 +164,15 @@ class UserController extends Controller
      */
     public function edit(Request $request, User $user)
     {
+        $isNotAdmin = auth()->user();
         $employee = User::with('employee')->findOrFail($user->id);
         $route = route('users.update', $user->id);
         $formMethod = 'PUT';
-        $roles = Role::pluck('name', 'id');
+        if ($isNotAdmin->role_id === 0) {
+            $roles = Role::pluck('name', 'id');
+        } else {
+            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
+        }
         $departments = Department::pluck('department_name', 'id')->toArray();
         $designations = Designation::all();
         $employeeTypes = EmployeeType::all();

@@ -120,10 +120,14 @@ class NoticeController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $notice = Notice::findOrFail($id);
-        $notice->status = $request->status;
-        $notice->save();
-
-        return response()->json(['message' => 'Status updated successfully'], 200);
-    }
+        $notice = Notice::find($id);
+        if ($notice) {
+            $notice->status = $request->input('status');
+            $notice->save();
+    
+            return response()->json(['success' => true]);
+        }
+    
+        return response()->json(['success' => false], 400);
+    }    
 }

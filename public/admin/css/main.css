@@ -292,7 +292,9 @@ ul.pagination {
 .data-table .card-header h4 {
     font-size: 18px !important;
 } 
-
+body#asdasd p, body#asdasd span, body#asdasd td, body#asdasd th, body#asdasd div, body#asdasd li, body#asdasd li a {
+    font-size: 13px;
+}
 
 
 

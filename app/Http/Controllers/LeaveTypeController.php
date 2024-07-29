@@ -47,7 +47,7 @@ class LeaveTypeController extends Controller
         ]);
         LeaveType::create($validate);
 
-        return response()->json(['message', 'Leave Type Created Successfully']);
+        return response()->json(['message' => 'Leave Type Created Successfully'], 200);
     }
 
     /**

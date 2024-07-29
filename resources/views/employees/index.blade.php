@@ -4,36 +4,79 @@
     View All Employees
 @endsection
 @section('page-content')
-    <div class="box">
-        @php
-            $user = auth()->user();
-        @endphp
-        <!-- Box header and search form -->
-        <div class="box-body">
-            <table class="table table-bordered" id="employees-table">
-                <thead style="background-color: #F8F8F8;">
-                    <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Department</th>
-                        <th>Employee Type</th>
-                        <th>Shift</th>
-                        <th>Designation</th>
-                        @if (isAdmin($user))
-                            <th>Manage</th>
-                        @endif
-                    </tr>
-                </thead>
-            </table>
+    @php
+        $user = auth()->user();
+    @endphp
+    <div id="loadingSpinner" style="display: none; text-align: center;">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card data-table small-box">
+                <div class="card-header" style="margin-bottom: 10px;">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="header-title">
+                                <h4 class="text-bold">Manage Notices</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="box-header pl-1">
+                                <h3 class="box-title">
+                                    <a href="{{ route('employees.create') }}" class="btn btn-success text-bold">
+                                        Add <i class="fas fa-plus" style="font-size: 13px;"></i>
+                                    </a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap" id="employees-table">
+                        <thead>
+                            <tr>
+                                <th width="10%">Image</th>
+                                <th width="20%">Name</th>
+                                <th width="20%">Email</th>
+                                <th width="10%">Department</th>
+                                <th width="10%">Employee Type</th>
+                                <th width="10%">Shift</th>
+                                <th width="10%">Designation</th>
+                                @if (isAdmin($user))
+                                    <th width="10%">Manage</th>
+                                @endif
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
 @endsection
+
 @push('css')
 {{-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"> --}}
 <style>
+    div#loadingSpinner {
+        position: fixed;
+        left: 0;
+        right: 0;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        z-index: 99;
+        background: #00000036;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    div#loadingSpinner i {
+        color: #007bff;
+    }
+
     /* Custom table header style */
     #employees-table thead {
         background-color: #f8f8f8;
@@ -78,7 +121,6 @@
 </style>
 @endpush
 @push('js')
-
 <script>
     $(function() {
         $('#employees-table').DataTable({
@@ -149,66 +191,45 @@
     });
 
     $(document).ready(function() {
-        $(document).on('click', '.employee-toggle', function() {
-            const button = $(this);
-            const id = button.data('id');
-            const status = button.data('status');
-            const newStatus = status === 'active' ? 'deactive' : 'active';
-            const statusIcon = status === 'active' ? 'down' : 'up';
-            const btnClass = status === 'active' ? 'danger' : 'info';
+
+        $(document).on('click', '.status-toggle', function(e) {
+            e.preventDefault();
+
+            const $this = $(this);
+            const employeeId = $this.data('id');
+            const currentStatus = $this.data('status');
+            const newStatus = currentStatus === 'active' ? 'deactive' : 'active';
+            const token = $('meta[name="csrf-token"]').attr('content');
+            $('#loadingSpinner').show();
 
             $.ajax({
-                url: '/employees-status/' + id,
-                method: 'PUT',
-                data: {
-                    status: newStatus
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    button.removeClass('btn-' + (status === 'active' ? 'info' : 'danger'))
-                        .addClass('btn-' + btnClass);
-                    button.find('i').removeClass('fa-thumbs-' + (status === 'active' ?
-                        'up' : 'down')).addClass('fa-thumbs-' + statusIcon);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: "Status " + newStatus.charAt(0).toUpperCase() +
-                            newStatus.slice(1) + " successfully"
-                    });
-                    button.data('status', newStatus);
-                },
-                error: function(xhr) {
-                    console.error(xhr);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "error",
-                        title: "Failed to update status"
-                    });
-                }
-            });
+                    url: `/employees-status/${employeeId}`,
+                    method: 'PUT',
+                    data: {
+                        _token: token,
+                        id: employeeId,
+                        status: newStatus
+                    },
+                })
+                .then((response) => {
+                    setTimeout(() => {
+                        $('#loadingSpinner').hide();
+                        toastr.success(response.message);
+                    }, 1000);
+
+                    $this.data('status', newStatus);
+                    $this.find('span').text(newStatus.charAt(0).toUpperCase() + newStatus.slice(
+                        1));
+                    $this.find('span').attr('class', 'badges ' + (newStatus === 'active' ?
+                        'active-badge' : 'deactive-badge'));
+
+                }).catch((err) => {
+                    $('#loadingSpinner').hide();
+                    console.error(err);
+                    toastr.error('Failed to update status. Please try again.');
+                });
         });
+
     });
 </script>
 @endpush

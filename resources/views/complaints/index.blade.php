@@ -4,90 +4,124 @@
     Manage Complaints
 @endsection
 @section('page-content')
-    <div class="box">
-        <div class="box-body">
-            <table class="table table-bordered">
-                <thead style="background-color: #fff;">
-                    <tr>
-                        <th width="20%">Date</th>
-                        <th width="30%">Ticker Number</th>
-                        <th width="20%">User Name</th>
-                        <th width="20%">Status</th>
-                        <th width="10%">Manage</th>
-                    </tr>
-                </thead>
-                <tbody style="background-color: #fff;">
-                    @if ($allData['complaints']->count() > 0)
-                        @foreach ($allData['complaints'] as $complaint)
+    <div id="loadingSpinner" style="display: none; text-align: center;">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card data-table small-box">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="header-title">
+                                <h4 class="text-bold">All Complaints</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="box-header pl-1">
+                                <h3 class="box-title">
+                                    <a href="{{ route('complaints.create') }}" class="btn btn-success text-bold">
+                                        Add <i class="fas fa-plus" style="font-size: 13px;"></i>
+                                    </a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
                             <tr>
-                                @php
-                                    $employee = $allData['employees']->firstWhere('user_id', $complaint->user_id);
-                                @endphp
-                                <td>{{ $complaint->created_at->toFormattedDateString() }}</td>
-                                <td>{{ $complaint->ticket_number }}</td>
-                                <td>{{ $employee->user->name }}</td>
-                                <td>
-                                    @if (!isAdmin(auth()->user()))
-                                        <button type="button"
-                                            class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }}">
-                                            {{ ucwords(str_replace('_', ' ', $complaint->complaint_status)) }}
-                                        </button>
-                                    @else
-                                        <div class="complaint-row" data-id="{{ $complaint->id }}">
-                                            <div class="btn-group">
+                                <th width="20%">Date</th>
+                                <th width="30%">Ticker Number</th>
+                                <th width="20%">User Name</th>
+                                <th width="20%">Status</th>
+                                <th width="10%">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($allData['complaints']->count() > 0)
+                                @foreach ($allData['complaints'] as $complaint)
+                                    <tr>
+                                        @php
+                                            $employee = $allData['employees']->firstWhere(
+                                                'user_id',
+                                                $complaint->user_id,
+                                            );
+                                        @endphp
+                                        <td>{{ $complaint->created_at->toFormattedDateString() }}</td>
+                                        <td>{{ $complaint->ticket_number }}</td>
+                                        <td>{{ $employee->user->name }}</td>
+                                        <td>
+                                            @if (!isAdmin(auth()->user()))
                                                 <button type="button"
-                                                    class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }} status-btn setDisabled">
+                                                    class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }}">
                                                     {{ ucwords(str_replace('_', ' ', $complaint->complaint_status)) }}
                                                 </button>
-                                                <button type="button"
-                                                    class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }} setDisabled dropdown-toggle"
-                                                    data-toggle="dropdown" aria-expanded="false">
-                                                    <span class="caret"></span>
-                                                    <span class="sr-only">Toggle Dropdown</span>
-                                                </button>
-                                                <ul class="dropdown-menu" role="menu">
-                                                    @foreach ($allData['statuses'] as $status)
-                                                        @if ($status !== 'pending')
-                                                            @php
-                                                                $formattedStatus = str_replace('_', ' ', $status);
-                                                            @endphp
-                                                            <li><a href="#" class="status-change"
-                                                                    data-status="{{ $status }}"
-                                                                    data-id="{{ $complaint->id }}">{{ ucwords($formattedStatus) }}</a>
-                                                            </li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
+                                            @else
+                                                <div class="complaint-row" data-id="{{ $complaint->id }}">
+                                                    <div class="btn-group">
+                                                        <button type="button"
+                                                            class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }} status-btn setDisabled">
+                                                            {{ ucwords(str_replace('_', ' ', $complaint->complaint_status)) }}
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-{{ $complaint->complaint_status == 'resolved' ? 'success' : ($complaint->complaint_status == 'pending' ? 'warning' : 'primary') }} setDisabled dropdown-toggle"
+                                                            data-toggle="dropdown" aria-expanded="false">
+                                                            <span class="caret"></span>
+                                                            <span class="sr-only">Toggle Dropdown</span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu">
+                                                            @foreach ($allData['statuses'] as $status)
+                                                                @if ($status !== 'pending')
+                                                                    @php
+                                                                        $formattedStatus = str_replace(
+                                                                            '_',
+                                                                            ' ',
+                                                                            $status,
+                                                                        );
+                                                                    @endphp
+                                                                    <li><a href="#" class="status-change"
+                                                                            data-status="{{ $status }}"
+                                                                            data-id="{{ $complaint->id }}">{{ ucwords($formattedStatus) }}</a>
+                                                                    </li>
+                                                                @endif
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="manage-process">
+                                                <a href="#" data-toggle="modal" data-target="#complaintModal"
+                                                    data-content="{{ $complaint->content }}"
+                                                    data-department="{{ $employee->department->department_name }}"
+                                                    data-type="{{ $employee->employeeType->type ?? '' }}"
+                                                    data-designation="{{ $employee->designation->designation_name }}">
+                                                    <div class="edit-item"><i class="fas fa-eye"></i> View</div>
+                                                </a>
+                                                @php
+                                                    $user = auth()->user();
+                                                @endphp
+                                                @if (isAdmin($user))
+                                                    <a href="#">
+                                                        <div class="delete-item delete-complaint"
+                                                            data-complaint="{{ $complaint->id }}"
+                                                            data-delete-route="{{ route('complaints.destroy', $complaint->id) }}">
+                                                            <i class="far fa-trash-alt"></i> Delete
+                                                        </div>
+                                                    </a>
+                                                @endif
                                             </div>
-                                        </div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#complaintModal" data-content="{{ $complaint->content }}"
-                                        data-department="{{ $employee->department->department_name }}"
-                                        data-type="{{ $employee->employeeType->type ?? '' }}"
-                                        data-designation="{{ $employee->designation->designation_name }}">
-                                        <i class="far fa-eye"></i>
-                                    </button>
-                                    @php
-                                        $user = auth()->user();
-                                    @endphp
-                                    @if (isAdmin($user))
-                                        <button class="delete-complaint btn btn-danger btn-flat btn-sm"
-                                            data-complaint="{{ $complaint->id }}"
-                                            data-delete-route="{{ route('complaints.destroy', $complaint->id) }}">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                        @else
-                        <tr><td class="text-center" colspan="8">No Record Found</td></tr>
-                    @endif
-                </tbody>
-            </table>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Modal Structure -->
@@ -112,6 +146,40 @@
     </div>
 @endsection
 @endsection
+
+@push('css')
+<style>
+    .modal-body p {
+        color: #000;
+        font-size: 15px !important;
+    }
+
+    div#complaintContent {
+        border: solid 1px #cccc;
+        border-radius: 5px;
+        margin-top: 15px;
+        padding: 10px 10px;
+    }
+
+    div#loadingSpinner {
+        position: fixed;
+        left: 0;
+        right: 0;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        z-index: 99;
+        background: #00000036;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    div#loadingSpinner i {
+        color: #007bff;
+    }
+</style>
+@endpush
 @push('js')
 <script>
     $(document).ready(function() {
@@ -138,17 +206,18 @@
             const complaintId = $(this).data('id');
             const row = $(this).closest('.complaint-row');
             const buttons = row.find('.setDisabled');
-
+            $('#loadingSpinner').show();
             buttons.prop('disabled', true);
 
             $.ajax({
-                url: '/complaints/' + complaintId,
-                type: 'POST',
-                data: {
-                    complaint_status: newStatus,
-                    _token: token
-                },
-                success: function(response) {
+                    url: `/complaints/${complaintId}`,
+                    method: 'POST',
+                    data: {
+                        complaint_status: newStatus,
+                        _token: token
+                    },
+                })
+                .then((response) => {
                     let statusBtn = row.find('.status-btn');
                     statusBtn.text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
                     statusBtn.removeClass('btn-warning btn-success btn-danger');
@@ -171,15 +240,15 @@
                     } else {
                         dropdownToggle.addClass('btn-primary');
                     }
-                    toastr.success(response.message);
                     buttons.prop('disabled', false);
-                },
-                error: function(xhr, status, error) {
+                    $('#loadingSpinner').hide();
                     toastr.success(response.message);
-                    console.error(xhr.responseText);
+
+                }).catch((err) => {
+                    toastr.error(response.message);
+                    console.error(err);
                     buttons.prop('disabled', false);
-                }
-            });
+                });
         });
 
         $('.delete-complaint').on('click', function(e) {
@@ -189,7 +258,10 @@
             const complaintId = $(this).data('complaint-id');
             const deleteRoute = $(this).data('delete-route').replace(':id', complaintId);
             const $clickedElement = $(this);
+
             if (confirm('Are you sure you want to delete this complaint?')) {
+                $('#loadingSpinner').show();
+
                 $.ajax({
                     type: "DELETE",
                     url: deleteRoute,
@@ -197,12 +269,16 @@
                         'X-CSRF-TOKEN': token
                     }
                 }).then(function(response) {
-                    console.log(response);
-                    toastr.success(response.message);
+                    setTimeout(() => {
+                        $('#loadingSpinner').hide();
+                        toastr.success(response.message);
+                    }, 1000);
+
                     $clickedElement.closest('tr').fadeOut('slow', function() {
                         $(this).remove();
                     });
                 }).catch(function(xhr) {
+                    $('#loadingSpinner').hide();
                     console.error(xhr);
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         toastr.error(xhr.responseJSON.message);

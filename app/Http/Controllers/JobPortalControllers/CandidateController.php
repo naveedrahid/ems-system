@@ -19,7 +19,7 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        $candidates = Candidate::with('scheduleInterviews')->paginate(15);
+        $candidates = Candidate::with('scheduleInterviews')->paginate(10);
         $applicationStatuses = Candidate::candidate_application_status();
 
         return view('job-portal.candidates.index', compact('candidates', 'applicationStatuses'));

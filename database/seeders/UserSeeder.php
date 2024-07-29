@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
                 'country' => 1,
                 'password' => Hash::make('admin12345'),
                 'status' => 'active',
-                'role_id' => 1
+                'role_id' => 0
             ]
         ];
 

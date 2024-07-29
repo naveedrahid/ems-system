@@ -4,47 +4,69 @@
     Manage Shifts
 @endsection
 @section('page-content')
-    <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">
-                <a href="{{ route('shifts.create') }}" class="btn btn-primary">
-                    Insert Shifts
-                </a>
-            </h3>
-        </div>
-        <div class="box-body">
-            <table class="table table-bordered">
-                <thead style="background-color: #fff;">
-                    <tr>
-                        <th width="10%">Date</th>
-                        <th width="30%">Shift Name</th>
-                        <th width="20%">Opening</th>
-                        <th width="20%">Closing</th>
-                        <th width="20%">Manage</th>
-                    </tr>
-                </thead>
-                <tbody style="background-color: #fff;">
-                    @if (count($shifts) > 0)
-                        @foreach ($shifts as $shift)
+    <div class="row">
+        <div class="col-12">
+            <div class="card data-table small-box">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="header-title">
+                                <h4 class="card-title text-bold">All Shifts</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="box-header pl-1">
+                                <h3 class="box-title">
+                                    <a href="{{ route('shifts.create') }}" class="btn btn-success text-bold">
+                                        Add <i class="fas fa-plus" style="font-size: 13px;"></i>
+                                    </a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
                             <tr>
-                                <td>{{ $shift->created_at->toFormattedDateString() }}</td>
-                                <td>{{ $shift->name }}</td>
-                                <td>{{ $shift->opening }}</td>
-                                <td>{{ $shift->closing }}</td>
-                                <td>
-                                    <a href="{{ route('shifts.edit', $shift) }}" class="btn btn-info btn-flat btn-sm">
-                                        <i class="fa fa-edit"></i></a>
-                                    <button class="delete-shift btn btn-danger btn-flat btn-sm"
-                                        data-holiday-id="{{ $shift->id }}"
-                                        data-delete-route="{{ route('shifts.destroy', $shift->id) }}">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </td>
+                                <th>Date</th>
+                                <th>Shift Name</th>
+                                <th>Opening</th>
+                                <th>Closing</th>
+                                <th>Manage</th>
                             </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+
+                            @forelse ($shifts as $shift)
+                                <tr>
+                                    <td>{{ $shift->created_at->toFormattedDateString() }}</td>
+                                    <td>{{ $shift->name }}</td>
+                                    <td>{{ $shift->opening }}</td>
+                                    <td>{{ $shift->closing }}</td>
+                                    <td>
+                                        <div class="manage-process">
+                                            <a href="{{ route('shifts.edit', $shift) }}" >
+                                                <div class="edit-item"><i class="fas fa-edit"></i> Edit</div>
+                                            </a>
+                                            <div class="delete-shift delete-item" 
+                                                style="cursor: pointer;"
+                                                data-shift-id="{{ $shift->id }}"
+                                                data-delete-route="{{ route('shifts.destroy', $shift->id) }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                        </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td class="text-center" colspan="9">No Shift Found!</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -54,8 +76,8 @@
     $(document).ready(function() {
         $('.delete-shift').on('click', function(e) {
             e.preventDefault();
-            const bankId = $(this).data('shift-id');
-            const deleteRoute = $(this).data('delete-route').replace(':id', bankId);
+            const shiftId = $(this).data('shift-id');
+            const deleteRoute = $(this).data('delete-route').replace(':id', shiftId);
             const $clickedElement = $(this);
 
             Swal.fire({

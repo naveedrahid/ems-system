@@ -14,8 +14,24 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::get();
-        return view('department.index', compact('departments'));
+        $departments = Department::all();
+
+        // Variables for creating a new department
+        $newDepartment = new Department();
+        $createFormMethod = 'POST';
+        $createRoute = route('department.store');
+    
+        $editDepartment = null;
+        $editFormMethod = 'PUT';
+        $editRoute = '';
+    
+        return view('department.index', compact('departments', 'newDepartment', 'createFormMethod', 'createRoute', 'editDepartment', 'editFormMethod', 'editRoute'));
+    }
+
+    public function getData()
+    {
+        $departments = Department::all();
+        return response()->json($departments);
     }
 
     /**
@@ -94,6 +110,4 @@ class DepartmentController extends Controller
         $department->delete();
         return response()->json(['message' => 'Department deleted successfully'], 200);
     }
-    
-    
 }

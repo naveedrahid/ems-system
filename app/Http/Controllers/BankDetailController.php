@@ -167,7 +167,7 @@ class BankDetailController extends Controller
     public function destroy(BankDetail $bankDetail)
     {
         $bankDetail->delete();
-        return response()->json(['success' => 'Bank Details deleted successfully'], 200);
+        return response()->json(['message' => 'Bank Details deleted successfully'], 200);
     }
 
     public function bankStatus(Request $request, BankDetail $bankDetail)

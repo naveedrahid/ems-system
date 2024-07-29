@@ -4,20 +4,21 @@
     Interviewer Remarks
 @endsection
 @section('page-content')
+    <div id="loadingSpinner" style="display: none; text-align: center;">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+    </div>
     <div class="row">
         <div class="col-12">
-            {{-- <div class="box-header pl-1">
-            <h3 class="box-title">
-                <a href="{{ route('designation.create') }}" class="btn btn-success text-bold">
-                    Add <i class="fas fa-plus" style="font-size: 13px;"></i>
-                </a>
-            </h3>
-        </div> --}}
             <div class="card data-table small-box">
                 <div class="card-header">
-                    <h4 class="card-title text-bold">Manage Designation</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="header-title">
+                                <h4 class="text-bold">All Candidate Interviews Remarks</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- /.card-header -->
                 <div class="card-body table-responsive p-0">
                     <table class="table table-hover text-nowrap">
                         <thead style="background-color: #fff;">
@@ -48,7 +49,7 @@
                                             $status = $interviewer_remark->status;
                                             $badgeClass =
                                                 $status === 'Pending'
-                                                    ? 'primary'
+                                                    ? 'warning'
                                                     : ($status === 'Selected'
                                                         ? 'active'
                                                         : 'deactive');
@@ -121,96 +122,103 @@
             </div>
         </div>
     </div>
-    {{-- Selected Notes Modal --}}
-    <div class="modal fade show" id="selectedNotes" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Default Modal</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                {!! Form::model($interviewer_remark, [
-                    'url' => route('selected.remarks', $interviewer_remark->id),
-                    'method' => 'PUT',
-                    'id' => 'selectedNotesHandler',
-                ]) !!}
-                <div class="modal-body">
-                    <div class="card small-box card-primary p-5 position-relative">
-                        <div id="loadingSpinner" style="display: none; text-align: center;">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                        </div>
-                        @method('PATCH')
-
-                        {!! Form::textarea('selected_notes',null, [
-                            'id' => 'selected_notes',
-                            'cols' => 30,
-                            'rows' => 10,
-                            'class' => 'form-control',
-                        ]) !!}
-
+    @if ($interviewer_remarks->count() > 0)
+        {{-- Selected Notes Modal --}}
+        <div class="modal fade show" id="selectedNotes" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Default Modal</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    {!! Form::submit('Send', ['class' => 'btn btn-primary setDisabled']) !!}
-                </div>
-                {!! Form::close() !!}
-            </div>
-        </div>
-    </div>
-    {{-- End Modal --}}
+                    {!! Form::model($interviewer_remark, [
+                        'url' => route('selected.remarks', $interviewer_remark->id),
+                        'method' => 'PUT',
+                        'id' => 'selectedNotesHandler',
+                    ]) !!}
+                    <div class="modal-body">
+                        <div class="card small-box card-primary p-5 position-relative">
+                            <div id="loadingSpinner" style="display: none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            </div>
+                            @method('PATCH')
 
-    {{-- Rejected Notes Modal --}}
-    <div class="modal fade show" id="rejectedNotes" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                {!! Form::model($interviewer_remark, [
-                    'url' => route('rejected.remarks', $interviewer_remark->id),
-                    'method' => 'PATCH',
-                    'id' => 'rejectedNotesHandler',
-                ]) !!}
-                <div class="modal-body">
-                    <div class="card small-box card-primary p-5 position-relative">
-                        <div id="loadingSpinner" style="display: none; text-align: center;">
-                            <i class="fas fa-spinner fa-spin fa-3x"></i>
-                        </div>
-
-                        @method('PATCH')
-
-                        <div class="mb-3 form-group">
-                            {!! Form::textarea('rejected_notes', null, [
-                                'id' => 'rejected_notes',
+                            {!! Form::textarea('selected_notes', null, [
+                                'id' => 'selected_notes',
                                 'cols' => 30,
                                 'rows' => 10,
                                 'class' => 'form-control',
                             ]) !!}
-                        </div>
 
+                        </div>
                     </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        {!! Form::submit('Send', ['class' => 'btn btn-primary setDisabled']) !!}
+                    </div>
+                    {!! Form::close() !!}
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    {!! Form::submit('Send', ['class' => 'btn btn-primary setDisabled']) !!}
+            </div>
+        </div>
+        {{-- End Modal --}}
+
+        {{-- Rejected Notes Modal --}}
+        <div class="modal fade show" id="rejectedNotes" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    {!! Form::model($interviewer_remark, [
+                        'url' => route('rejected.remarks', $interviewer_remark->id),
+                        'method' => 'PATCH',
+                        'id' => 'rejectedNotesHandler',
+                    ]) !!}
+                    <div class="modal-body">
+                        <div class="card small-box card-primary p-5 position-relative">
+                            <div id="loadingSpinner" style="display: none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            </div>
+
+                            @method('PATCH')
+
+                            <div class="mb-3 form-group">
+                                {!! Form::textarea('rejected_notes', null, [
+                                    'id' => 'rejected_notes',
+                                    'cols' => 30,
+                                    'rows' => 10,
+                                    'class' => 'form-control',
+                                ]) !!}
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        {!! Form::submit('Send', ['class' => 'btn btn-primary setDisabled']) !!}
+                    </div>
+                    {!! Form::close() !!}
                 </div>
-                {!! Form::close() !!}
+
             </div>
 
         </div>
-
-    </div>
-    {{-- End Modal --}}
+        {{-- End Modal --}}
+    @endif
 @endsection
 @endsection
 
 @push('css')
 <style>
+    .warning-badge {
+        background: #ffc10761;
+        color: #b7942d;
+    }
+
     a.status-toggle.disabled {
         opacity: 0.40;
         pointer-events: none;
@@ -268,6 +276,7 @@
         background-color: #FFF1F1;
         outline: 1px solid #FFCFCF;
         color: #EF4444;
+        font-size: 13px !important;
     }
 
     button.btn.btn-default.badges.pass {
@@ -300,16 +309,16 @@
 <script>
     $(document).ready(function() {
         $('#selectedNotes').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var notes = button.data('notes');
-            var modal = $(this);
+            const button = $(event.relatedTarget);
+            const notes = button.data('notes');
+            const modal = $(this);
             modal.find('#selected_notes').val(notes);
         });
 
         $('#rejectedNotes').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var notes = button.data('notes');
-            var modal = $(this);
+            const button = $(event.relatedTarget);
+            const notes = button.data('notes');
+            const modal = $(this);
             modal.find('#rejected_notes').val(notes);
         });
     });
@@ -328,19 +337,20 @@
             let nextStatus;
             if (currentStatus === 'Pending') {
                 nextStatus = 'Selected';
-                statusSpan.removeClass('primary-badge').addClass('active-badge');
+                statusSpan.removeClass('warning-badge').addClass('active-badge');
             } else if (currentStatus === 'Selected') {
                 nextStatus = 'Rejected';
                 statusSpan.removeClass('active-badge').addClass('deactive-badge');
             } else if (currentStatus === 'Rejected') {
                 nextStatus = 'Pending';
-                statusSpan.removeClass('deactive-badge').addClass('primary-badge');
+                statusSpan.removeClass('deactive-badge').addClass('warning-badge');
             }
 
             const formData = new FormData();
             formData.append('status', nextStatus);
 
             button.addClass('disabled');
+            $('#loadingSpinner').show();
 
             $.ajax({
                     method: "PATCH",
@@ -353,13 +363,15 @@
                     }
                 })
                 .then((response) => {
+                    $('#loadingSpinner').hide();
                     button.removeClass('disabled');
                     toastr.success(`Status ${nextStatus} updated successfully.`);
                     button.attr('data-status', nextStatus);
                     statusSpan.text(nextStatus);
                 })
                 .catch((err) => {
-                    toastr.success(`Failed Status Changed.`);
+                    $('#loadingSpinner').hide();
+                    toastr.error(`Failed Status Changed.`);
                     button.removeClass('disabled');
                     console.error('Error:', err);
                 });

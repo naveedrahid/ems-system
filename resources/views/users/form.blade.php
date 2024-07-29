@@ -19,7 +19,9 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-                    {{-- @dd($countries) --}}
+                    @php
+                        $user = auth()->user();
+                    @endphp
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3 form-group">
@@ -159,10 +161,12 @@
                                 @php
                                     $rolesArray = $roles->pluck('name', 'id')->toArray();
                                 @endphp
-                                {!! Form::select('user_role', $roles, $employee->role_id ?? '', [
-                                    'class' => 'form-control form-select select2',
-                                    'id' => 'user_role',
-                                ]) !!}
+                                @if (isAdmin($user))
+                                    {!! Form::select('user_role', $roles, $employee->role_id ?? '', [
+                                        'class' => 'form-control form-select select2',
+                                        'id' => 'user_role',
+                                    ]) !!}
+                                @endif
                             </div>
                             <div class="mb-3 form-group">
                                 {!! Form::label('title', 'Date of birth') !!}

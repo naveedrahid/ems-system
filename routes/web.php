@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::resource('roles', RoleController::class)->except(['show']);
 
     Route::resource('department', DepartmentController::class)->except(['show']);
+    Route::get('department/data', [DepartmentController::class, 'getData'])->name('department.data');
 
     Route::resource('designation', DesignationController::class)->except(['show']);
 
@@ -97,11 +98,11 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
+    Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
     Route::resource('documents', DocumentUserController::class)->except(['show']);
     Route::post('/documents/upload', [DocumentUserController::class, 'upload'])->name('documents.upload');
 
-    Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
 
     Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
     Route::resource('employees', EmployeeController::class)->parameters([

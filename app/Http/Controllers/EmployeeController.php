@@ -38,14 +38,13 @@ class EmployeeController extends Controller
             ->get();
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) {
-                return '<a href="' . route('employees.edit', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
-                    <i class="fa fa-edit"></i>
-                </a> <button class="employee-toggle btn btn-' . ($employee->status === "active" ? "info" : "danger") . ' btn-sm"
-                    data-id="' . $employee->id . '" data-status="' . $employee->status . '">
-                    <i class="fa fa-thumbs-' . ($employee->status === "active" ? "up" : "down") . '"></i>
-                </button> <a href="' . route('employees.profile', $employee->id) . '" class="btn btn-info btn-flat btn-sm">
-                    <i class="far fa-eye"></i>
-                </a>';
+
+                return '<div class="manage-process"><a href="#" class="status-toggle empoyee-toggle" data-id="' . $employee->id . '" data-status="' . $employee->status . '">
+                        <span class="badges ' . ($employee->status === 'active' ? 'active-badge' : ($employee->status === 'pending' ? 'pending-badge' : 'deactive-badge')) . '">' . ucfirst($employee->status) . '</span>
+                    </a><a href="' . route('employees.edit', $employee->id) . '" class="edit-item">
+                    <i class="fa fa-edit"></i> edit</a><a href="' . route('employees.profile', $employee->id) . '" class="edit-item">
+                    <i class="far fa-eye"></i> View
+                </a></div>';
             })
             ->editColumn('employee_img', function ($employee) {
                 if (empty($employee->employee->employee_img)) {
@@ -86,10 +85,10 @@ class EmployeeController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        if ($currentUser->role_id === 1) {
-            $roles = Role::all();
+        if ($currentUser->role_id === 0) {
+            $roles = Role::pluck('name', 'id');
         } else {
-            $roles = Role::where('name', 'employee')->get();
+            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
         }
         $route = route('employees.store');
         $formMethod = 'POST';
@@ -195,7 +194,13 @@ class EmployeeController extends Controller
         $employee = User::with('employee')->findOrFail($id);
         $route = route('employees.update', $employee->id);
         $formMethod = 'PUT';
-        $roles = Role::find($employee->role_id);
+        $currentUser = auth()->user();
+        if ($currentUser->role_id === 0) {
+            $roles = Role::pluck('name', 'id');
+        } else {
+            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
+        }
+        // $roles = Role::find($employee->role_id);
         $departments = Department::pluck('department_name', 'id')->toArray();
         $designations = Designation::all();
         $employeeShift = Shift::all();

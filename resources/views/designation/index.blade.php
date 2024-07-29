@@ -1,8 +1,8 @@
 @extends('masterLayout.app')
 @section('main')
-    {{-- @section('page-title')
+@section('page-title')
     Manage Designation
-@endsection --}}
+@endsection
 @section('page-content')
     <div class="row">
         <div class="col-12">
@@ -11,7 +11,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="header-title">
-                                <h4 class="text-bold">Manage Designation</h4>
+                                <h4 class="text-bold">All Designation</h4>
                             </div>
                         </div>
                         <div class="col-md-6 text-right">
