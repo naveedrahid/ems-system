@@ -198,12 +198,7 @@ class EmployeeController extends Controller
         $route = route('employees.update', $employee->id);
         $formMethod = 'PUT';
         $currentUser = auth()->user();
-        if ($currentUser->role_id === 0) {
-            $roles = Role::pluck('name', 'id');
-        } else {
-            $roles = Role::where('id', '!=', 0)->pluck('name', 'id');
-        }
-        // $roles = Role::find($employee->role_id);
+        $roles = Role::where('name', 'Employee')->first();
         $departments = Department::pluck('department_name', 'id')->toArray();
         $designations = Designation::all();
         $employeeShift = Shift::all();
@@ -213,7 +208,7 @@ class EmployeeController extends Controller
             return $cityGroup->pluck('name', 'id');
         })->toArray();
 
-        return view('employees.form', compact('formMethod','route','employee', 'roles', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
+        return view('employees.form', compact('roles','formMethod','route','employee', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
     }
 
     public function update(Request $request, $id)

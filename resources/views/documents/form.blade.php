@@ -12,7 +12,7 @@
                         'url' => $route,
                         'method' => $formMethod,
                         'files' => true,
-                        'id' => $document->exists ? 'documentUpdateForm' : 'documentForm',
+                        'id' => $document->exists ? 'documentUpdateHandler' : 'documentUploadHandler',
                     ]) !!}
                     @if ($formMethod === 'PUT')
                         @method('PUT')
@@ -34,22 +34,22 @@
                                 {!! Form::label('user_id', 'Select User') !!}
                                 <select name="user_id" id="user_id" class="form-control select2">
                                     <option value="">Select User</option>
-                                    {{-- @foreach ($departments as $department)
+                                    @foreach ($departments as $department)
                                         @foreach ($department->employees as $employee)
-                                            <option value="{{ $employee->user->id ?? '' }}"
-                                                data-department-id="{{ $department->id ?? '' }}"
+                                            <option value="{{ $employee->user->id }}"
+                                                data-department-id="{{ $department->id }}"
                                                 {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
-                                                {{ $employee->user->name ?? ''}}
+                                                {{ $employee->user->name ?? '' }}
                                             </option>
                                         @endforeach
-                                    @endforeach --}}
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('nic_front', 'NIC Front Image') !!}
-                                <div class="dropzone" id="nicFrontDropzone"></div>
+                                <input type="file" class="filepond" name="nic_front" data-filepond>
                                 {!! Form::hidden('nic_front', old('nic_front'), ['id' => 'nicFrontPath']) !!}
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('nic_back', 'NIC Back Image') !!}
-                                <div class="dropzone" id="nicBackDropzone"></div>
+                                <input type="file" class="filepond" name="nic_back" data-filepond>
                                 {!! Form::hidden('nic_back', old('nic_back'), ['id' => 'nicBackPath']) !!}
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('resume', 'Add Resume') !!}
-                                <div class="dropzone" id="resumeDropzone"></div>
+                                <input type="file" class="filepond" name="resume" data-filepond>
                                 {!! Form::hidden('resume', old('resume'), ['id' => 'resumePath']) !!}
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('payslip', 'Add Payslip') !!}
-                                <div class="dropzone" id="payslipDropzone"></div>
+                                <input type="file" class="filepond" name="payslip" data-filepond>
                                 {!! Form::hidden('payslip', old('payslip'), ['id' => 'payslipPath']) !!}
                             </div>
                         </div>
@@ -85,7 +85,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('experience_letter', 'Add Experience Letter') !!}
-                                <div class="dropzone" id="experienceLetterDropzone"></div>
+                                <input type="file" class="filepond" name="experience_letter" data-filepond>
                                 {!! Form::hidden('experience_letter', old('experience_letter'), ['id' => 'experienceLetterPath']) !!}
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('bill', 'Add Bill Image') !!}
-                                <div class="dropzone" id="billDropzone"></div>
+                                <input type="file" class="filepond" name="bill" data-filepond>
                                 {!! Form::hidden('bill', old('bill'), ['id' => 'billPath']) !!}
                             </div>
                         </div>
@@ -115,7 +115,9 @@
 @endsection
 
 @push('css')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+<link href="https://unpkg.com/filepond@^4/dist/filepond.min.css" rel="stylesheet">
+<link href="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.css"
+    rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <style>
     span.select2-selection.select2-selection--single {
@@ -125,68 +127,272 @@
 @endpush
 
 @push('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+<script src="https://unpkg.com/filepond/dist/filepond.min.js" crossorigin="anonymous" referrerpolicy="no-referrer">
+</script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size@^2/dist/filepond-plugin-file-validate-size.min.js"
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.js"
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://unpkg.com/jquery-filepond/filepond.jquery.js" crossorigin="anonymous" referrerpolicy="no-referrer">
+</script>
 
 <script>
-Dropzone.autoDiscover = false;
+    // Dropzone.autoDiscover = false;
 
-$(document).ready(function() {
-    // Initialize Dropzones with unique URLs and options
-    const dropzones = {
-        nicFront: new Dropzone("#nicFrontDropzone", {
-            url: "{{ route('documents.store') }}", // Updated to the route for file upload
-            paramName: 'file',
-            maxFilesize: 2, // MB
-            acceptedFiles: 'image/*,application/pdf',
-            addRemoveLinks: true,
-            dictDefaultMessage: "Drop files here to upload",
-            autoProcessQueue: false,
-            init: function() {
-                const myDropzone = this;
+    $(document).ready(function() {
+        FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
 
-                $('#documentForm').on('submit', function(event) {
-                    event.preventDefault(); // Prevent the default form submission
+        const nic_front = FilePond.create(document.querySelector('input[name="nic_front"]'));
+        const nic_back = FilePond.create(document.querySelector('input[name="nic_back"]'));
+        const resume = FilePond.create(document.querySelector(
+            'input[name="resume"]'));
+        const payslip = FilePond.create(document.querySelector('input[name="payslip"]'));
+        const experience_letter = FilePond.create(document.querySelector('input[name="experience_letter"]'));
+        const bill = FilePond.create(document.querySelector('input[name="bill"]'));
 
-                    myDropzone.processQueue();
+        // Fetch existing files
+        @if ($document->nic_front)
+            nic_front.addFile("{{ asset($document->nic_front) }}");
+        @endif
 
-                    myDropzone.on('queuecomplete', function() {
-                        const formData = new FormData($('#documentForm')[0]);
+        @if ($document->nic_back)
+            nic_back.addFile("{{ asset($document->nic_back) }}");
+        @endif
 
-                        // Append all files from Dropzone to the formData
-                        myDropzone.getAcceptedFiles().forEach(file => {
-                            formData.append('files[]', file);
-                        });
+        @if ($document->resume)
+            resume.addFile("{{ asset($document->resume) }}");
+        @endif
 
-                        fetch($('#documentForm').attr('action'), {
-                                method: $('#documentForm').attr('method'),
-                                body: formData,
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                toastr.success(data.message);
-                                if ($('#submitBtn').val() === 'Create') {
-                                    $('#documentForm')[0].reset();
-                                    myDropzone.removeAllFiles(true);
-                                } else {
-                                    // Handle update logic if needed
-                                }
-                            })
-                            .catch(error => {
-                                toastr.error('Error submitting form');
-                                console.error('There was an error!', error);
-                            });
+        @if ($document->payslip)
+            payslip.addFile("{{ asset($document->payslip) }}");
+        @endif
+
+        @if ($document->experience_letter)
+            experience_letter.addFile("{{ asset($document->experience_letter) }}");
+        @endif
+
+        @if ($document->bill)
+            bill.addFile("{{ asset($document->bill) }}");
+        @endif
+
+        $('#documentUploadHandler').submit(function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            const uploadFields = [{
+                    pond: nic_front,
+                    name: 'nic_front'
+                },
+                {
+                    pond: nic_back,
+                    name: 'nic_back'
+                },
+                {
+                    pond: resume,
+                    name: 'resume'
+                },
+                {
+                    pond: payslip,
+                    name: 'payslip'
+                },
+                {
+                    pond: experience_letter,
+                    name: 'experience_letter'
+                },
+                {
+                    pond: bill,
+                    name: 'bill'
+                }
+            ];
+
+            let isEmptyFile = true;
+
+            uploadFields.forEach(field => {
+                if (field.pond.getFiles().length > 0) {
+                    isEmptyFile = false;
+                    field.pond.getFiles().forEach(file => {
+                        formData.append(field.name, file.file);
                     });
-                });
+                }
+            });
+
+            if (isEmptyFile) {
+                toastr.error('Please select at least one file to upload.');
+                return;
             }
-        }),
-        // Repeat similarly for other Dropzone instances
-    };
-});
+
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+
+            $.ajax({
+                    method: "POST",
+                    url: url,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .then((response) => {
+                    toastr.success(response.message);
+
+                    // // Redirect to the new URL
+                    // window.location.href = response.url;
+
+                    button.prop('disabled', false);
+                    $('#documentUploadHandler')[0].reset();
+                    nic_front.removeFiles();
+                    nic_back.removeFiles();
+                    resume.removeFiles();
+                    payslip.removeFiles();
+                    experience_letter.removeFiles();
+                    bill.removeFiles();
+                }).catch((err) => {
+                    console.error("Error response: ", err);
+                    if (err.responseJSON && err.responseJSON.errors) {
+                        $.each(err.responseJSON.errors, function(key, value) {
+                            toastr.error(value);
+                        });
+                    } else {
+                        toastr.error('Error updating profile photo');
+                    }
+                    button.prop('disabled', false);
+                });
+
+        });
 
 
+        $('#documentUpdateHandler').submit(function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            const nic_frontFiles = nic_front.getFiles();
+            const nic_backFiles = nic_back.getFiles();
+            const resumeFiles = resume.getFiles();
+            const payslipFiles = payslip.getFiles();
+            const experience_letterFiles = experience_letter.getFiles();
+            const billFiles = bill.getFiles();
+
+            if (nic_frontFiles.length > 0) {
+                formData.append('nic_front', nic_frontFiles[0].file);
+            } else {
+                formData.delete('nic_frontFiles');
+            }
+
+            if (nic_backFiles.length > 0) {
+                formData.append('nic_back', nic_backFiles[0].file);
+            } else {
+                formData.delete('nic_backFiles');
+            }
+
+            if (resumeFiles.length > 0) {
+                formData.append('resume', resumeFiles[0].file);
+            } else {
+                formData.delete('resumeFiles');
+            }
+
+            if (payslipFiles.length > 0) {
+                formData.append('payslip', payslipFiles[0].file);
+            } else {
+                formData.delete('payslipFiles');
+            }
+
+            if (experience_letterFiles.length > 0) {
+                formData.append('experience_letter', experience_letterFiles[0].file);
+            } else {
+                formData.delete('experience_letterFiles');
+            }
+
+            if (billFiles.length > 0) {
+                formData.append('bill', billFiles[0].file);
+            } else {
+                formData.delete('billFiles');
+            }
+
+            const uploadFields = [{
+                    pond: nic_front,
+                    name: 'nic_front'
+                },
+                {
+                    pond: nic_back,
+                    name: 'nic_back'
+                },
+                {
+                    pond: resume,
+                    name: 'resume'
+                },
+                {
+                    pond: payslip,
+                    name: 'payslip'
+                },
+                {
+                    pond: experience_letter,
+                    name: 'experience_letter'
+                },
+                {
+                    pond: bill,
+                    name: 'bill'
+                }
+            ];
+
+            let isEmptyFile = true;
+
+            uploadFields.forEach(field => {
+                if (field.pond.getFiles().length > 0) {
+                    isEmptyFile = false;
+                    field.pond.getFiles().forEach(file => {
+                        formData.append(field.name, file.file);
+                    });
+                }
+            });
+
+            if (isEmptyFile) {
+                toastr.error('Please select at least one file to upload.');
+                return;
+            }
+
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+
+            $.ajax({
+                    method: "POST",
+                    url: url,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                .then((response) => {
+                    toastr.success(response.message);
+
+                    // // Redirect to the new URL
+                    // window.location.href = response.url;
+
+                    button.prop('disabled', false);
+
+                }).catch((err) => {
+                    console.error("Error response: ", err);
+                    if (err.responseJSON && err.responseJSON.errors) {
+                        $.each(err.responseJSON.errors, function(key, value) {
+                            toastr.error(value);
+                        });
+                    } else {
+                        toastr.error('Error updating profile photo');
+                    }
+                    button.prop('disabled', false);
+                });
+
+        });
+    });
 </script>
 
 
@@ -382,81 +588,80 @@ $(document).ready(function() {
         }
 
     $('#documentForm, #documentUpdateForm').submit(function(e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    const formData = new FormData(this);
+        const formData = new FormData(this);
 
-    // Clear existing file entries in FormData
-    formData.delete('nic_front');
-    formData.delete('nic_back');
-    formData.delete('resume');
-    formData.delete('payslip');
-    formData.delete('experience_letter');
-    formData.delete('bill');
+        // Clear existing file entries in FormData
+        formData.delete('nic_front');
+        formData.delete('nic_back');
+        formData.delete('resume');
+        formData.delete('payslip');
+        formData.delete('experience_letter');
+        formData.delete('bill');
 
-    const nic_frontFiles = nic_front.getFiles();
-    const nic_backFiles = nic_back.getFiles();
-    const resumeFiles = resume.getFiles();
-    const payslipFiles = payslip.getFiles();
-    const experience_letterFiles = experience_letter.getFiles();
-    const billFiles = bill.getFiles();
+        const nic_frontFiles = nic_front.getFiles();
+        const nic_backFiles = nic_back.getFiles();
+        const resumeFiles = resume.getFiles();
+        const payslipFiles = payslip.getFiles();
+        const experience_letterFiles = experience_letter.getFiles();
+        const billFiles = bill.getFiles();
 
-    if (nic_frontFiles.length > 0) {
-        formData.append('nic_front', nic_frontFiles[0].file);
-    }
-
-    if (nic_backFiles.length > 0) {
-        formData.append('nic_back', nic_backFiles[0].file);
-    }
-
-    if (resumeFiles.length > 0) {
-        formData.append('resume', resumeFiles[0].file);
-    }
-
-    if (payslipFiles.length > 0) {
-        formData.append('payslip', payslipFiles[0].file);
-    }
-
-    if (experience_letterFiles.length > 0) {
-        formData.append('experience_letter', experience_letterFiles[0].file);
-    }
-
-    if (billFiles.length > 0) {
-        formData.append('bill', billFiles[0].file);
-    }
-
-    const url = $(this).attr('action');
-    const token = $('meta[name="csrf-token"]').attr('content');
-    const button = $('input[type="submit"]');
-    button.prop('disabled', true);
-
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-CSRF-TOKEN': token
+        if (nic_frontFiles.length > 0) {
+            formData.append('nic_front', nic_frontFiles[0].file);
         }
-    }).then((response) => {
-        toastr.success(response.message);
-        button.prop('disabled', false);
-        if ($(e.target).attr('id') === 'documentForm') {
-            $('#documentForm')[0].reset();
-            nic_front.removeFiles();
-            nic_back.removeFiles();
-            resume.removeFiles();
-            payslip.removeFiles();
-            experience_letter.removeFiles();
-            bill.removeFiles();
+
+        if (nic_backFiles.length > 0) {
+            formData.append('nic_back', nic_backFiles[0].file);
         }
-    }).catch((err) => {
-        console.error(err);
-        toastr.error('Error updating document');
-        button.prop('disabled', false);
-    });
-    });
+
+        if (resumeFiles.length > 0) {
+            formData.append('resume', resumeFiles[0].file);
+        }
+
+        if (payslipFiles.length > 0) {
+            formData.append('payslip', payslipFiles[0].file);
+        }
+
+        if (experience_letterFiles.length > 0) {
+            formData.append('experience_letter', experience_letterFiles[0].file);
+        }
+
+        if (billFiles.length > 0) {
+            formData.append('bill', billFiles[0].file);
+        }
+
+        const url = $(this).attr('action');
+        const token = $('meta[name="csrf-token"]').attr('content');
+        const button = $('input[type="submit"]');
+        button.prop('disabled', true);
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        }).then((response) => {
+            toastr.success(response.message);
+            button.prop('disabled', false);
+            if ($(e.target).attr('id') === 'documentForm') {
+                $('#documentForm')[0].reset();
+                nic_front.removeFiles();
+                nic_back.removeFiles();
+                resume.removeFiles();
+                payslip.removeFiles();
+                experience_letter.removeFiles();
+                bill.removeFiles();
+            }
+        }).catch((err) => {
+            console.error(err);
+            toastr.error('Error updating document');
+            button.prop('disabled', false);
+        });
     });
 </script> --}}
 

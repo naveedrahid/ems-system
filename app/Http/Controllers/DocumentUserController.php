@@ -124,7 +124,7 @@ class DocumentUserController extends Controller
             'experience_letter' => 'required|file|mimes:pdf,doc,docx',
             'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
+        
         $document = DocumentUser::findOrFail($id);
         $document->user_id = $request->user_id;
         $document->department_id = $request->department_id;
@@ -150,8 +150,6 @@ class DocumentUserController extends Controller
         return response()->json(['message' => 'Document updated successfully!', 'data' => $document]);
     }
 
-
-
     /**
      * Remove the specified resource from storage.
      *
@@ -170,12 +168,10 @@ class DocumentUserController extends Controller
 
     public function upload(Request $request)
     {
-        // Handle file uploads
         $validated = $request->validate([
             'file' => 'required|file|mimes:jpg,png,pdf|max:2048',
         ]);
     
-        // Store the file
         $path = $request->file('file')->store('user_docs');
     
         return response()->json(['path' => $path], 200);

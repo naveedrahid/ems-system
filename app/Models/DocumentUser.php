@@ -11,7 +11,7 @@ class DocumentUser extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['user_id', 'department_id', 'nic_front', 'nic_back','resume', 'payslip', 'experience_letter','bill'];
 
     public function employee()
     {

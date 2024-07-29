@@ -110,9 +110,12 @@
                         <div class="col-md-6 col-12">
                             <div class="mb-3 form-group">
                                 {!! Form::label('role_id', 'Role') !!}
-                                {!! Form::text('user_role', $roles->name ?? '', [
+                                {!! Form::text('user_roles', $roles->name ?? '', [
                                     'class' => 'form-control',
                                     'readonly',
+                                ]) !!}
+                                {!! Form::hidden('user_role', $roles->id ?? '', [
+                                    'class' => 'form-control',
                                 ]) !!}
                             </div>
                         </div>
@@ -291,10 +294,13 @@
     .form-control:focus {
         border: 1.4px solid #007BFF !important;
     }
-    form#addEmployee .form-control, form#addEmployee .select2-selection{
+
+    form#addEmployee .form-control,
+    form#addEmployee .select2-selection {
         height: calc(2.25rem) !important;
         border-radius: 10px !important;
     }
+
     span.select2-selection.select2-selection--single {
         height: 40px;
     }
