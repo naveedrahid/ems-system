@@ -36,10 +36,10 @@
                                     <option value="">Select User</option>
                                     @foreach ($departments as $department)
                                         @foreach ($department->employees as $employee)
-                                            <option value="{{ $employee->user->id }}"
-                                                data-department-id="{{ $department->id }}"
+                                            <option value="{{ $employee->user->id ?? '' }}"
+                                                data-department-id="{{ $department->id ?? '' }}"
                                                 {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
-                                                {{ $employee->user->name }}
+                                                {{ $employee->user->name ?? ''}}
                                             </option>
                                         @endforeach
                                     @endforeach
