@@ -92,9 +92,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $currentUser = auth()->user();
-        if ($currentUser->role_id === 0) {
-            $roles = Role::pluck('name', 'id');
-        }
+        $roles = Role::where('name', 'Employee')->first();
         $route = route('employees.store');
         $formMethod = 'POST';
         $employee = new Employee();

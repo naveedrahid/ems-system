@@ -110,7 +110,7 @@
                         <div class="col-md-6 col-12">
                             <div class="mb-3 form-group">
                                 {!! Form::label('role_id', 'Role') !!}
-                                {!! Form::text('user_role', $employee->employee->address ?? '', [
+                                {!! Form::text('user_role', $roles->name ?? '', [
                                     'class' => 'form-control',
                                     'readonly',
                                 ]) !!}
