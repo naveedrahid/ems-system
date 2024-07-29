@@ -24,9 +24,10 @@
                                 {!! Form::select(
                                     'department_id',
                                     $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
-                                    null,
-                                    ['class' => 'form-control select2', 'id' => 'department_id'],
+                                    old('department_id', $documents->department_id ?? null),
+                                    ['class' => 'form-control select2', 'id' => 'department_id']
                                 ) !!}
+                                
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
