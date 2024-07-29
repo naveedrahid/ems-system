@@ -1,18 +1,18 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    {{ $documents->exists ? 'Edit Document' : 'Create Document' }}
+    {{ $document->exists ? 'Edit Document' : 'Create Document' }}
 @endsection
 @section('page-content')
     <div class="card-body">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card small-box card-primary p-5">
-                    {!! Form::model($documents, [
+                    {!! Form::model($document, [
                         'url' => $route,
                         'method' => $formMethod,
                         'files' => true,
-                        'id' => $documents->exists ? 'documentUpdateHandler' : 'documentUploadHandler',
+                        'id' => $document->exists ? 'documentUpdateHandler' : 'documentUploadHandler',
                     ]) !!}
                     @if ($formMethod === 'PUT')
                         @method('PUT')
@@ -24,7 +24,7 @@
                                 {!! Form::select(
                                     'department_id',
                                     $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
-                                    old('department_id', $documents->department_id ?? null),
+                                    old('department_id', $document->department_id ?? null),
                                     ['class' => 'form-control select2', 'id' => 'department_id']
                                 ) !!}
                                 
@@ -40,7 +40,7 @@
                                             @if ($employee->user)
                                                 <option value="{{ $employee->user->id }}"
                                                     data-department-id="{{ $department->id }}"
-                                                    {{ $employee->user->id == $documents->user_id ? 'selected' : '' }}>
+                                                    {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
                                                     {{ $employee->user->name ?? '' }}
                                                 </option>
                                             @endif
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                         <div class="box-footer">
-                            {!! Form::submit($documents->exists ? 'Update' : 'Create', [
+                            {!! Form::submit($document->exists ? 'Update' : 'Create', [
                                 'class' => 'btn btn-primary',
                                 'id' => 'submitBtn',
                             ]) !!}
@@ -155,28 +155,28 @@
         const bill = FilePond.create(document.querySelector('input[name="bill"]'));
 
         // Fetch existing files
-        @if ($documents->nic_front)
-            nic_front.addFile("{{ asset($documents->nic_front) }}");
+        @if ($document->nic_front)
+            nic_front.addFile("{{ asset($document->nic_front) }}");
         @endif
 
-        @if ($documents->nic_back)
-            nic_back.addFile("{{ asset($documents->nic_back) }}");
+        @if ($document->nic_back)
+            nic_back.addFile("{{ asset($document->nic_back) }}");
         @endif
 
-        @if ($documents->resume)
-            resume.addFile("{{ asset($documents->resume) }}");
+        @if ($document->resume)
+            resume.addFile("{{ asset($document->resume) }}");
         @endif
 
-        @if ($documents->payslip)
-            payslip.addFile("{{ asset($documents->payslip) }}");
+        @if ($document->payslip)
+            payslip.addFile("{{ asset($document->payslip) }}");
         @endif
 
-        @if ($documents->experience_letter)
-            experience_letter.addFile("{{ asset($documents->experience_letter) }}");
+        @if ($document->experience_letter)
+            experience_letter.addFile("{{ asset($document->experience_letter) }}");
         @endif
 
-        @if ($documents->bill)
-            bill.addFile("{{ asset($documents->bill) }}");
+        @if ($document->bill)
+            bill.addFile("{{ asset($document->bill) }}");
         @endif
 
         $('#documentUploadHandler').submit(function(e) {

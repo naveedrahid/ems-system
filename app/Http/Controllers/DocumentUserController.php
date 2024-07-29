@@ -30,13 +30,13 @@ class DocumentUserController extends Controller
      */
     public function create()
     {
-        $documents = new DocumentUser();
+        $document = new DocumentUser();
         $route = route('documents.store');
         $formMethod = 'POST';
         $departments = Department::with('employees.user')->get();
         $users = User::all();
 
-        return view('documents.form', compact('documents', 'route', 'formMethod', 'departments', 'users'));
+        return view('documents.form', compact('document', 'route', 'formMethod', 'departments', 'users'));
     }
 
     /**
