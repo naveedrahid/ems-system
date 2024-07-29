@@ -34,16 +34,19 @@
                                 {!! Form::label('user_id', 'Select User') !!}
                                 <select name="user_id" id="user_id" class="form-control select2">
                                     <option value="">Select User</option>
-                                    @foreach ($department as $item)
-                                        @foreach ($item->employees as $employee)
-                                            <option value="{{ $employee->user->id }}"
-                                                data-department-id="{{ $item->id }}"
-                                                {{ $employee->user->id == $item->user_id ? 'selected' : '' }}>
-                                                {{ $employee->user->name ?? '' }}
-                                            </option>
+                                    @foreach ($departments as $department)
+                                        @foreach ($department->employees as $employee)
+                                            @if ($employee->user)
+                                                <option value="{{ $employee->user->id }}"
+                                                    data-department-id="{{ $department->id }}"
+                                                    {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
+                                                    {{ $employee->user->name ?? '' }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     @endforeach
                                 </select>
+                                
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
