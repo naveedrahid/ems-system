@@ -39,7 +39,11 @@
                                 <th width="25%">Manage</th>
                             </tr>
                         </thead>
-                        <tbody id="departments-body"></tbody>
+                        <tbody id="departments-body">
+                            <div id="loadingSpinner2" style="display: none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            </div>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -75,7 +79,7 @@
 
 @push('css')
 <style>
-    div#loadingSpinner {
+    div#loadingSpinner, div#loadingSpinner2 {
         position: fixed;
         left: 0;
         right: 0;
@@ -89,7 +93,7 @@
         justify-content: center;
     }
 
-    div#loadingSpinner i {
+    div#loadingSpinner i, div#loadingSpinner2 i {
         color: #007bff;
     }
 </style>
@@ -119,6 +123,7 @@ $(document).ready(function() {
 
     const fetchDepartmentData = async () => {
         const url = "{{ route('department.data') }}";
+        $('#loadingSpinner2').show();
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -126,9 +131,11 @@ $(document).ready(function() {
             tableData.empty();
 
             if (data.length === 0) {
+                $('#loadingSpinner2').hide();
                 tableData.append(
                     '<tr><td colspan="3" class="text-center">No record found</td></tr>');
             } else {
+                $('#loadingSpinner2').hide();
                 $.each(data, function(_, department) {
                     const row = `
                     <tr>
@@ -154,6 +161,7 @@ $(document).ready(function() {
             }
 
         } catch (error) {
+            $('#loadingSpinner2').hide();
             console.error('Error:', error);
         }
     };
@@ -166,7 +174,7 @@ $(document).ready(function() {
         const clickedElement = $(this);
 
         if (confirm('Are you sure you want to delete this Department?')) {
-            $('#loadingSpinner').show();
+            $('#loadingSpinner2').show();
             const token = $('meta[name="csrf-token"]').attr('content');
 
             $.ajax({
@@ -177,7 +185,7 @@ $(document).ready(function() {
                 }
             }).then(function(response) {
                 setTimeout(() => {
-                    $('#loadingSpinner').hide();
+                    $('#loadingSpinner2').hide();
                     toastr.success(response.message);
                 }, 1000);
                 clickedElement.closest('tr').fadeOut('slow', function() {
@@ -185,6 +193,7 @@ $(document).ready(function() {
                 });
                 fetchDepartmentData();
             }).catch(function(xhr) {
+                $('#loadingSpinner2').hide();
                 console.error(xhr);
                 toastr.error('Faild to delete Department');
             });
@@ -212,6 +221,7 @@ $(document).ready(function() {
         const token = $('meta[name="csrf-token"]').attr('content');
         const button = $('input[type="submit"]');
         button.prop('disabled', true);
+        $('#loadingSpinner2').show();
 
         $.ajax({
                 url: url,
@@ -232,9 +242,11 @@ $(document).ready(function() {
                 }
                 fetchDepartmentData();
                 $('#selectedNotes').modal('hide');
+                $('#loadingSpinner2').hide();
             })
             .catch(function(err) {
                 console.error(err);
+                $('#loadingSpinner2').hide();
                 toastr.error('Failed to save Department.');
                 button.prop('disabled', false);
             });
