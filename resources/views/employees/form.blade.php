@@ -4,282 +4,302 @@
     {{ $employee->exists ? 'Edit Employee' : 'Add Employee' }}
 @endsection
 @section('page-content')
+    {!! Form::model($employee, [
+        'url' => $route,
+        'method' => $formMethod,
+        'files' => true,
+        'id' => $employee->exists ? 'UpdateEmployee' : 'addEmployee',
+    ]) !!}
+    @if ($formMethod === 'PUT')
+        @method('PUT')
+    @endif
 
-                {!! Form::model($employee, [
-                    'url' => $route,
-                    'method' => $formMethod,
-                    'files' => true,
-                    'id' => $employee->exists ? 'UpdateEmployee' : 'addEmployee',
-                ]) !!}
-                @if ($formMethod === 'PUT')
-                    @method('PUT')
-                @endif
-
-                @php
-                    $user = auth()->user();
-                @endphp
-                <div class="row justify-content-center">
-                    <div class="col-md-12">
-                        <div class="card small-box card-primary">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title text-bold">Personal Information</h4>
+    @php
+        $user = auth()->user();
+    @endphp
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card small-box card-primary">
+                <div class="card-header bg-white">
+                    <h4 class="card-title text-bold">Personal Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('user_name', 'Name') !!}
+                                {!! Form::text('user_name', $employee->name ?? '', ['class' => 'form-control', 'placeholder' => 'Name']) !!}
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('user_name', 'Name') !!}
-                                            {!! Form::text('user_name', $employee->name ?? '', ['class' => 'form-control', 'placeholder' => 'Name']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            {!! Form::label('employee_img', 'Photo') !!}
-                                            <div class="input-group">
-                                                <div class="custom-file">
-                                                    {!! Form::file('employee_img', ['class' => 'custom-file-input']) !!}
-                                                    <label class="custom-file-label" for="exampleInputFile"
-                                                    >Choose file</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('father_name', 'Father Name') !!}
-                                            {!! Form::text('fater_name', $employee->employee->fater_name ?? '', ['class' => 'form-control', 'placeholder' => 'Fater Name']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('date_of_birth', 'Date of birth') !!}
-                                            {!! Form::date('date_of_birth', $employee->employee->date_of_birth ?? '', ['class' => 'form-control','placeholder' => 'Date of birth']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('gender', 'Gender') !!}
-                                            {!! Form::select(
-                                                'gender',
-                                                ['' => 'Select Gender', 'male' => 'Male', 'female' => 'Female'],
-                                                $employee->employee->gender ?? '',
-                                                ['class' => 'form-control form-select select2'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('phone_number', 'Phone Number') !!}
-                                            {!! Form::tel('phone_number', $employee->employee->phone_number ?? '', ['class' => 'form-control', 'placeholder' => 'Phone Number']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('country', 'Country *') !!}
-                                            {!! Form::select('country', ['' => 'Select Country'] + $countries, old('country', $employee->country ?? ''), [
-                                                'class' => 'form-control form-select select2',
-                                                'id' => 'country',
-                                                'placeholder' => 'Country'
-                                            ]) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('city', 'City') !!}
-                                            {!! Form::select(
-                                                'city',
-                                                ['' => 'Select City'] + (isset($cities[$employee->country_id]) ? $cities[$employee->country_id]->toArray() : []),
-                                                old('city', $employee->city),
-                                                ['class' => 'form-control form-select select2', 'id' => 'city'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('address', 'Address') !!}
-                                            {!! Form::text('address', $employee->employee->address ?? '', ['class' => 'form-control', 'placeholder' => 'Address']) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('role_id', 'Role') !!}
-                                            @if (isAdmin($user))
-                                                {!! Form::select('user_role', $roles, $employee->role_id ?? '', [
-                                                    'class' => 'form-control form-select select2',
-                                                    'id' => 'user_role',
-                                                ]) !!}
-                                            @endif
-                                        </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                {!! Form::label('employee_img', 'Photo') !!}
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        {!! Form::file('employee_img', ['class' => 'custom-file-input']) !!}
+                                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card small-box card-primary">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title text-bold">Company Details</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('employee_type_id', 'Employee Type') !!}
-                                            {!! Form::select(
-                                                'employee_type_id',
-                                                ['' => 'Select Employee Type'] + $employeeTypes->pluck('type', 'id')->toArray(),
-                                                $employee->employee->employee_type_id ?? '',
-                                                ['class' => 'form-control form-select select2', 'id' => 'employee_type_id', 'placeholder' => 'Employee Type'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('shift_id', 'Employee Shift') !!}
-                                            {!! Form::select(
-                                                'shift_id',
-                                                ['' => 'Select Shift'] + $employeeShift->pluck('name', 'id')->toArray(),
-                                                $employee->employee->shift_id ?? '',
-                                                ['class' => 'form-control form-select select2', 'id' => 'shift_id'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('department_id', 'Department Name') !!}
-                                            {!! Form::select(
-                                                'department_id',
-                                                ['' => 'Select Department'] + $departments,
-                                                $employee->employee->department_id ?? '',
-                                                ['class' => 'form-control form-select select2', 'id' => 'department_id'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('designation_id', 'Designation') !!}
-                                            <select id="designation_id" name="designation_id" class="form-control form-select select2"
-                                                style="width: 100%;">
-                                                <option value="">Select Designation</option>
-                                                @foreach ($designations as $designation)
-                                                    <option value="{{ $designation->id }}"
-                                                        data-department-id="{{ $designation->department_id }}"
-                                                        {{ isset($employee->employee) && $employee->employee->designation_id == $designation->id ? 'selected' : '' }}>
-                                                        {{ $designation->designation_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('job_type', 'Job Type') !!}
-                                            {!! Form::select(
-                                                'job_type',
-                                                ['' => 'Select Type', 'onsite' => 'On Site', 'remote' => 'Remote', 'hybrid' => 'Hybrid'],
-                                                $employee->job_type ?? '',
-                                                ['class' => 'form-control form-select select2'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('work_type', 'Work Type') !!}
-                                            {!! Form::select(
-                                                'work_type',
-                                                ['' => 'Select Type', 'fulltime' => 'Fulltime', 'parttime' => 'Parttime'],
-                                                $employee->work_type ?? '',
-                                                ['class' => 'form-control form-select select2', 'id' => 'work_type', 'style' => 'width: 100%;'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('status', 'Status') !!}
-                                            {!! Form::select(
-                                                'status',
-                                                ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
-                                                $employee->status ?? '',
-                                                ['class' => 'form-control form-select select2'],
-                                            ) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('joining_date', 'Joining Date') !!}
-                                            {!! Form::date('joining_date', $employee->employee->joining_date ?? '', ['class' => 'form-control','placeholder' => 'Joining Date']) !!}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('fater_name', 'Father Name') !!}
+                                {!! Form::text('fater_name', $employee->employee->fater_name ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Fater Name',
+                                ]) !!}
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card small-box card-primary">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title text-bold">Emergency Details</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('emergency_phone_number', 'Emergency Number') !!}
-                                            {!! Form::tel('emergency_phone_number', $employee->employee->emergency_phone_number ?? '', [
-                                                'class' => 'form-control',
-                                                'placeholder' => 'Emergency Number'
-                                            ]) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('emergency_person_name', 'Emergency Person Name') !!}
-                                            {!! Form::text('emergency_person_name', $employee->employee->emergency_person_name ?? '', [
-                                                'class' => 'form-control',
-                                                'placeholder' => 'Emergency Person Name'
-                                            ]) !!}
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('date_of_birth', 'Date of birth') !!}
+                                {!! Form::date('date_of_birth', $employee->employee->date_of_birth ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Date of birth',
+                                ]) !!}
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card small-box card-primary">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title text-bold">Employee Account</h4>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('gender', 'Gender') !!}
+                                {!! Form::select(
+                                    'gender',
+                                    ['' => 'Select Gender', 'male' => 'Male', 'female' => 'Female'],
+                                    $employee->employee->gender ?? '',
+                                    ['class' => 'form-control form-select select2'],
+                                ) !!}
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 col-lg-6 col-12">
-                                        @if ($formMethod === 'POST')
-                                            <div class="mb-3 form-group">
-                                                {!! Form::label('title', 'Password') !!}
-                                                {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Password']) !!}
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="mb-3 form-group">
-                                            {!! Form::label('user_email', 'Email address') !!}
-                                            {!! Form::email('user_email', $employee->email ?? '', ['class' => 'form-control', 'placeholder' => 'Email']) !!}
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('phone_number', 'Phone Number') !!}
+                                {!! Form::tel('phone_number', $employee->employee->phone_number ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Phone Number',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('country', 'Country *') !!}
+                                {!! Form::select('country', ['' => 'Select Country'] + $countries, old('country', $employee->country ?? ''), [
+                                    'class' => 'form-control form-select select2',
+                                    'id' => 'country',
+                                    'placeholder' => 'Country',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('city', 'City') !!}
+                                {!! Form::select(
+                                    'city',
+                                    ['' => 'Select City'] + (isset($cities[$employee->country_id]) ? $cities[$employee->country_id]->toArray() : []),
+                                    old('city', $employee->city),
+                                    ['class' => 'form-control form-select select2', 'id' => 'city'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('address', 'Address') !!}
+                                {!! Form::text('address', $employee->employee->address ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Address',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('role_id', 'Role') !!}
+                                @if (isAdmin($user))
+                                    {!! Form::select('user_role', $roles, $employee->role_id ?? '', [
+                                        'class' => 'form-control form-select select2',
+                                        'id' => 'user_role',
+                                    ]) !!}
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="box-footer">
-                    {!! Form::submit($employee->exists ? 'update' : 'create', ['class' => 'btn btn-primary setDisabled']) !!}
-                    <a href="{{ route('employees.view') }}" class="btn btn-danger">Cancel</a>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card small-box card-primary">
+                <div class="card-header bg-white">
+                    <h4 class="card-title text-bold">Company Details</h4>
                 </div>
-                {!! Form::close() !!}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('employee_type_id', 'Employee Type') !!}
+                                {!! Form::select(
+                                    'employee_type_id',
+                                    ['' => 'Select Employee Type'] + $employeeTypes->pluck('type', 'id')->toArray(),
+                                    $employee->employee->employee_type_id ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'employee_type_id', 'placeholder' => 'Employee Type'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('shift_id', 'Employee Shift') !!}
+                                {!! Form::select(
+                                    'shift_id',
+                                    ['' => 'Select Shift'] + $employeeShift->pluck('name', 'id')->toArray(),
+                                    $employee->employee->shift_id ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'shift_id'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('department_id', 'Department Name') !!}
+                                {!! Form::select(
+                                    'department_id',
+                                    ['' => 'Select Department'] + $departments,
+                                    $employee->employee->department_id ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'department_id'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('designation_id', 'Designation') !!}
+                                <select id="designation_id" name="designation_id" class="form-control form-select select2"
+                                    style="width: 100%;">
+                                    <option value="">Select Designation</option>
+                                    @foreach ($designations as $designation)
+                                        <option value="{{ $designation->id }}"
+                                            data-department-id="{{ $designation->department_id }}"
+                                            {{ isset($employee->employee) && $employee->employee->designation_id == $designation->id ? 'selected' : '' }}>
+                                            {{ $designation->designation_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('job_type', 'Job Type') !!}
+                                {!! Form::select(
+                                    'job_type',
+                                    ['' => 'Select Type', 'onsite' => 'On Site', 'remote' => 'Remote', 'hybrid' => 'Hybrid'],
+                                    $employee->job_type ?? '',
+                                    ['class' => 'form-control form-select select2'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('work_type', 'Work Type') !!}
+                                {!! Form::select(
+                                    'work_type',
+                                    ['' => 'Select Type', 'fulltime' => 'Fulltime', 'parttime' => 'Parttime'],
+                                    $employee->work_type ?? '',
+                                    ['class' => 'form-control form-select select2', 'id' => 'work_type', 'style' => 'width: 100%;'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('status', 'Status') !!}
+                                {!! Form::select(
+                                    'status',
+                                    ['' => 'Select Status', 'active' => 'Active', 'deactive' => 'Deactive'],
+                                    $employee->status ?? '',
+                                    ['class' => 'form-control form-select select2'],
+                                ) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('joining_date', 'Joining Date') !!}
+                                {!! Form::date('joining_date', $employee->employee->joining_date ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Joining Date',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card small-box card-primary">
+                <div class="card-header bg-white">
+                    <h4 class="card-title text-bold">Emergency Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('emergency_phone_number', 'Emergency Number') !!}
+                                {!! Form::tel('emergency_phone_number', $employee->employee->emergency_phone_number ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Emergency Number',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('emergency_person_name', 'Emergency Person Name') !!}
+                                {!! Form::text('emergency_person_name', $employee->employee->emergency_person_name ?? '', [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Emergency Person Name',
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card small-box card-primary">
+                <div class="card-header bg-white">
+                    <h4 class="card-title text-bold">Employee Account</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-6 col-12">
+                            @if ($formMethod === 'POST')
+                                <div class="mb-3 form-group">
+                                    {!! Form::label('title', 'Password') !!}
+                                    {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Password']) !!}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="mb-3 form-group">
+                                {!! Form::label('user_email', 'Email address') !!}
+                                {!! Form::email('user_email', $employee->email ?? '', ['class' => 'form-control', 'placeholder' => 'Email']) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        {!! Form::submit($employee->exists ? 'update' : 'create', ['class' => 'btn btn-primary setDisabled']) !!}
+        <a href="{{ route('employees.view') }}" class="btn btn-danger">Cancel</a>
+    </div>
+    {!! Form::close() !!}
 @endsection
 @endsection
 
 @push('css')
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <style>
+    .form-control:focus {
+        border: 1.4px solid #007BFF !important;
+    }
+    form#addEmployee .form-control, form#addEmployee .select2-selection{
+        height: calc(2.25rem) !important;
+        border-radius: 10px !important;
+    }
     span.select2-selection.select2-selection--single {
         height: 40px;
     }
