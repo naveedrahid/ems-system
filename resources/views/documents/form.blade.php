@@ -37,10 +37,9 @@
                                         'department_id',
                                         $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
                                         old('department_id', $document->department_id ?? null),
-                                        ['class' => 'form-control select2', 'id' => 'department_id'],
+                                        ['class' => 'form-control select2', 'id' => 'department_id']
                                     ) !!}
                                 @endif
-
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
