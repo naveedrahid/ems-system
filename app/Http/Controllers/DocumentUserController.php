@@ -61,6 +61,8 @@ class DocumentUserController extends Controller
         $document = new DocumentUser();
         $document->user_id = $request->user_id;
         $document->department_id = $request->department_id;
+        $userName = User::where('id', $document->user_id)->value('name');
+        $sanitizedUserName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $userName);
 
         $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
 
@@ -68,7 +70,7 @@ class DocumentUserController extends Controller
             if ($request->hasFile($file)) {
                 $uploadedFile = $request->file($file);
                 $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-                $filePath = $uploadedFile->storeAs('user_docs', $fileName, 'public');
+                $filePath = $uploadedFile->storeAs('user_docs/'.$sanitizedUserName, $fileName, 'public');
                 $document->$file = 'storage/' . $filePath;
             }
         }
@@ -114,21 +116,25 @@ class DocumentUserController extends Controller
     // public function update(Request $request, DocumentUser $document)
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validationRules = [
             'user_id' => 'required|exists:users,id',
             'department_id' => 'required|exists:departments,id',
-            'nic_front' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'nic_back' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resume' => 'required|file|mimes:pdf,doc,docx',
+            'nic_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'nic_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'resume' => 'nullable|file|mimes:pdf,doc,docx',
             'payslip' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'experience_letter' => 'required|file|mimes:pdf,doc,docx',
+            'experience_letter' => 'nullable|file|mimes:pdf,doc,docx',
             'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        ];
         
+        $request->validate($validationRules);
+    
         $document = DocumentUser::findOrFail($id);
         $document->user_id = $request->user_id;
         $document->department_id = $request->department_id;
-
+        $userName = User::where('id', $document->user_id)->value('name');
+        $sanitizedUserName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $userName);
+        
         $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
 
         foreach ($files as $file) {
@@ -140,7 +146,7 @@ class DocumentUserController extends Controller
 
                 $uploadedFile = $request->file($file);
                 $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-                $filePath = $uploadedFile->storeAs('user_docs', $fileName, 'public');
+                $filePath = $uploadedFile->storeAs('user_docs/'.$sanitizedUserName, $fileName, 'public');
                 $document->$file = 'storage/' . $filePath;
             }
         }

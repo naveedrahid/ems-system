@@ -17,89 +17,174 @@
                     @if ($formMethod === 'PUT')
                         @method('PUT')
                     @endif
-                    <div class="row">
+                    <div class="row {{ $document->exists ? 'editDocuments' : '' }}">
                         <div class="col-md-6 col-12">
                             <div class="form-group">
-                                {!! Form::label('department_id', 'Select Department') !!}
-                                {!! Form::select(
-                                    'department_id',
-                                    $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
-                                    old('department_id', $document->department_id ?? null),
-                                    ['class' => 'form-control select2', 'id' => 'department_id']
-                                ) !!}
-                                
+                                @if ($document->exists)
+                                    @php
+                                        $departName = $departments->where('id', $document->department_id)->first();
+                                    @endphp
+
+                                    {!! Form::label('department_id', 'Department') !!}
+                                    {!! Form::text('departmentname', $departName ? $departName->department_name : '', [
+                                        'class' => 'form-control',
+                                        'readonly' => true,
+                                    ]) !!}
+                                    {!! Form::hidden('department_id', $document->department_id) !!}
+                                @else
+                                    {!! Form::label('department_id', 'Select Department') !!}
+                                    {!! Form::select(
+                                        'department_id',
+                                        $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
+                                        old('department_id', $document->department_id ?? null),
+                                        ['class' => 'form-control select2', 'id' => 'department_id'],
+                                    ) !!}
+                                @endif
+
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="form-group">
-                                {!! Form::label('user_id', 'Select User') !!}
-                                <select name="user_id" id="user_id" class="form-control select2">
-                                    <option value="">Select User</option>
-                                    @foreach ($departments as $department)
-                                        @foreach ($department->employees as $employee)
-                                            @if ($employee->user)
-                                                <option value="{{ $employee->user->id }}"
-                                                    data-department-id="{{ $department->id }}"
-                                                    {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
-                                                    {{ $employee->user->name ?? '' }}
-                                                </option>
-                                            @endif
+                                @php
+                                    $userData = $users->where('id', $document->user_id)->first();
+                                @endphp
+                                @if ($document->exists)
+                                    {!! Form::label('department_id', 'User Name') !!}
+                                    {!! Form::text('username', $userData ? $userData->name : '', [
+                                        'class' => 'form-control',
+                                        'readonly' => true,
+                                    ]) !!}
+                                    {!! Form::hidden('user_id', $document->user_id) !!}
+                                @else
+                                    {!! Form::label('user_id', 'Select User') !!}
+                                    <select name="user_id" id="user_id" class="form-control select2">
+                                        <option value="">Select User</option>
+                                        @foreach ($departments as $department)
+                                            @foreach ($department->employees as $employee)
+                                                @if ($employee->user)
+                                                    <option value="{{ $employee->user->id }}"
+                                                        data-department-id="{{ $department->id }}"
+                                                        {{ $employee->user->id == $document->user_id ? 'selected' : '' }}>
+                                                        {{ $employee->user->name ?? '' }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
                                         @endforeach
-                                    @endforeach
-                                </select>
-                                
+                                    </select>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                <div class="imgShow"></div>
                                 {!! Form::label('nic_front', 'NIC Front Image') !!}
-                                <input type="file" class="filepond" name="nic_front" data-filepond>
-                                {!! Form::hidden('nic_front', old('nic_front'), ['id' => 'nicFrontPath']) !!}
+                                {!! Form::file('nic_front', ['class' => 'form-control', 'id' => 'nic_front']) !!}
+                                @if ($document->nic_front)
+                                    @php $nic_frontUrl = asset($document->nic_front); @endphp
+                                @endif
+                                <img id="nic_front_preview" class="imagePreview"
+                                    src="{{ isset($nic_frontUrl) ? $nic_frontUrl : '#' }}" alt="Image Preview"
+                                    style="display:{{ $document->exists ? 'block' : 'none' }};" />
                             </div>
                         </div>
-
-                        <!-- Dropzone for NIC Back Image -->
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                <div class="imgShow"></div>
                                 {!! Form::label('nic_back', 'NIC Back Image') !!}
-                                <input type="file" class="filepond" name="nic_back" data-filepond>
-                                {!! Form::hidden('nic_back', old('nic_back'), ['id' => 'nicBackPath']) !!}
+                                {!! Form::file('nic_back', ['class' => 'form-control', 'id' => 'nic_back']) !!}
+                                @if ($document->nic_back)
+                                    @php $nic_backUrl = asset($document->nic_back); @endphp
+                                @endif
+                                <img id="nic_back_preview" class="imagePreview"
+                                    src="{{ isset($nic_backUrl) ? $nic_backUrl : '#' }}" alt="Image Preview"
+                                    style="display:{{ $document->exists ? 'block' : 'none' }};" />
                             </div>
                         </div>
-
-                        <!-- Dropzone for Resume -->
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                @php
+                                    $filePath = $document->resume;
+                                    $fileType = pathinfo($filePath, PATHINFO_EXTENSION);
+                                    $isPdf = strtolower($fileType) === 'pdf';
+                                @endphp
+
                                 {!! Form::label('resume', 'Add Resume') !!}
-                                <input type="file" class="filepond" name="resume" data-filepond>
-                                {!! Form::hidden('resume', old('resume'), ['id' => 'resumePath']) !!}
+                                {!! Form::file('resume', ['class' => 'form-control', 'id' => 'resume']) !!}
+
+                                @if ($document->exists)
+                                    @if ($isPdf)
+                                        <iframe id="resume_preview_pdf" src="{{ asset($filePath) }}"
+                                            style="display: block; width: 100%; height: 400px;" frameborder="0">
+                                        </iframe>
+                                        <div id="resume_preview_text" style="display: none;"></div>
+                                    @else
+                                        <div id="resume_preview_text" style="display: block;">
+                                            {{ basename($filePath) }}
+                                        </div>
+                                        <iframe id="resume_preview_pdf" style="display: none; width: 100%; height: 400px;"
+                                            frameborder="0"></iframe>
+                                    @endif
+                                @else
+                                    <iframe id="resume_preview_pdf" style="display: none; width: 100%; height: 400px;"
+                                        frameborder="0"></iframe>
+                                    <div id="resume_preview_text" style="display: none;"></div>
+                                @endif
                             </div>
                         </div>
-
-                        <!-- Dropzone for Payslip -->
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                <div class="imgShow"></div>
                                 {!! Form::label('payslip', 'Add Payslip') !!}
-                                <input type="file" class="filepond" name="payslip" data-filepond>
-                                {!! Form::hidden('payslip', old('payslip'), ['id' => 'payslipPath']) !!}
+                                {!! Form::file('payslip', ['class' => 'form-control', 'id' => 'payslip']) !!}
+                                @if ($document->payslip)
+                                    @php $payslipUrl = asset($document->payslip); @endphp
+                                @endif
+                                <img id="payslip_preview" class="imagePreview"
+                                    src="{{ isset($payslipUrl) ? $payslipUrl : '' }}" alt="Image Preview"
+                                    style="display:{{ $document->exists ? 'block' : 'none' }};" />
                             </div>
                         </div>
-
-                        <!-- Dropzone for Experience Letter -->
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                @php
+                                    $filePath = $document->experience_letter;
+                                    $fileType = pathinfo($filePath, PATHINFO_EXTENSION);
+                                    $isPdf = strtolower($fileType) === 'pdf';
+                                @endphp
+
                                 {!! Form::label('experience_letter', 'Add Experience Letter') !!}
-                                <input type="file" class="filepond" name="experience_letter" data-filepond>
-                                {!! Form::hidden('experience_letter', old('experience_letter'), ['id' => 'experienceLetterPath']) !!}
+                                {!! Form::file('experience_letter', ['class' => 'form-control', 'id' => 'experience_letter']) !!}
+
+                                @if ($document->exists)
+                                    @if ($isPdf)
+                                        <iframe id="experience_letter_preview_pdf" src="{{ asset($filePath) }}"
+                                            style="display: block; width: 100%; height: 400px;" frameborder="0">
+                                        </iframe>
+                                        <div id="experience_letter_preview_text" style="display: none;"></div>
+                                    @else
+                                        <div id="experience_letter_preview_text" style="display: block;">
+                                            {{ basename($filePath) }}
+                                        </div>
+                                        <iframe id="experience_letter_preview_pdf"
+                                            style="display: none; width: 100%; height: 400px;" frameborder="0"></iframe>
+                                    @endif
+                                @else
+                                    <iframe id="experience_letter_preview_pdf"
+                                        style="display: none; width: 100%; height: 400px;" frameborder="0"></iframe>
+                                    <div id="experience_letter_preview_text" style="display: none;"></div>
+                                @endif
                             </div>
                         </div>
-
-                        <!-- Dropzone for Bill -->
                         <div class="col-md-6 col-12">
                             <div class="form-group">
+                                <div class="imgShow"></div>
                                 {!! Form::label('bill', 'Add Bill Image') !!}
-                                <input type="file" class="filepond" name="bill" data-filepond>
-                                {!! Form::hidden('bill', old('bill'), ['id' => 'billPath']) !!}
+                                {!! Form::file('bill', ['class' => 'form-control', 'id' => 'bill']) !!}
+                                @if ($document->bill)
+                                    @php $billUrl = asset($document->bill); @endphp
+                                @endif
+                                <img id="bill_preview" class="imagePreview" src="{{ isset($billUrl) ? $billUrl : '' }}"
+                                    alt="Image Preview" style="display:{{ $document->exists ? 'block' : 'none' }};" />
                             </div>
                         </div>
                         <div class="box-footer">
@@ -119,251 +204,209 @@
 @endsection
 
 @push('css')
-<link href="https://unpkg.com/filepond@^4/dist/filepond.min.css" rel="stylesheet">
-<link href="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.css"
-    rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <style>
+    iframe#experience_letter_preview_pdf,
+    iframe#resume_preview_pdf {
+        height: 240px !important;
+        border: solid 1px #cccc;
+        padding: 10px;
+        margin-top: 20px;
+        margin-bottom: 35px;
+        border-radius: 10px;
+        box-shadow: #00000024 0px 0px 10px 0px;
+    }
+
+    div#resume_preview_text,
+    div#experience_letter_preview_text {
+        background: #00000082;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        box-shadow: #0000003b 0px 0px 10px 0px;
+    }
+
     span.select2-selection.select2-selection--single {
         height: 40px;
+    }
+
+    label {
+        margin-left: 3px;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    label:not(.form-check-label):not(.custom-file-label) {
+        font-weight: 500 !important;
+    }
+
+    .imagePreview {
+        width: 100%;
+        height: 240px;
+        object-fit: contain;
+        border: solid 1px #cccc;
+        padding: 10px;
+        margin-top: 20px;
+        margin-bottom: 35px;
+        border-radius: 10px;
+        box-shadow: #00000024 0px 0px 10px 0px;
+        transform: scale(1);
+        transition: 1s ease;
+    }
+
+    #experience_letter_preview_pdf,
+    #resume_preview_pdf {
+        transition: 1s ease;
+        transform: scale(1);
+    }
+
+    #experience_letter_preview_pdf:hover,
+    #resume_preview_pdf:hover,
+    .imagePreview:hover {
+        transform: scale(1.040);
+        transition: 1s ease;
     }
 </style>
 @endpush
 
 @push('js')
-<script src="https://unpkg.com/filepond/dist/filepond.min.js" crossorigin="anonymous" referrerpolicy="no-referrer">
-</script>
-<script src="https://unpkg.com/filepond-plugin-file-validate-size@^2/dist/filepond-plugin-file-validate-size.min.js"
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.js"
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://unpkg.com/jquery-filepond/filepond.jquery.js" crossorigin="anonymous" referrerpolicy="no-referrer">
-</script>
-
 <script>
-    // Dropzone.autoDiscover = false;
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInputs = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const validDocTypes = ['application/pdf', 'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
 
-    $(document).ready(function() {
-        FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
+        fileInputs.forEach(inputId => {
+            document.getElementById(inputId).addEventListener('change', event => {
+                const file = event.target.files[0];
+                const previewId = inputId + '_preview';
+                const previewPdfId = inputId + '_preview_pdf';
+                const previewTextId = inputId + '_preview_text';
 
-        const nic_front = FilePond.create(document.querySelector('input[name="nic_front"]'));
-        const nic_back = FilePond.create(document.querySelector('input[name="nic_back"]'));
-        const resume = FilePond.create(document.querySelector(
-            'input[name="resume"]'));
-        const payslip = FilePond.create(document.querySelector('input[name="payslip"]'));
-        const experience_letter = FilePond.create(document.querySelector('input[name="experience_letter"]'));
-        const bill = FilePond.create(document.querySelector('input[name="bill"]'));
-
-        // Fetch existing files
-        @if ($document->nic_front)
-            nic_front.addFile("{{ asset($document->nic_front) }}");
-        @endif
-
-        @if ($document->nic_back)
-            nic_back.addFile("{{ asset($document->nic_back) }}");
-        @endif
-
-        @if ($document->resume)
-            resume.addFile("{{ asset($document->resume) }}");
-        @endif
-
-        @if ($document->payslip)
-            payslip.addFile("{{ asset($document->payslip) }}");
-        @endif
-
-        @if ($document->experience_letter)
-            experience_letter.addFile("{{ asset($document->experience_letter) }}");
-        @endif
-
-        @if ($document->bill)
-            bill.addFile("{{ asset($document->bill) }}");
-        @endif
-
-        $('#documentUploadHandler').submit(function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-
-            const uploadFields = [{
-                    pond: nic_front,
-                    name: 'nic_front'
-                },
-                {
-                    pond: nic_back,
-                    name: 'nic_back'
-                },
-                {
-                    pond: resume,
-                    name: 'resume'
-                },
-                {
-                    pond: payslip,
-                    name: 'payslip'
-                },
-                {
-                    pond: experience_letter,
-                    name: 'experience_letter'
-                },
-                {
-                    pond: bill,
-                    name: 'bill'
-                }
-            ];
-
-            let isEmptyFile = true;
-
-            uploadFields.forEach(field => {
-                if (field.pond.getFiles().length > 0) {
-                    isEmptyFile = false;
-                    field.pond.getFiles().forEach(file => {
-                        formData.append(field.name, file.file);
-                    });
+                if (file) {
+                    if (validImageTypes.includes(file.type) && ['nic_front', 'nic_back',
+                            'payslip', 'bill'
+                        ].includes(inputId)) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const previewImgElement = document.getElementById(previewId);
+                            if (previewImgElement) {
+                                previewImgElement.src = reader.result;
+                                previewImgElement.style.display = 'block';
+                            }
+                            const previewPdfElement = document.getElementById(previewPdfId);
+                            if (previewPdfElement) {
+                                previewPdfElement.style.display = 'none';
+                            }
+                            const previewTextElement = document.getElementById(
+                                previewTextId);
+                            if (previewTextElement) {
+                                previewTextElement.style.display = 'none';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (file.type === 'application/pdf' && ['resume',
+                            'experience_letter'
+                        ].includes(inputId)) {
+                        const fileURL = URL.createObjectURL(file);
+                        const previewPdfElement = document.getElementById(previewPdfId);
+                        if (previewPdfElement) {
+                            previewPdfElement.src = fileURL;
+                            previewPdfElement.style.display = 'block';
+                        }
+                        const previewImgElement = document.getElementById(previewId);
+                        if (previewImgElement) {
+                            previewImgElement.style.display = 'none';
+                        }
+                        const previewTextElement = document.getElementById(previewTextId);
+                        if (previewTextElement) {
+                            previewTextElement.style.display = 'none';
+                        }
+                    } else if (validDocTypes.includes(file.type) && ['resume',
+                            'experience_letter'
+                        ].includes(inputId)) {
+                        const previewTextElement = document.getElementById(previewTextId);
+                        if (previewTextElement) {
+                            previewTextElement.innerText = file.name;
+                            previewTextElement.style.display = 'block';
+                        }
+                        const previewPdfElement = document.getElementById(previewPdfId);
+                        if (previewPdfElement) {
+                            previewPdfElement.style.display = 'none';
+                        }
+                        const previewImgElement = document.getElementById(previewId);
+                        if (previewImgElement) {
+                            previewImgElement.style.display = 'none';
+                        }
+                    } else {
+                        event.target.value = '';
+                        toastr.error('Invalid file type. Please upload the correct format.');
+                    }
                 }
             });
-
-            if (isEmptyFile) {
-                toastr.error('Please select at least one file to upload.');
-                return;
-            }
-
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            const button = $('input[type="submit"]');
-            button.prop('disabled', true);
-
-            $.ajax({
-                    method: "POST",
-                    url: url,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                .then((response) => {
-                    toastr.success(response.message);
-
-                    // // Redirect to the new URL
-                    // window.location.href = response.url;
-
-                    button.prop('disabled', false);
-                    $('#documentUploadHandler')[0].reset();
-                    nic_front.removeFiles();
-                    nic_back.removeFiles();
-                    resume.removeFiles();
-                    payslip.removeFiles();
-                    experience_letter.removeFiles();
-                    bill.removeFiles();
-                }).catch((err) => {
-                    console.error("Error response: ", err);
-                    if (err.responseJSON && err.responseJSON.errors) {
-                        $.each(err.responseJSON.errors, function(key, value) {
-                            toastr.error(value);
-                        });
-                    } else {
-                        toastr.error('Error updating profile photo');
-                    }
-                    button.prop('disabled', false);
-                });
-
         });
 
-
-        $('#documentUpdateHandler').submit(function(e) {
+        $('#documentUploadHandler, #documentUpdateHandler').submit(function(e) {
             e.preventDefault();
+            let department_id, user_id;
 
-            const formData = new FormData(this);
-
-            const nic_frontFiles = nic_front.getFiles();
-            const nic_backFiles = nic_back.getFiles();
-            const resumeFiles = resume.getFiles();
-            const payslipFiles = payslip.getFiles();
-            const experience_letterFiles = experience_letter.getFiles();
-            const billFiles = bill.getFiles();
-
-            if (nic_frontFiles.length > 0) {
-                formData.append('nic_front', nic_frontFiles[0].file);
+            if ($(e.target).attr('id') === 'documentUploadHandler') {
+                department_id = $('select[name="department_id"]').val().trim();
+                user_id = $('select[name="user_id"]').val().trim();
             } else {
-                formData.delete('nic_frontFiles');
+                department_id = $('input[name="department_id"]').val().trim();
+                user_id = $('input[name="user_id"]').val().trim();
             }
 
-            if (nic_backFiles.length > 0) {
-                formData.append('nic_back', nic_backFiles[0].file);
-            } else {
-                formData.delete('nic_backFiles');
-            }
+            if (department_id === '' || user_id === '') {
+                if (department_id === '')
+                    toastr.error('Department is required.');
 
-            if (resumeFiles.length > 0) {
-                formData.append('resume', resumeFiles[0].file);
-            } else {
-                formData.delete('resumeFiles');
-            }
+                if (user_id === '')
+                    toastr.error('User name is required.');
 
-            if (payslipFiles.length > 0) {
-                formData.append('payslip', payslipFiles[0].file);
-            } else {
-                formData.delete('payslipFiles');
-            }
-
-            if (experience_letterFiles.length > 0) {
-                formData.append('experience_letter', experience_letterFiles[0].file);
-            } else {
-                formData.delete('experience_letterFiles');
-            }
-
-            if (billFiles.length > 0) {
-                formData.append('bill', billFiles[0].file);
-            } else {
-                formData.delete('billFiles');
-            }
-
-            const uploadFields = [{
-                    pond: nic_front,
-                    name: 'nic_front'
-                },
-                {
-                    pond: nic_back,
-                    name: 'nic_back'
-                },
-                {
-                    pond: resume,
-                    name: 'resume'
-                },
-                {
-                    pond: payslip,
-                    name: 'payslip'
-                },
-                {
-                    pond: experience_letter,
-                    name: 'experience_letter'
-                },
-                {
-                    pond: bill,
-                    name: 'bill'
-                }
-            ];
-
-            let isEmptyFile = true;
-
-            uploadFields.forEach(field => {
-                if (field.pond.getFiles().length > 0) {
-                    isEmptyFile = false;
-                    field.pond.getFiles().forEach(file => {
-                        formData.append(field.name, file.file);
-                    });
-                }
-            });
-
-            if (isEmptyFile) {
-                toastr.error('Please select at least one file to upload.');
                 return;
             }
 
+            const formData = new FormData(this);
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
             const button = $('input[type="submit"]');
             button.prop('disabled', true);
+
+
+            let valid = true;
+
+
+            fileInputs.forEach(function(inputId) {
+                const file = document.getElementById(inputId).files[0];
+                if (file) {
+                    if (inputId === 'resume' || inputId === 'experience_letter') {
+                        if (!['application/pdf', 'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                            ].includes(file.type)) {
+                            valid = false;
+                            toastr.error('Invalid file type for ' + inputId.replace('_', ' ') +
+                                '. Only PDF, DOC, and DOCX are allowed.');
+                        }
+                    } else {
+                        if (!file.type.startsWith('image/')) {
+                            valid = false;
+                            toastr.error('Invalid file type for ' + inputId.replace('_', ' ') +
+                                '. Only image files are allowed.');
+                        }
+                    }
+                }
+            });
+
+            if (!valid) {
+                button.prop('disabled', false);
+                return;
+            }
 
             $.ajax({
                     method: "POST",
@@ -377,12 +420,22 @@
                 })
                 .then((response) => {
                     toastr.success(response.message);
-
-                    // // Redirect to the new URL
-                    // window.location.href = response.url;
-
                     button.prop('disabled', false);
-
+                    if ($(e.target).attr('id') === 'documentUploadHandler') {
+                        $('#documentUploadHandler')[0].reset();
+                        fileInputs.forEach(function(inputId) {
+                            const previewImgElement = document.getElementById(inputId +
+                                '_preview');
+                            if (previewImgElement) previewImgElement.style.display = 'none';
+                            const previewPdfElement = document.getElementById(inputId +
+                                '_preview_pdf');
+                            if (previewPdfElement) previewPdfElement.style.display = 'none';
+                            const previewTextElement = document.getElementById(inputId +
+                                '_preview_text');
+                            if (previewTextElement) previewTextElement.style.display =
+                                'none';
+                        });
+                    }
                 }).catch((err) => {
                     console.error("Error response: ", err);
                     if (err.responseJSON && err.responseJSON.errors) {
@@ -390,284 +443,13 @@
                             toastr.error(value);
                         });
                     } else {
-                        toastr.error('Error updating profile photo');
+                        toastr.error('Error updating document photo');
                     }
                     button.prop('disabled', false);
                 });
-
         });
     });
 </script>
-
-
-{{-- <script>
-    $(document).ready(function() {
-        FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
-
-        const nic_front = FilePond.create(document.querySelector('input[name="nic_front"]'));
-        const nic_back = FilePond.create(document.querySelector('input[name="nic_back"]'));
-        const resume = FilePond.create(document.querySelector('input[name="resume"]'));
-        const payslip = FilePond.create(document.querySelector('input[name="payslip"]'));
-        const experience_letter = FilePond.create(document.querySelector('input[name="experience_letter"]'));
-        const bill = FilePond.create(document.querySelector('input[name="bill"]'));
-
-        @if ($document->nic_front)
-            nic_front.setOptions({
-                files: [{
-                    source: "{{ asset($document->nic_front) }}"
-                }]
-            });
-        @endif
-        @if ($document->nic_back)
-            nic_back.setOptions({
-                files: [{
-                    source: "{{ asset($document->nic_back) }}"
-                }]
-            });
-        @endif
-        @if ($document->resume)
-            resume.setOptions({
-                files: [{
-                    source: "{{ asset($document->resume) }}"
-                }]
-            });
-        @endif
-        @if ($document->payslip)
-            payslip.setOptions({
-                files: [{
-                    source: "{{ asset($document->payslip) }}"
-                }]
-            });
-        @endif
-        @if ($document->experience_letter)
-            experience_letter.setOptions({
-                files: [{
-                    source: "{{ asset($document->experience_letter) }}"
-                }]
-            });
-        @endif
-        @if ($document->bill)
-            bill.setOptions({
-                files: [{
-                    source: "{{ asset($document->bill) }}"
-                }]
-            });
-        @endif
-
-        $('#documentForm, #documentUpdateForm').submit(function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-
-            const appendFiles = (name, pond) => {
-                const files = pond.getFiles();
-                if (files.length > 0 && files[0].file instanceof File) {
-                    formData.append(name, files[0].file);
-                }
-            };
-            const nic_front_files = nic_front.getFiles();
-            const nic_back_files = nic_back.getFiles();
-            const resume_files = resume.getFiles();
-            const payslip_files = payslip.getFiles();
-            const experience_letter_files = experience_letter.getFiles();
-            const bill_files = bill.getFiles();
-            const department_id = $('select[name="department_id"]').val().trim();
-            const user_id = $('select[name="user_id"]').val().trim();
-
-            if (nic_front_files.length === 0 || nic_back_files.length === 0 || resume_files.length === 0 || payslip_files.length === 0 || experience_letter_files.length === 0 || bill_files.length === 0 || department_id === '' || user_id === '') {
-                
-                if (department_id === '') toastr.error('Department is required.');
-                if (user_id === '') toastr.error('User name is required.');
-                if (nic_front_files.length === 0) toastr.error('NIC front image is required.');
-                if (nic_back_files.length === 0) toastr.error('NIC back image is required.');
-                if (resume_files.length === 0) toastr.error('Resume is required.');
-                if (payslip_files.length === 0) toastr.error('Payslip is required.');
-                if (experience_letter_files.length === 0) toastr.error('Experience letter is required.');
-                if (bill_files.length === 0) toastr.error('Bill is required.');
-                
-                return;
-            }
-            
-
-            appendFiles('nic_front', nic_front);
-            appendFiles('nic_back', nic_back);
-            appendFiles('resume', resume);
-            appendFiles('payslip', payslip);
-            appendFiles('experience_letter', experience_letter);
-            appendFiles('bill', bill);
-            
-            const url = $(this).attr('action');
-            const token = $('meta[name="csrf-token"]').attr('content');
-            const button = $('input[type="submit"]');
-            button.prop('disabled', true);
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': token
-                }
-            }).then((response) => {
-                toastr.success(response.message);
-                button.prop('disabled', false);
-
-                if ($(e.target).attr('id') === 'documentForm') {
-                    $(e.target)[0].reset();
-                    [nic_front, nic_back, resume, payslip, experience_letter, bill].forEach(
-                        pond => {
-                            pond.removeFiles();
-                        });
-                }
-            }).catch((err) => {
-                console.error(err);
-                toastr.error('Error updating document');
-                button.prop('disabled', false);
-            });
-        });
-    });
-</script> --}}
-
-{{-- <script>
-    $(document).ready(function() {
-        FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
-
-        const nic_front = FilePond.create(document.querySelector('input[name="nic_front"]'));
-        const nic_back = FilePond.create(document.querySelector('input[name="nic_back"]'));
-        const resume = FilePond.create(document.querySelector('input[name="resume"]'));
-        const payslip = FilePond.create(document.querySelector('input[name="payslip"]'));
-        const experience_letter = FilePond.create(document.querySelector('input[name="experience_letter"]'));
-        const bill = FilePond.create(document.querySelector('input[name="bill"]'));
-
-        const documentData = @json($document);
-
-        if (documentData.nic_front) {
-            nic_front.setOptions({
-                files: [{
-                    source: "{{ asset($document->nic_front) }}"
-                }]
-            });
-        }
-
-        if (documentData.nic_back) {
-            nic_back.setOptions({
-                files: [{
-                    source: "{{ asset($document->nic_back) }}"
-                }]
-            });
-        }
-
-        if (documentData.resume) {
-            resume.setOptions({
-                files: [{
-                    source: "{{ asset($document->resume) }}"
-                }]
-            });
-        }
-
-        if (documentData.payslip) {
-            payslip.setOptions({
-                files: [{
-                    source: "{{ asset($document->payslip) }}"
-                }]
-            });
-        }
-
-        if (documentData.experience_letter) {
-            experience_letter.setOptions({
-                files: [{
-                    source: "{{ asset($document->experience_letter) }}"
-                }]
-            });
-        }
-
-        if (documentData.bill) {
-            bill.setOptions({
-                files: [{
-                    source: "{{ asset($document->bill) }}"
-                }]
-            });
-        }
-
-    $('#documentForm, #documentUpdateForm').submit(function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-
-        // Clear existing file entries in FormData
-        formData.delete('nic_front');
-        formData.delete('nic_back');
-        formData.delete('resume');
-        formData.delete('payslip');
-        formData.delete('experience_letter');
-        formData.delete('bill');
-
-        const nic_frontFiles = nic_front.getFiles();
-        const nic_backFiles = nic_back.getFiles();
-        const resumeFiles = resume.getFiles();
-        const payslipFiles = payslip.getFiles();
-        const experience_letterFiles = experience_letter.getFiles();
-        const billFiles = bill.getFiles();
-
-        if (nic_frontFiles.length > 0) {
-            formData.append('nic_front', nic_frontFiles[0].file);
-        }
-
-        if (nic_backFiles.length > 0) {
-            formData.append('nic_back', nic_backFiles[0].file);
-        }
-
-        if (resumeFiles.length > 0) {
-            formData.append('resume', resumeFiles[0].file);
-        }
-
-        if (payslipFiles.length > 0) {
-            formData.append('payslip', payslipFiles[0].file);
-        }
-
-        if (experience_letterFiles.length > 0) {
-            formData.append('experience_letter', experience_letterFiles[0].file);
-        }
-
-        if (billFiles.length > 0) {
-            formData.append('bill', billFiles[0].file);
-        }
-
-        const url = $(this).attr('action');
-        const token = $('meta[name="csrf-token"]').attr('content');
-        const button = $('input[type="submit"]');
-        button.prop('disabled', true);
-
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': token
-            }
-        }).then((response) => {
-            toastr.success(response.message);
-            button.prop('disabled', false);
-            if ($(e.target).attr('id') === 'documentForm') {
-                $('#documentForm')[0].reset();
-                nic_front.removeFiles();
-                nic_back.removeFiles();
-                resume.removeFiles();
-                payslip.removeFiles();
-                experience_letter.removeFiles();
-                bill.removeFiles();
-            }
-        }).catch((err) => {
-            console.error(err);
-            toastr.error('Error updating document');
-            button.prop('disabled', false);
-        });
-    });
-</script> --}}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
