@@ -27,7 +27,7 @@
                                 @foreach ($employees as $employee)
                                     <option value="{{ $employee->user->id ?? '' }}"
                                         data-department="{{ $employee->department_id }}">
-                                        {{ $employee->user->name }}</option>
+                                        {{ $employee->user->name ?? '' }}</option>
                                 @endforeach
                             </select>
                         </div>
