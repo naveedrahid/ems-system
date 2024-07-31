@@ -67,8 +67,8 @@ class EmployeeController extends Controller
             ->editColumn('name', function ($employee) {
                 $user = auth()->user();
                 if (isAdmin($user)) {
-                    return $employee->name . '<br><a href="' . route('bank-details.create', ['employee_id' => $employee->employee_id]) . '">
-                    <i class="fas fa-money-check-alt"></i></a>';
+                    return '<h6>'.$employee->name . '</h6>' .'<span>'.optional($employee->employee->department)->department_name.'</span> - <span>'.optional($employee->employee->designation)->designation_name.'</span>';
+                    // route('bank-details.create', ['employee_id' => $employee->employee_id])
                 } else {
                     return $employee->name;
                 }

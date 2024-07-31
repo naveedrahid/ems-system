@@ -25,7 +25,7 @@
                             <select name="user_id" id="user" class="form-control">
                                 <option value="">Select User</option>
                                 @foreach ($employees as $employee)
-                                    <option value="{{ $employee->user->id }}"
+                                    <option value="{{ $employee->user->id ?? '' }}"
                                         data-department="{{ $employee->department_id }}">
                                         {{ $employee->user->name }}</option>
                                 @endforeach

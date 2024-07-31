@@ -97,9 +97,8 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                                 {!! Form::label('job_img', 'Thumbnail') !!}
-                                {{-- {!! Form::file('job_img', ['class' => 'filepond']) !!} --}}
-
-                                <input type="file" name="job_img" class="filepond" data-filepond>
+                                {!! Form::file('job_img', ['id' => 'job_img', 'class' =>'form-control']) !!}
+                                <img id="job_img_preview" src="{{ $job->job_img ? asset($job->job_img) : '' }}" style="{{ $job->job_img ? 'display: block;' : 'display: none;' }}" alt="Job Image Preview">
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-12 col-12">
@@ -126,11 +125,30 @@
 @endsection
 
 @push('css')
-<link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
-<link href="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.css"
-    rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 <style>
+    img#job_img_preview {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    border: solid 1px #cccc;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 35px;
+    border-radius: 10px;
+    box-shadow: #00000024 0px 0px 10px 0px;
+    transform: scale(1);
+    transition: 1s ease;
+}
+    #job_img_preview {
+        transition: 1s ease;
+        transform: scale(1);
+    }
+
+    #job_img_preview:hover{
+        transform: scale(1.040);
+        transition: 1s ease;
+    }
     span.select2-selection.select2-selection--single {
         height: 40px;
     }
@@ -138,23 +156,24 @@
     a.filepond--credits {
         display: none;
     }
-    div#loadingSpinner {
-            position: fixed;
-            left: 0;
-            right: 0;
-            margin: auto;
-            top: 0;
-            bottom: 0;
-            z-index: 99;
-            background: #00000036;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
-        div#loadingSpinner i {
-            color: #007bff;
-        }
+    div#loadingSpinner {
+        position: fixed;
+        left: 0;
+        right: 0;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        z-index: 99;
+        background: #00000036;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    div#loadingSpinner i {
+        color: #007bff;
+    }
 </style>
 @endpush
 
@@ -171,10 +190,7 @@
         toolbar: 'bold italic underline | fontsizeselect | forecolor | bullist numlist | alignleft aligncenter alignright | link | blocks',
     });
 </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" crossorigin="anonymous"
-    referrerpolicy="no-referrer"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>    
 <script>
     $(document).ready(function() {
         $('select').select2();
@@ -222,14 +238,6 @@
     });
 </script>
 
-<script src="https://unpkg.com/filepond/dist/filepond.min.js" crossorigin="anonymous" referrerpolicy="no-referrer">
-</script>
-<script src="https://unpkg.com/filepond-plugin-file-validate-size@^2/dist/filepond-plugin-file-validate-size.min.js"
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://unpkg.com/filepond-plugin-image-preview@^4/dist/filepond-plugin-image-preview.min.js"
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://unpkg.com/jquery-filepond/filepond.jquery.js" crossorigin="anonymous" referrerpolicy="no-referrer">
-</script>
 
 {{-- <script>
     $(document).ready(function() {
@@ -335,18 +343,31 @@
 <!-- Add this to your Blade template -->
 <script>
     $(document).ready(function() {
-        FilePond.registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
-        const job_img = FilePond.create(document.querySelector('input[name="job_img"]'));
+        document.getElementById('job_img').addEventListener('change', event => {
+            const file = event.target.files[0];
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const previewElement = document.getElementById('job_img_preview');
 
-        @if($job->job_img)
-            const existingImageUrl = "{{ asset($job->job_img) }}";
-            job_img.addFile(existingImageUrl);
-        @endif
+            if (file) {
+                if (validImageTypes.includes(file.type)) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        previewElement.src = reader.result;
+                        previewElement.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    event.target.value = '';
+                    previewElement.style.display = 'none';
+                    alert('Invalid file type. Please upload a valid image file.');
+                }
+            }
+        });
 
         $('#createJobHandler, #updateJobHandler').submit(function(e) {
             e.preventDefault();
 
-            const fields = [{   
+            const fields = [{
                     name: 'title',
                     message: 'title is required'
                 },
@@ -404,12 +425,6 @@
             }
 
             const formData = new FormData(this);
-            const files = job_img.getFiles();
-            if (files.length > 0) {
-                formData.append('job_img', files[0].file);
-            } else {
-                formData.delete('job_img');
-            }
 
             const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
@@ -433,7 +448,6 @@
                     button.prop('disabled', false);
                     if ($(e.target).attr('id') === 'createJobHandler') {
                         $('#createJobHandler')[0].reset();
-                        job_img.removeFiles();
                     }
                 }).catch((err) => {
                     $('#loadingSpinner').hide();
@@ -444,5 +458,4 @@
         });
     });
 </script>
-
 @endpush

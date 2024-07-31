@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Holiday;
+use App\Models\JobModels\InterviewerRemark;
 use App\Models\LeaveApplication;
 use App\Models\LeaveType;
 use App\Models\Notice;

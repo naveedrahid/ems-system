@@ -1,58 +1,84 @@
 @extends('masterLayout.app')
 @section('main')
 @section('page-title')
-    All Jobs
+    Manage Jobs
 @endsection
 @section('page-content')
-    <div class="box">
-        <div class="box-body">
-            <div class="row">
-                @if ($jobs)
-                    @foreach ($jobs as $job)
+    <div class="row">
+        <div class="col-12">
+            <div class="card data-table small-box">
+                <div class="card-header">
+                    <div class="row align-items-center">
                         <div class="col-md-6">
-                            <div class="jobWrapper">
-                                @if ($job->job_img)
-                                    <img src="{{ asset($job->job_img) }}" alt="Award Image" class="img-fluid">
-                                @endif
-                                <h4>{{ $job->title }}</h4>
-                                <p> <strong>Department:</strong> {{ $departments[$job->department_id] ?? 'N/A' }}</p>
-                                <p> <strong>Designatio:</strong> {{ $designations[$job->designation_id] ?? 'N/A' }}</p>
-                                <p> <strong>Shift:</strong> {{ $shifts[$job->shift_id] ?? 'N/A' }}</p>
-                                @php
-                                    $employmentTypes = explode(', ', $job->employment_type);
-                                @endphp
-                                <p>
-
-                                    <strong>JobType:</strong>{{ ucwords(str_replace('_', ' ', implode(', ', $employmentTypes))) }}
-                                </p>
-                                <p>
-                                    <strong>Location:</strong> {{ $job->location }}
-                                </p>
-                                <p>
-                                    <strong>Salary:</strong>{{ $job->salary_range }}
-                                </p>
-                                <p>
-                                    <strong>Job Last Date</strong>{{ $job->closing_date }}
-                                </p>
-                                {{-- @php
-                                        $jobImg = str_replace('public/', 'storage/', $job->job_images) ?? '';
-                                    @endphp --}}
-                                <div class="jobDESC">{!! $job->description !!}</div>
-
-                            </div>
-                            <div class="jobtns">
-                                <button class="delete-job btn btn-danger btn-flat btn-sm" data-job-id="{{ $job->id }}"
-                                    data-delete-route="{{ route('jobs.destroy', ':id') }}">
-                                    Delete <i class="fas fa-trash-alt"></i>
-                                </button>
-
-                                <a href="{{ route('jobs.edit', $job->id) }}" class="status-toggle btn btn-primary btn-sm">
-                                    edit
-                                </a>
+                            <div class="header-title">
+                                <h4 class="text-bold">All Jobs</h4>
                             </div>
                         </div>
-                    @endforeach
-                @endif
+                        <div class="col-md-6 text-right">
+                            <div class="box-header pl-1">
+                                <h3 class="box-title">
+                                    <a href="{{ route('jobs.create') }}" class="btn btn-success text-bold">
+                                        Add <i class="fas fa-plus" style="font-size: 13px;"></i>
+                                    </a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th width="10%">Date</th>
+                                <th width="15%">Title</th>
+                                <th width="10%">Shift</th>
+                                <th width="10%">JobType</th>
+                                <th width="10%">Location</th>
+                                <th width="10%">Salary</th>
+                                <th width="10%">Close Date</th>
+                                <th width="10%">Desc</th>
+                                <th width="15%">Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @forelse ($jobs as $job)
+                                <tr>
+                                    <td>{{ $job->created_at->toFormattedDateString() }}</td>
+                                    <td>
+                                        <h6>{{ $job->title ?? '' }}</h6>
+                                        <span>{{ $job->department->department_name ?? '' }}</span> -
+                                        <span>{{ $job->designation->designation_name ?? '' }}</span>
+                                        <div class="manage-process mt-3">
+                                            <a href="{{ route('jobs.edit', $job->id) }}" >
+                                                <div class="edit-item"><i class="fas fa-edit"></i> Edit</div>
+                                            </a>
+                                            <a href="#">
+                                                <div class="delete-item delete-job" data-job-id="{{ $job->id }}"
+                                                    data-delete-route="{{ route('jobs.destroy', ':id') }}">
+                                                    <i class="far fa-trash-alt"></i> Delete
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>{{ $job->shift->name }}</td>
+                                    <td>{{ $job->employment_type }}</td>
+                                    <td>{{ $job->location }}</td>
+                                    <td>{{ $job->salary_range }}</td>
+                                    <td>{{ $job->closing_date }}</td>
+                                    <td>{!! $job->description !!}</td>
+                                    <td>
+                                        <img src="{{ asset($job->job_img) }}" width="60" height="60">
+                                    </td>
+
+                                @empty
+                                <tr>
+                                    <td class="text-center" colspan="9">Record not found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -66,6 +92,7 @@
         object-fit: cover;
         object-position: center center;
     }
+
     .jobDESC {
         height: 0;
         opacity: 0;
@@ -84,27 +111,32 @@
     .jobWrapper:hover {
         transition: 0.4s ease;
     }
+
     .jobtns {
         background: #777;
         padding: 10px 20px;
         border-radius: 0px 0px 10px 10px;
         justify-content: center;
     }
+
     .jobtns a,
     .jobtns button {
         width: 100px;
         margin: 0px 20px;
     }
+
     .jobWrapper {
         padding: 30px;
         border-radius: 10px 10px 0px 0px;
         box-shadow: #0000006e 0px 0px 20px 0px;
         background: #fff;
     }
+
     .jobWrapper p {
         color: #000;
         font-size: 18px !important;
     }
+
     .jobWrapper h4 {
         text-decoration: underline;
         margin: 20px 0px;
@@ -141,7 +173,7 @@
                     }
                 }).then(function(result) {
                     toastr.success(result.message);
-                    targetElement.closest('.col-md-6').fadeOut('slow', function() {
+                    targetElement.closest('tr').fadeOut('slow', function() {
                         $(this).remove();
                     });
                 }).catch(function(err) {

@@ -31,19 +31,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body table-responsive p-0">
+                <div class="card-body table-responsive p-0" id="employees-table_wrapper">
                     <table class="table table-hover text-nowrap" id="employees-table">
                         <thead>
                             <tr>
                                 <th width="10%">Image</th>
-                                <th width="20%">Name</th>
+                                <th width="30%">Name</th>
                                 <th width="20%">Email</th>
-                                <th width="10%">Department</th>
                                 <th width="10%">Employee Type</th>
                                 <th width="10%">Shift</th>
-                                <th width="10%">Designation</th>
                                 @if (isAdmin($user))
-                                    <th width="10%">Manage</th>
+                                    <th width="15%">Manage</th>
                                 @endif
                             </tr>
                         </thead>
@@ -59,6 +57,104 @@
 {{-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"> --}}
 <style>
+    #employees-table_wrapper {
+        .col-md-5 {
+            display: none !important;
+        }
+
+        .col-md-7 {
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 8px !important;
+        }
+
+        .paginate_button {
+            padding: 6px 12px !important;
+            border: 1px solid #C1C1C1;
+            font-size: 14px !important;
+            display: inline;
+        }
+
+        .next {
+            margin-left: 10px;
+            border-radius: 10px !important;
+
+            &:hover {
+                background: transparent !important;
+                color: #F59E0B !important;
+            }
+        }
+
+        .previous {
+            margin-right: 10px;
+            border-radius: 10px !important;
+
+            &: hover {
+                background: transparent !important;
+                color: #F59E0B !important;
+            }
+
+            ;
+            /* height: auto !important; */
+        }
+
+        .dataTables_paginate {
+            display: flex;
+            gap: 450px;
+
+            span {
+                padding: 0px 0px !important;
+                border: 1px solid #C1C1C1;
+                border-radius: 10px;
+
+                a {
+                    margin: 0 !important;
+                    border-radius: 0;
+                    border: 0 !important;
+                    border-left: 1px solid #C1C1C1 !important;
+
+                    &:hover {
+                        background: transparent !important;
+                        color: #F59E0B !important;
+                    }
+
+                    &:first-child {
+                        border-left: 0 !important;
+                    }
+                }
+
+                .current {
+                    background: none !important;
+                    box-shadow: none !important;
+                    color: #F59E0B !important;
+                }
+            }
+        }
+
+        input {
+            position: relative;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background: url('../../../admin/images/searchicon.png');
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            padding-left: 40px;
+        }
+
+        input::before {
+            position: absolute;
+            content: "Search";
+            font-size: 10px;
+        }
+    }
+
+
+
+
     div#loadingSpinner {
         position: fixed;
         left: 0;
@@ -123,7 +219,7 @@
 @push('js')
 <script>
     $(function() {
-        $('#employees-table').DataTable({
+        const table = $('#employees-table').DataTable({
             processing: true,
             responsive: true,
             searchDelay: 300,
@@ -144,12 +240,6 @@
                     name: 'email'
                 },
                 {
-                    data: 'department',
-                    name: 'department',
-                    orderable: false,
-                    searchable: true
-                },
-                {
                     data: 'employee_type_id',
                     name: 'employee_type_id',
                     orderable: false,
@@ -158,12 +248,6 @@
                 {
                     data: 'shift_id',
                     name: 'shift_id',
-                    orderable: false,
-                    searchable: true
-                },
-                {
-                    data: 'designation',
-                    name: 'designation',
                     orderable: false,
                     searchable: true
                 },
@@ -188,8 +272,12 @@
                 'copy', 'excel', 'pdf'
             ]
         });
-        console.log(employees.data);
+
+        table.on('xhr', function() {
+            table.ajax.json();
+        });
     });
+
 
     $(document).ready(function() {
 

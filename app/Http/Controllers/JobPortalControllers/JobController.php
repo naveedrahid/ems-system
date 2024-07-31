@@ -19,13 +19,13 @@ class JobController extends Controller
      */
     public function index()
     {
-        $jobs = Job::all();
+        $jobs = Job::with(['department','designation','shift'])->get();
+        // dd($jobs);
+        // $departments = Department::where('id', $jobs->department_id)->get();
+        // $designations = Designation::pluck('designation_name', 'id');
+        // $shifts = Shift::pluck('name', 'id');
 
-        $departments = Department::pluck('department_name', 'id');
-        $designations = Designation::pluck('designation_name', 'id');
-        $shifts = Shift::pluck('name', 'id');
-
-        return view('job-portal.jobs.index', compact('jobs', 'departments', 'designations', 'shifts'));
+        return view('job-portal.jobs.index', compact('jobs'));
     }
 
     public function showJobsCandidate()
@@ -227,8 +227,11 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
+        if ($job->job_img) {
+            $imagePath = str_replace('storage/', 'public/', $job->job_img);
+            Storage::delete($imagePath);
+        }
         $job->delete();
-        // return redirect()->back()->with('success', 'record deleted');
         return response()->json(['message' => 'Job deleted successfully'], 200);
     }
 }

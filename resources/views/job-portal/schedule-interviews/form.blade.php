@@ -36,7 +36,7 @@
                                     style="width: 100%;">
                                     <option value="">Select User</option>
                                     @foreach ($employees as $employee)
-                                        <option value="{{ $employee->user_id }}"
+                                        <option value="{{ $employee->user->id }}"
                                             data-department-id="{{ $employee->department_id }}"
                                             {{ $schedule_interview->user_id == $employee->user_id ? 'selected' : '' }}>
                                             {{ $employee->user->name }}
