@@ -20,7 +20,14 @@
                     <div class="row {{ $document->exists ? 'editDocuments' : '' }}">
                         <div class="col-md-6 col-12">
                             <div class="form-group">
-                                @if ($document->exists)
+                                @if ($fromEmployee)
+                                    {!! Form::label('department_id', 'Department') !!}
+                                    {!! Form::text('departmentname', $employeeDepartment->department_name, [
+                                        'class' => 'form-control',
+                                        'readonly' => true,
+                                    ]) !!}
+                                    {!! Form::hidden('department_id', $employeeDepartment->id) !!}
+                                @elseif($document->exists)
                                     @php
                                         $departName = $departments->where('id', $document->department_id)->first();
                                     @endphp
@@ -37,7 +44,7 @@
                                         'department_id',
                                         $departments->pluck('department_name', 'id')->prepend('Select Department', ''),
                                         old('department_id', $document->department_id ?? null),
-                                        ['class' => 'form-control select2', 'id' => 'department_id']
+                                        ['class' => 'form-control select2', 'id' => 'department_id'],
                                     ) !!}
                                 @endif
                             </div>
@@ -47,7 +54,14 @@
                                 @php
                                     $userData = $users->where('id', $document->user_id)->first();
                                 @endphp
-                                @if ($document->exists)
+                                @if ($fromEmployee)
+                                    {!! Form::label('department_id', 'User Name') !!}
+                                    {!! Form::text('username', $userName, [
+                                        'class' => 'form-control',
+                                        'readonly' => true,
+                                    ]) !!}
+                                    {!! Form::hidden('user_id', $fromEmployee) !!}
+                                @elseif ($document->exists)
                                     {!! Form::label('department_id', 'User Name') !!}
                                     {!! Form::text('username', $userData ? $userData->name : '', [
                                         'class' => 'form-control',
@@ -349,11 +363,23 @@
             });
         });
 
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        const documentUser = getUrlParameter('document_user');
+
         $('#documentUploadHandler, #documentUpdateHandler').submit(function(e) {
             e.preventDefault();
             let department_id, user_id;
 
-            if ($(e.target).attr('id') === 'documentUploadHandler') {
+            if (documentUser) {
+                department_id = $('input[name="department_id"]').val().trim();
+                user_id = $('input[name="user_id"]').val().trim();
+            } else if ($(e.target).attr('id') === 'documentUploadHandler') {
                 department_id = $('select[name="department_id"]').val().trim();
                 user_id = $('select[name="user_id"]').val().trim();
             } else {

@@ -39,7 +39,7 @@ class EmployeeController extends Controller
             ->get();
         return DataTables::of($employees)
             ->addColumn('action', function ($employee) use ($userId) {
-                
+
                 $action = '<div class="manage-process">';
                 if ($employee->id !== $userId) {
                     $statusClass = $employee->status === 'active' ? 'active-badge' : ($employee->status === 'pending' ? 'pending-badge' : 'deactive-badge');
@@ -50,7 +50,8 @@ class EmployeeController extends Controller
                 $action .= '<a href="' . route('employees.edit', $employee->id) . '" class="edit-item">
                 <i class="fa fa-edit"></i> edit</a>
                 <a href="' . route('employees.profile', $employee->id) . '" class="edit-item">
-                <i class="far fa-eye"></i> View</a></div>';
+                <i class="far fa-eye"></i> View</a><a href="javascript:;" data-delete-route="' . route('employees.destroy', $employee->employee->id) . '" class="edit-item delete-employee">
+                <i class="far fa-trash-alt"></i> Delete</a></div>';
                 return $action;
             })
             ->editColumn('employee_img', function ($employee) {
@@ -67,8 +68,7 @@ class EmployeeController extends Controller
             ->editColumn('name', function ($employee) {
                 $user = auth()->user();
                 if (isAdmin($user)) {
-                    return '<h6>'.$employee->name . '</h6>' .'<span>'.optional($employee->employee->department)->department_name.'</span> - <span>'.optional($employee->employee->designation)->designation_name.'</span>';
-                    // route('bank-details.create', ['employee_id' => $employee->employee_id])
+                    return '<h6>' . $employee->name . '</h6>' . '<span>' . optional($employee->employee->department)->department_name . '</span> - <span>' . optional($employee->employee->designation)->designation_name . '</span>';
                 } else {
                     return $employee->name;
                 }
@@ -104,8 +104,8 @@ class EmployeeController extends Controller
         $cities = City::all()->groupBy('country_id')->map(function ($cityGroup) {
             return $cityGroup->pluck('name', 'id');
         })->toArray();
-        
-        return view('employees.form', compact('route','formMethod','employee','departments', 'designations', 'roles', 'employeeTypes', 'employeeShift', 'countries', 'cities'));
+
+        return view('employees.form', compact('route', 'formMethod', 'employee', 'departments', 'designations', 'roles', 'employeeTypes', 'employeeShift', 'countries', 'cities'));
     }
 
     public function getDesignations($departmentId)
@@ -208,7 +208,7 @@ class EmployeeController extends Controller
             return $cityGroup->pluck('name', 'id');
         })->toArray();
 
-        return view('employees.form', compact('roles','formMethod','route','employee', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
+        return view('employees.form', compact('roles', 'formMethod', 'route', 'employee', 'departments', 'designations', 'employeeShift', 'employeeTypes', 'countries', 'cities'));
     }
 
     public function update(Request $request, $id)
@@ -319,6 +319,7 @@ class EmployeeController extends Controller
             $employee = User::with(['employee.bank'])->findOrFail($user->id);
         }
 
+
         return view('employees.profile', compact('employee'));
     }
 
@@ -339,5 +340,24 @@ class EmployeeController extends Controller
         Auth::logout();
 
         return response()->json(['message' => 'Password changed successfully', 'logout' => true], 200);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $employee = Employee::find($id);
+
+        if ($employee) {
+            $userId = $employee->user_id;
+
+            $user = User::find($userId);
+
+            if ($user) {
+                $user->delete();
+            }
+
+            return response()->json(['message' => 'User deleted successfully'], 200);
+        }
+
+        return response()->json(['message' => 'Employee not found'], 404);
     }
 }

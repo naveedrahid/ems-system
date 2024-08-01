@@ -112,10 +112,10 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
         'store' => 'employees.store',
         'edit' => 'employees.edit',
         'update' => 'employees.update',
+        'destroy' => 'employees.destroy',
     ])->except([
         'index',
         'show',
-        'destroy'
     ]);
 
     Route::put('/employees-status/{id}', [EmployeeController::class, 'updateStatus'])->name('employees.status');

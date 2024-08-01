@@ -79,7 +79,64 @@
 
 @push('css')
 <style>
-    div#loadingSpinner, div#loadingSpinner2 {
+    .modal-dialog {
+        max-width: 600px !important;
+        margin: 2.75rem auto !important;
+        border-radius: 20px !important;
+
+        .modal-title {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            box-shadow: 0 .1rem .5rem rgba(0, 0, 0, .5);
+        }
+
+        label {
+            font-weight: 600 !important;
+            font-size: 15px;
+        }
+
+        .modal-header {
+            padding-top: 0;
+            padding-left: 7px;
+            border: none;
+        }
+
+        .form-control {
+            height: calc(2.25rem + 0px);
+            font-size: 15px;
+            border-radius: 10px;
+
+            &:focus {
+                border: 1.5px solid #80BDFF;
+            }
+        }
+
+        .btn-close {
+            border: 0;
+            background: none;
+        }
+
+        .btn-primary {
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .col-md-6 {
+            padding-left: 0;
+        }
+    }
+
+    .profile-box .profile-img {
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    div#loadingSpinner,
+    div#loadingSpinner2 {
         position: fixed;
         left: 0;
         right: 0;
@@ -93,51 +150,52 @@
         justify-content: center;
     }
 
-    div#loadingSpinner i, div#loadingSpinner2 i {
+    div#loadingSpinner i,
+    div#loadingSpinner2 i {
         color: #007bff;
     }
 </style>
 @endpush
 @push('js')
 <script>
-$(document).ready(function() {
-    $('a[data-type="add"]').click(function() {
-        $('#loadingSpinner').show();
-        $('#formContainer').load("{{ route('department.create') }}", function() {
-            $('#loadingSpinner').hide();
-            $('#formContainer form').attr('id', 'departmentData');
+    $(document).ready(function() {
+        $('a[data-type="add"]').click(function() {
+            $('#loadingSpinner').show();
+            $('#formContainer').load("{{ route('department.create') }}", function() {
+                $('#loadingSpinner').hide();
+                $('#formContainer form').attr('id', 'departmentData');
+            });
         });
-    });
 
-    // Use event delegation to bind the click event
-    $('#departmentTable').on('click', '.edit-department', function() {
-        const departmentId = $(this).data('id');
-        $('#loadingSpinner').show();
+        // Use event delegation to bind the click event
+        $('#departmentTable').on('click', '.edit-department', function() {
+            const departmentId = $(this).data('id');
+            $('#loadingSpinner').show();
 
-        $('#formContainer').load("/department/" + departmentId + "/edit", function() {
-            $('#loadingSpinner').hide();
-            $('#formContainer form').attr('id', 'departmentDataUpdate');
+            $('#formContainer').load("/department/" + departmentId + "/edit", function() {
+                $('#loadingSpinner').hide();
+                $('#formContainer form').attr('id', 'departmentDataUpdate');
+            });
         });
-    });
 
 
-    const fetchDepartmentData = async () => {
-        const url = "{{ route('department.data') }}";
-        $('#loadingSpinner2').show();
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            const tableData = $('#departments-body');
-            tableData.empty();
+        const fetchDepartmentData = async () => {
+            const url = "{{ route('department.data') }}";
+            $('#loadingSpinner2').show();
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const tableData = $('#departments-body');
+                tableData.empty();
 
-            if (data.length === 0) {
-                $('#loadingSpinner2').hide();
-                tableData.append(
-                    '<tr><td colspan="3" class="text-center">No record found</td></tr>');
-            } else {
-                $('#loadingSpinner2').hide();
-                $.each(data, function(_, department) {
-                    const row = `
+                if (data.length === 0) {
+                    $('#loadingSpinner2').hide();
+                    tableData.append(
+                        '<tr><td colspan="3" class="text-center">No record found</td></tr>');
+                } else {
+                    $('#loadingSpinner2').hide();
+                    $.each(data, function(_, department) {
+                        const row = `
                     <tr>
                         <td>${new Date(department.created_at).toLocaleDateString()}</td>
                         <td>${department.department_name}</td>
@@ -156,101 +214,101 @@ $(document).ready(function() {
                             </div>
                         </td>
                     </tr>`;
-                    tableData.append(row);
+                        tableData.append(row);
+                    });
+                }
+
+            } catch (error) {
+                $('#loadingSpinner2').hide();
+                console.error('Error:', error);
+            }
+        };
+        fetchDepartmentData();
+
+        $(document).on('click', '.delete-department', function(e) {
+            e.preventDefault();
+            const departmentId = $(this).data('department-id');
+            const deleteRoute = $(this).data('delete-route');
+            const clickedElement = $(this);
+
+            if (confirm('Are you sure you want to delete this Department?')) {
+                $('#loadingSpinner2').show();
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    type: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    setTimeout(() => {
+                        $('#loadingSpinner2').hide();
+                        toastr.success(response.message);
+                    }, 1000);
+                    clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                    fetchDepartmentData();
+                }).catch(function(xhr) {
+                    $('#loadingSpinner2').hide();
+                    console.error(xhr);
+                    toastr.error('Faild to delete Department');
                 });
             }
+        });
 
-        } catch (error) {
-            $('#loadingSpinner2').hide();
-            console.error('Error:', error);
-        }
-    };
-    fetchDepartmentData();
+        $('#formContainer').on('submit', '#departmentData, #departmentDataUpdate', function(e) {
+            e.preventDefault();
 
-    $(document).on('click', '.delete-department', function(e) {
-        e.preventDefault();
-        const departmentId = $(this).data('department-id');
-        const deleteRoute = $(this).data('delete-route');
-        const clickedElement = $(this);
+            const dp_name = $('input[name="department_name"]').val().trim();
+            const dp_status = $('select[name="status"]').val().trim();
 
-        if (confirm('Are you sure you want to delete this Department?')) {
-            $('#loadingSpinner2').show();
+            if (dp_name === '' || dp_status === '') {
+                if (dp_name === '') {
+                    toastr.error('Department name is required.');
+                }
+                if (dp_status === '') {
+                    toastr.error('Department status is required.');
+                }
+                return;
+            }
+
+            const formData = new FormData(this);
+            const url = $(this).attr('action');
             const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+            $('#loadingSpinner2').show();
 
             $.ajax({
-                type: "DELETE",
-                url: deleteRoute,
-                headers: {
-                    'X-CSRF-TOKEN': token
-                }
-            }).then(function(response) {
-                setTimeout(() => {
-                    $('#loadingSpinner2').hide();
+                    url: url,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                })
+                .then(function(response) {
+                    console.log(response);
                     toastr.success(response.message);
-                }, 1000);
-                clickedElement.closest('tr').fadeOut('slow', function() {
-                    $(this).remove();
+                    button.prop('disabled', false);
+                    if ($(e.target).attr('id') === 'departmentData') {
+                        $('#departmentData')[0].reset();
+                    }
+                    fetchDepartmentData();
+                    $('#selectedNotes').modal('hide');
+                    $('#loadingSpinner2').hide();
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    $('#loadingSpinner2').hide();
+                    toastr.error('Failed to save Department.');
+                    button.prop('disabled', false);
                 });
-                fetchDepartmentData();
-            }).catch(function(xhr) {
-                $('#loadingSpinner2').hide();
-                console.error(xhr);
-                toastr.error('Faild to delete Department');
-            });
-        }
+        });
     });
-
-    $('#formContainer').on('submit', '#departmentData, #departmentDataUpdate', function(e) {
-        e.preventDefault();
-
-        const dp_name = $('input[name="department_name"]').val().trim();
-        const dp_status = $('select[name="status"]').val().trim();
-
-        if (dp_name === '' || dp_status === '') {
-            if (dp_name === '') {
-                toastr.error('Department name is required.');
-            }
-            if (dp_status === '') {
-                toastr.error('Department status is required.');
-            }
-            return;
-        }
-
-        const formData = new FormData(this);
-        const url = $(this).attr('action');
-        const token = $('meta[name="csrf-token"]').attr('content');
-        const button = $('input[type="submit"]');
-        button.prop('disabled', true);
-        $('#loadingSpinner2').show();
-
-        $.ajax({
-                url: url,
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRF-TOKEN': token
-                }
-            })
-            .then(function(response) {
-                console.log(response);
-                toastr.success(response.message);
-                button.prop('disabled', false);
-                if ($(e.target).attr('id') === 'departmentData') {
-                    $('#departmentData')[0].reset();
-                }
-                fetchDepartmentData();
-                $('#selectedNotes').modal('hide');
-                $('#loadingSpinner2').hide();
-            })
-            .catch(function(err) {
-                console.error(err);
-                $('#loadingSpinner2').hide();
-                toastr.error('Failed to save Department.');
-                button.prop('disabled', false);
-            });
-    });
-});
 </script>
 @endpush

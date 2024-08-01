@@ -28,15 +28,26 @@ class DocumentUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $fromEmployee = $request->input('document_user');
+        $departments = Department::with('employees.user')->get();
+        $userName = null;
+        $employeeDepartment = null;
+        if ($fromEmployee) {
+            $userName = User::find($fromEmployee)->name;
+            $dpId = $departments->flatMap(function ($department) {
+                return $department->employees;
+            })->firstWhere('user_id', $fromEmployee);
+
+            $employeeDepartment = $departments->find($dpId->department_id);
+        }
         $document = new DocumentUser();
         $route = route('documents.store');
         $formMethod = 'POST';
-        $departments = Department::with('employees.user')->get();
         $users = User::all();
 
-        return view('documents.form', compact('document', 'route', 'formMethod', 'departments', 'users'));
+        return view('documents.form', compact('document', 'route', 'formMethod', 'departments', 'users', 'fromEmployee', 'userName', 'employeeDepartment'));
     }
 
     /**
@@ -70,7 +81,7 @@ class DocumentUserController extends Controller
             if ($request->hasFile($file)) {
                 $uploadedFile = $request->file($file);
                 $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-                $filePath = $uploadedFile->storeAs('user_docs/'.$sanitizedUserName, $fileName, 'public');
+                $filePath = $uploadedFile->storeAs('user_docs/' . $sanitizedUserName, $fileName, 'public');
                 $document->$file = 'storage/' . $filePath;
             }
         }
@@ -126,15 +137,15 @@ class DocumentUserController extends Controller
             'experience_letter' => 'nullable|file|mimes:pdf,doc,docx',
             'bill' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
-        
+
         $request->validate($validationRules);
-    
+
         $document = DocumentUser::findOrFail($id);
         $document->user_id = $request->user_id;
         $document->department_id = $request->department_id;
         $userName = User::where('id', $document->user_id)->value('name');
         $sanitizedUserName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $userName);
-        
+
         $files = ['nic_front', 'nic_back', 'resume', 'payslip', 'experience_letter', 'bill'];
 
         foreach ($files as $file) {
@@ -146,7 +157,7 @@ class DocumentUserController extends Controller
 
                 $uploadedFile = $request->file($file);
                 $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
-                $filePath = $uploadedFile->storeAs('user_docs/'.$sanitizedUserName, $fileName, 'public');
+                $filePath = $uploadedFile->storeAs('user_docs/' . $sanitizedUserName, $fileName, 'public');
                 $document->$file = 'storage/' . $filePath;
             }
         }
@@ -164,24 +175,32 @@ class DocumentUserController extends Controller
      */
     public function destroy(DocumentUser $document)
     {
-        // if ($document->job_img && Storage::disk('public')->exists($document->job_img)) {
-        //     Storage::disk('public')->delete($document->job_img);
-        // }
+        $user = User::find($document->user_id);
+
+        if ($user) {
+            $sanitizedUserName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $user->name);
+
+            $userFolder = 'user_docs/' . $sanitizedUserName;
+
+            if (Storage::disk('public')->exists($userFolder)) {
+                Storage::disk('public')->deleteDirectory($userFolder);
+            }
+        }
+
         $document->delete();
 
-        return response()->json(['message' => 'Record and associated images deleted successfully.']);
+        return response()->json(['message' => 'Documents deleted successfully.']);
     }
+
 
     public function upload(Request $request)
     {
         $validated = $request->validate([
             'file' => 'required|file|mimes:jpg,png,pdf|max:2048',
         ]);
-    
+
         $path = $request->file('file')->store('user_docs');
-    
+
         return response()->json(['path' => $path], 200);
     }
-    
 }
-

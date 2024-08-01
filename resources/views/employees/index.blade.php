@@ -319,6 +319,38 @@
                 });
         });
 
+        $(document).on('click', '.delete-employee', function(e) {
+            e.preventDefault();
+
+            const deleteRoute = $(this).data('delete-route');
+            const clickedElement = $(this);
+
+            if (confirm('Are you sure you want to delete this Employee?')) {
+                $('#loadingSpinner').show();
+                const token = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    method: "DELETE",
+                    url: deleteRoute,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                }).then(function(response) {
+                    setTimeout(() => {
+                        $('#loadingSpinner').hide();
+                        toastr.success(response.message);
+                    }, 1000);
+                    clickedElement.closest('tr').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }).catch(function(xhr) {
+                    $('#loadingSpinner').hide();
+                    console.error(xhr);
+                    toastr.error('Failed to delete Employee'); // Fix typo: "Faild" to "Failed"
+                });
+            }
+        });
+
     });
 </script>
 @endpush
