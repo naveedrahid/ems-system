@@ -20,6 +20,22 @@ class DesignationController extends Controller
         return view('designation.index', compact('designations'));
     }
 
+    public function getData()
+    {
+        $designation = Designation::with('department')->paginate(10);
+        return response()->json($designation);
+    }
+
+    public function loadForm($id = null)
+    {
+        $designation = $id ? Designation::findOrFail($id) : new Designation();
+        $departments = Department::pluck('department_name', 'id');
+        $formMethod = $id ? 'PUT' : 'POST';
+        $route = $id ? route('designation.update', $designation->id) : route('designation.store');
+    
+        return view('designation.form', compact('departments', 'designation', 'formMethod', 'route'))->render();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -53,7 +69,7 @@ class DesignationController extends Controller
         // }
 
         Designation::create($request->all());
-        return response()->json(['message' => 'Role created successfully'], 200);
+        return response()->json(['message' => 'Designation created successfully'], 200);
     }
 
     /**

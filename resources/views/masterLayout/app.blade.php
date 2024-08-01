@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>{{ config('app.name', 'Laravel') }} | @yield('page-title')</title>
-    <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}">
+    {{-- <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}"> --}}
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
     <link rel="stylesheet"
@@ -259,11 +259,8 @@
         <aside class="main-sidebar sidebar-dark-primary">
             <div class="logo"
                 style="width: 100%; height: 57.10px; border-bottom: 1px solid #FFF; display: flex; justify-content: center; align-items: center;">
-                <a href="{{ route('home') }}">
-                    <img src="{{ asset('admin/images/pixelz-logo-white.svg') }}" class="text-center" height="43"
-                        width="110">
-                    <img src="{{ asset('admin/images/favicon.png') }}" class="text-center mini-logo" height="50"
-                        width="30">
+                <a href="{{ route('home') }}" style="color:#fff;">
+                    training4employment
                 </a>
             </div>
 
@@ -780,7 +777,7 @@
     <!-- ./wrapper -->
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-        <strong>Copyright &copy; 2014 <a href="https://pixelz360.com.au/">Pixelz 360</a>.</strong>
+        <strong>Copyright &copy; 2014 <a href="https://pixelz360.com.au/">training4employment</a>.</strong>
         All rights reserved.
         <div class="float-right d-none d-sm-inline-block">
             <b>Version</b> 3.0.4

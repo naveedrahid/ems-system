@@ -89,8 +89,9 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
 
     Route::resource('department', DepartmentController::class)->except(['show']);
     Route::get('department/data', [DepartmentController::class, 'getData'])->name('department.data');
-
+    
     Route::resource('designation', DesignationController::class)->except(['show']);
+    Route::get('designation/data', [DesignationController::class, 'getData'])->name('designation.data');
 
     Route::resource('awards', AwardController::class)->except(['show']);
 

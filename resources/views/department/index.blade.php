@@ -167,7 +167,6 @@
             });
         });
 
-        // Use event delegation to bind the click event
         $('#departmentTable').on('click', '.edit-department', function() {
             const departmentId = $(this).data('id');
             $('#loadingSpinner').show();
@@ -177,7 +176,6 @@
                 $('#formContainer form').attr('id', 'departmentDataUpdate');
             });
         });
-
 
         const fetchDepartmentData = async () => {
             const url = "{{ route('department.data') }}";

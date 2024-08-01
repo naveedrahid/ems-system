@@ -21,8 +21,8 @@
                 <div class="panel">
                     <div class="state">
                         <div class="logo" style=" height: 57.10px;">
-                            <a href="javascript:;">
-                                <img src="{{asset('admin/images/pixelz-logo-white.svg')}}" class="text-center" height="43" width="150">
+                            <a href="javascript:;" style="color:#fff;">
+                                training4employment
                             </a>
                         </div>
                     </div>
