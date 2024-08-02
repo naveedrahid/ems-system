@@ -16,8 +16,13 @@ class RoleController extends Controller
      */
     public function index()
     {
+        return view('roles.index');
+    }
+
+    public function roleFetchData()
+    {
         $roles = Role::get();
-        return view('roles.index', compact('roles'));
+        return response()->json($roles);
     }
 
     /**
@@ -30,7 +35,7 @@ class RoleController extends Controller
         $role = new Role();
         $route = route('roles.store');
         $formMethod = 'POST';
-        return view('roles.form', compact('role', 'route', 'formMethod'));
+        return view('roles.form', compact('role', 'route','formMethod'));
     }
 
     /**
@@ -44,17 +49,17 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         $roleName = strtolower(str_replace(' ', '-', $request->name));
         Role::create(['name' => $roleName]);
-    
+
         return response()->json(['message' => 'Role created successfully'], 200);
     }
-    
+
 
     /**
      * Display the specified resource.
@@ -77,7 +82,7 @@ class RoleController extends Controller
     {
         $route = route('roles.update', $role->id);
         $formMethod = 'PUT';
-        return view('roles.form', compact('role', 'route', 'formMethod'));
+        return view('roles.form', compact('role', 'route','formMethod'));
     }
 
     /**

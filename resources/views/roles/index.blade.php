@@ -4,9 +4,6 @@
     View Role
 @endsection
 @section('page-content')
-<div id="loadingSpinner" style="display: none; text-align: center;">
-    <i class="fas fa-spinner fa-spin fa-3x"></i>
-</div>
     <div class="row">
         <div class="col-12">
             <div class="card data-table small-box">
@@ -20,7 +17,8 @@
                         <div class="col-md-6 text-right">
                             <div class="box-header pl-1">
                                 <h3 class="box-title">
-                                    <a href="{{ route('roles.create') }}" class="btn btn-success text-bold">
+                                    <a href="{{ route('roles.create') }}" class="btn btn-success text-bold"
+                                        data-toggle="modal" data-target="#roleModal" data-type="add">
                                         Add <i class="fas fa-plus" style="font-size: 13px;"></i>
                                     </a>
                                 </h3>
@@ -37,29 +35,31 @@
                                 <th width="20%">Manage</th>
                             </tr>
                         </thead>
-                        @if (count($roles) > 0)
-                            @foreach ($roles as $role)
-                                <tr>
-                                    <td>{{ $role->created_at->toFormattedDateString() }}</td>
-                                    <td>{{ $role->name }}</td>
-                                    <td>
-                                        <div class="manage-process">
-                                            <a href="{{ route('roles.edit', $role) }}">
-                                                <div class="edit-item"><i class="fas fa-edit"></i> Edit</div>
-                                            </a>
-
-                                            <a href="#">
-                                                <div class="delete-item delete-role" data-role-id="{{ $role->id }}"
-                                                    data-delete-route="{{ route('roles.destroy', ':id') }}">
-                                                    <i class="far fa-trash-alt"></i> Delete
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
+                        <tbody id="roleTableData">
+                            <div id="loadingSpinner" style="display: none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            </div>
+                        </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show" id="roleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Shift Form</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loadingSpinner2">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    </div>
+                    <div id="formContainer">
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,7 +69,68 @@
 
 @push('css')
 <style>
-    div#loadingSpinner {
+    #loadingSpinner2{
+        display: none;
+        text-align: center;
+    }
+    .modal-dialog {
+        max-width: 600px !important;
+        margin: 2.75rem auto !important;
+        border-radius: 20px !important;
+
+        .modal-title {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            box-shadow: 0 .1rem .5rem rgba(0, 0, 0, .5);
+        }
+
+        label {
+            font-weight: 600 !important;
+            font-size: 15px;
+        }
+
+        .modal-header {
+            padding-top: 0;
+            padding-left: 7px;
+            border: none;
+        }
+
+        .form-control {
+            height: calc(2.25rem + 0px);
+            font-size: 15px;
+            border-radius: 10px;
+
+            &:focus {
+                border: 1.5px solid #80BDFF;
+            }
+        }
+
+        .btn-close {
+            border: 0;
+            background: none;
+        }
+
+        .btn-primary {
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .col-md-6 {
+            padding-left: 0;
+        }
+    }
+
+    .profile-box .profile-img {
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    div#loadingSpinner,
+    div#loadingSpinner2 {
         position: fixed;
         left: 0;
         right: 0;
@@ -83,7 +144,8 @@
         justify-content: center;
     }
 
-    div#loadingSpinner i {
+    div#loadingSpinner i,
+    div#loadingSpinner2 i {
         color: #007bff;
     }
 </style>
@@ -92,7 +154,85 @@
 <script>
     $(document).ready(function() {
 
-        $('.delete-role').on('click', function(e) {
+        $('a[data-type="add"]').click(function(e) {
+            e.preventDefault();
+            $('#loadingSpinner2').show();
+            $('#formContainer').load("{{ route('roles.create') }}", function() {
+                $('#formContainer form').attr('id', 'addRoleForm');
+                $('#loadingSpinner2').hide();
+            });
+        });
+        $('#roleTableData').on('click', '.edit-role', function(e) {
+            e.preventDefault();
+
+            const roleId = $(this).data('id');
+
+            $('#loadingSpinner2').show();
+            $('#formContainer').load(`/roles/${roleId}/edit`, function() {
+                $('#formContainer form').attr('id', 'editRoleForm');
+                $('#loadingSpinner2').hide();
+            });
+        });
+
+        const fetchRolesData = async () => {
+            const url = "{{ route('roles.data') }}";
+            $('#loadingSpinner2').show();
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                const roleTableData = $('#roleTableData');
+                roleTableData.empty();
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok" + response.statusText);
+                    $('#loadingSpinner2').hide();
+                }
+
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    roleTableData.append(
+                        '<tr><td colspan="3" class="text-center">No record found</td></tr>');
+                    $('#loadingSpinner2').hide();
+                } else {
+                    $.each(data, function(data, role) {
+                        const row = `<tr>
+                                    <td>${new Date(role.created_at).toLocaleDateString()}</td>
+                                    <td>${role.name}</td>
+                                    <td>
+                                        <div class="manage-process">
+                                            <a href="#" class="edit-role edit-item"
+                                                data-toggle="modal" data-target="#roleModal"
+                                                data-id="${role.id}"><i class="fa fa-edit"></i> edit
+                                            </a>
+                                            <a href="#">
+                                                <div class="delete-item delete-role"
+                                                    data-role-id="${role.id}"
+                                                    data-delete-route="/roles/${role.id}">
+                                                    <i class="far fa-trash-alt"></i> Delete
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                        roleTableData.append(row);
+                        $('#loadingSpinner2').hide();
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+                $('#loadingSpinner2').hide();
+            }
+        };
+
+        fetchRolesData();
+
+        $(document).on('click','.delete-role', function(e) {
             e.preventDefault();
             const roleId = $(this).data('role-id');
             const deleteRoute = $(this).data('delete-route').replace(':id', roleId);
@@ -109,6 +249,7 @@
                         'X-CSRF-TOKEN': token
                     }
                 }).then(function(response) {
+                    fetchRolesData();
                     setTimeout(() => {
                         $('#loadingSpinner').hide();
                         toastr.success(response.message);
@@ -123,6 +264,51 @@
                     button.prop('disabled', false);
                 });
             }
+        });
+
+        $(document).on('submit','#addRoleForm, #editRoleForm', function(e) {
+            e.preventDefault();
+
+            const roleName = $('input[name="name"]').val().trim();
+
+            if (roleName === '') {
+                toastr.error('Role is required.');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const url = $(this).attr('action');
+            const token = $('meta[name="csrf-token"]').attr('content');
+            const button = $('input[type="submit"]');
+            button.prop('disabled', true);
+            $('#loadingSpinner').show();
+            
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': token
+                    }
+                })
+                .then(function(response) {
+                    toastr.success(response.message);
+                    if ($(e.target).attr('id') === 'addRoleForm') {
+                        $('#addRoleForm')[0].reset();
+                    }
+                    fetchRolesData();
+                    button.prop('disabled', false);
+                    $('#loadingSpinner').hide();
+                    $('#roleModal').modal('hide');
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    toastr.error('Failed to save Role.');
+                    button.prop('disabled', false);
+                    $('#loadingSpinner').hide();
+                });
         });
     });
 </script>

@@ -6,9 +6,8 @@
 @section('page-content')
     <div class="card-body profile-box">
         <div class="btnGroup mb-4">
-            {{-- @dd($employee); --}}
-            <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-success">Add Bank Detail</a>
-            <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-success">Documnet user</a>
+            <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary mr-5">Add Bank Detail</a>
+            <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-primary">Documnet user</a>
         </div>
         <div class="row ">
             <div class="col-md-5">

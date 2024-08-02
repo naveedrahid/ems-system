@@ -85,13 +85,16 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::post('/attendance/create', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/report', [AttendanceController::class, 'filterAttendanceReport'])->name('attendance.report');
     Route::get('/attendance/report/download', [AttendanceController::class, 'downloadAttendanceReport'])->name('attendance.report.download');
+    
     Route::resource('roles', RoleController::class)->except(['show']);
+    Route::get('/roles/data/set', [RoleController::class, 'roleFetchData'])->name('roles.data');
 
     Route::resource('department', DepartmentController::class)->except(['show']);
     Route::get('department/data', [DepartmentController::class, 'getData'])->name('department.data');
     
     Route::resource('designation', DesignationController::class)->except(['show']);
     Route::get('designation/data', [DesignationController::class, 'getData'])->name('designation.data');
+    Route::put('/designation-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
 
     Route::resource('awards', AwardController::class)->except(['show']);
 
@@ -105,7 +108,6 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::post('/documents/upload', [DocumentUserController::class, 'upload'])->name('documents.upload');
 
 
-    Route::put('/update-status/{id}', [DesignationController::class, 'updateStatus'])->name('update.status');
     Route::resource('employees', EmployeeController::class)->parameters([
         'employees' => 'id'
     ])->names([
@@ -127,6 +129,7 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::get('/leave-types/data/set', [LeaveTypeController::class, 'fetchData'])->name('leave-types.data');
 
     Route::resource('shifts', ShiftController::class);
+    Route::get('/shifts/data/get', [ShiftController::class, 'getShiftData'])->name('shifts.data');
 
 
     Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');

@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body table-responsive p-0">
+                <div class="card-body table-responsive p-0" id="designationWrapper">
                     <table class="table table-hover text-nowrap">
                         <thead>
                             <tr>
@@ -57,11 +57,10 @@
                             class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body">
-                    <div id="loadingSpinner2" style="display: none; text-align: center;">
-                        <i class="fas fa-spinner fa-spin fa-3x"></i>
-                    </div>
                     <div id="formContainer">
-
+                        <div id="loadingSpinner2" style="display: none; text-align: center;">
+                            <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,6 +71,14 @@
 
 @push('css')
 <style>
+    #designationWrapper ul#pagination {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+        margin: 15px 0px;
+    }
+
     .modal-dialog {
         max-width: 600px !important;
         margin: 2.75rem auto !important;
@@ -154,16 +161,16 @@
     $(document).ready(function() {
 
         $('a[data-type="add"]').click(function() {
-            $('#loadingSpinner').show();
+            $('#loadingSpinner2').show();
             $('#formContainer').load("{{ route('designation.create') }}", function() {
-                $('#loadingSpinner').hide();
+                $('#loadingSpinner2').hide();
                 $('#formContainer form').attr('id', 'designationData');
             });
         });
 
         $('#designations-body').on('click', '.edit-designation', function() {
             const designationId = $(this).data('id');
-            $('#loadingSpinner').show();
+            $('#loadingSpinner2').show();
 
             $('#formContainer').load(`/designation/${designationId}/edit`, function(response, status,
                 xhr) {
@@ -174,7 +181,7 @@
                     return;
                 }
 
-                $('#loadingSpinner').hide();
+                $('#loadingSpinner2').hide();
                 $('#formContainer form').attr('id', 'designationDataUpdate');
             });
         });
@@ -205,7 +212,18 @@
                             <td>${new Date(designation.created_at).toLocaleDateString()}</td>
                             <td>${designation.designation_name}</td>
                             <td>${designation.department ? designation.department.department_name : 'N/A'}</td>
-                            <td>${designation.status}</td>
+                            <td>
+                                <div class="manage-process">
+                                    <a style="width:70px;text-align:right;" href="#"
+                                        class="designation-toggle" data-id="${designation.id}"
+                                        data-status="${designation.status}">
+                                        <span
+                                            class="badges ${designation.status === 'active' ? 'active-badge' : designation.status === 'deactive' ? 'deactive-badge' : 'active-badge'}">
+                                            ${designation.status}
+                                        </span>
+                                    </a>
+                                </div>
+                            </td>
                             <td>
                                 <div class="manage-process">
                                     <a href="#" class="edit-designation edit-item" data-toggle="modal" data-target="#selectedNotes" data-id="${designation.id}"><i class="fa fa-edit"></i> Edit</a>
@@ -284,18 +302,18 @@
             }
         });
 
-        $('.status-toggle').click(function(event) {
-            event.preventDefault();
-            const button = $(this);
-            const id = button.data('id');
-            const status = button.data('status');
-            const newStatus = status === 'active' ? 'deactive' : 'active';
-            const btnSpan = button.find('span');
-            btnSpan.removeClass(status + '-badge')
-                .addClass(newStatus + '-badge');
-            button.prop('disabled', true);
+        $(document).on('click', '.designation-toggle', function(e) {
+            e.preventDefault();
+
+            const $this = $(this);
+            const designationId = $this.data('id');
+            const currentStatus = $this.data('status');
+            const newStatus = currentStatus === 'active' ? 'deactive' : 'active';
+            const token = $('meta[name="csrf-token"]').attr('content');
+            $('#loadingSpinner').show();
+
             $.ajax({
-                url: '/update-status/' + id,
+                url: '/designation-status/' + designationId,
                 method: 'PUT',
                 data: {
                     status: newStatus
@@ -304,15 +322,21 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    button.find('span').text(newStatus.charAt(0).toUpperCase() + newStatus
-                        .slice(1));
-                    button.data('status', newStatus);
-                    button.prop('disabled', false);
+                    setTimeout(() => {
+                        $('#loadingSpinner').hide();
+                        toastr.success(response.message);
+                    }, 1000);
+                    const $span = $this.find('span');
+                    $span.text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
+                    $span.removeClass('active-badge deactive-badge');
+                    $span.addClass(newStatus === 'active' ? 'active-badge' :
+                        'deactive-badge');
+                    $this.data('status', newStatus);
                 },
                 error: function(err) {
                     console.log(err);
-                    alert('Failed to update status.');
-                    button.prop('disabled', false);
+                    $('#loadingSpinner').hide();
+                    toastr.error('Designation status failed.');
                 }
             });
         });
@@ -365,13 +389,13 @@
                         $('#designationData')[0].reset();
                     }
                     $('#selectedNotes').modal('hide');
-                    $('#loadingSpinner').hide();
+                    $('#loadingSpinner2').hide();
                 })
                 .catch(function(err) {
                     console.error(err);
                     toastr.error('Failed to save Designation.');
                     button.prop('disabled', false);
-                    $('#loadingSpinner').hide();
+                    $('#loadingSpinner2').hide();
                 });
         });
     });

@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>{{ config('app.name', 'Laravel') }} | @yield('page-title')</title>
-    {{-- <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}"> --}}
+    <link rel="icon" type="image/png" href="{{ asset('Pixelz360.png') }}">
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
     <link rel="stylesheet"
@@ -259,8 +259,11 @@
         <aside class="main-sidebar sidebar-dark-primary">
             <div class="logo"
                 style="width: 100%; height: 57.10px; border-bottom: 1px solid #FFF; display: flex; justify-content: center; align-items: center;">
-                <a href="{{ route('home') }}" style="color:#fff;">
-                    training4employment
+                <a href="{{ route('home') }}">
+                    <img src="{{ asset('admin/images/pixelz-logo-white.svg') }}" class="text-center" height="43"
+                        width="110">
+                    <img src="{{ asset('admin/images/favicon.png') }}" class="text-center mini-logo" height="50"
+                        width="30">
                 </a>
             </div>
 
@@ -326,12 +329,12 @@
                                     </a>
                                 </li>
                                 @if (isAdmin($user))
-                                <li class="nav-item">
-                                    <a href="{{ route('documents.create') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Add Employee Documents</p>
-                                    </a>
-                                </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('documents.create') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Add Employee Documents</p>
+                                        </a>
+                                    </li>
                                     <li class="nav-item">
                                         <a href="{{ route('bank-details.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
@@ -374,12 +377,6 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('designation.create') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Add Desginations</p>
-                                        </a>
-                                    </li>
                                     <li class="nav-item">
                                         <a href="{{ route('designation.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
@@ -612,7 +609,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{route('job-offers.index')}}" class="nav-link">
+                                        <a href="{{ route('job-offers.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
                                                 Job Offer
@@ -630,7 +627,7 @@
                                     </p>
                                 </a>
                             </li>
-                        @endif;
+                        @endif
                         <li class="nav-item has-treeview">
                             <a href="javascript:;" class="nav-link">
                                 <i class="nav-icon fas fa-calendar-alt"></i>

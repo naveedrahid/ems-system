@@ -14,8 +14,8 @@ class LeaveTypeController extends Controller
      */
     public function index()
     {
-        $leaveTypes = LeaveType::all();
-        return view('leave-type.index', compact('leaveTypes'));
+        // $leaveTypes = LeaveType::all();
+        return view('leave-type.index');
     }
 
     public function fetchData()

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <div class="col-lg-12 ">
         <div class="row justify-content-center">
             {{-- <div class="col-lg-4 mx-auto">
@@ -21,8 +20,9 @@
                 <div class="panel">
                     <div class="state">
                         <div class="logo" style=" height: 57.10px;">
-                            <a href="javascript:;" style="color:#fff;">
-                                training4employment
+                            <a href="javascript:;">
+                                <img src="{{ asset('admin/images/pixelz-logo-white.svg') }}" class="text-center"
+                                    height="43" width="150">
                             </a>
                         </div>
                     </div>
@@ -31,7 +31,8 @@
                         <div class="form-group">
                             {{-- <label for="email" class="form-check-label">{{ __('Email Address') }}</label> --}}
                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
-                                name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Email Address" autofocus>
+                                name="email" value="{{ old('email') }}" required autocomplete="email"
+                                placeholder="Email Address" autofocus>
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -74,7 +75,7 @@
                         @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}">
                                 <i class="fa fa-question-circle"></i>
-                               {{ __('Forgot password?')}}
+                                {{ __('Forgot password?') }}
                             </a>
                         @endif
                     </div>

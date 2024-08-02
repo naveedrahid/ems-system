@@ -24,6 +24,22 @@ class ShiftController extends Controller
         return view('shifts.index', compact('shifts'));
     }
 
+    public function getShiftData()
+    {
+        $shifts = Shift::all();
+        if ($shifts->isEmpty()) {
+            return response()->json(['message' => 'No shifts found'], 404);
+        }
+    
+        $shifts->transform(function ($shift) {
+            $shift->opening = Carbon::parse($shift->opening)->format('g:i A');
+            $shift->closing = Carbon::parse($shift->closing)->format('g:i A');
+            return $shift;
+        });
+        return response()->json($shifts);
+    }
+    
+
     /**
      * Show the form for creating a new resource.
      *
