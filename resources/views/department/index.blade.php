@@ -202,6 +202,7 @@
                                 <a href="#" class="edit-department edit-item"
                                     data-toggle="modal" data-target="#selectedNotes"
                                     data-id="${department.id}"><i class="fa fa-edit"></i> edit
+                                </a>
                                 <a href="#">
                                     <div class="delete-item delete-department"
                                         data-department-id="${department.id}"

@@ -18,6 +18,12 @@ class LeaveTypeController extends Controller
         return view('leave-type.index', compact('leaveTypes'));
     }
 
+    public function fetchData()
+    {
+        $leaveTypes = LeaveType::all();
+        return response()->json($leaveTypes);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

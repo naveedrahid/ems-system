@@ -123,10 +123,11 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 
     Route::resource('leave-types', LeaveTypeController::class);
+    Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
+    Route::get('/leave-types/data/set', [LeaveTypeController::class, 'fetchData'])->name('leave-types.data');
 
     Route::resource('shifts', ShiftController::class);
 
-    Route::put('/leave-types/status/{leave_type}', [LeaveTypeController::class, 'updateStatus'])->name('updateLeave.status');
 
     Route::put('/leave-applications/{leave_application}', [LeaveApplicationController::class, 'update'])->name('leave-applications.update');
     Route::get('/leave-applications/{leave_application}/edit', [LeaveApplicationController::class, 'edit'])->name('leave-applications.edit');
