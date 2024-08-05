@@ -171,7 +171,7 @@
                         <button onclick="checkOut()" class="btn btn-danger">Check Out</button> --}}
                     </div>
                 </li>
-                <li class="nav-item dropdown">
+                {{-- <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="javascript:;">
                         <i class="far fa-comments"></i>
                         <span class="badge badge-danger navbar-badge">3</span>
@@ -232,7 +232,7 @@
                         <div class="dropdown-divider"></div>
                         <a href="javascript:;" class="dropdown-item dropdown-footer">See All Messages</a>
                     </div>
-                </li>
+                </li> --}}
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="javascript:;">
                         <i class="far fa-bell"></i>
