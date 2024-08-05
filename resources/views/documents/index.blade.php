@@ -55,7 +55,7 @@
                                 <tr>
                                     <td>{{ $documentUser->created_at->toFormattedDateString() }}</td>
                                     <td>{{ $documentUser->user->name }}</td>
-                                    <td><img src="{{ asset($documentUser->nic_front) }}" width="100" height="100"
+                                    <td><img src="{{ url($documentUser->nic_front) }}" width="100" height="100"
                                             class="img-fluid" alt=""></td>
                                     <td><img src="{{ asset($documentUser->nic_back) }}" width="100" height="100"
                                             class="img-fluid" alt=""></td>
