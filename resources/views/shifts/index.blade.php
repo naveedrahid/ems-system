@@ -43,6 +43,7 @@
                             </div>
                         </tbody>
                     </table>
+                    <ul id="pagination"></ul>
                 </div>
             </div>
         </div>
@@ -149,92 +150,38 @@
 </style>
 @endpush
 @push('js')
-<script>
-    $('a[data-type="add"]').click(function() {
-        $('#loadingSpinner2').show();
-        $('#formContainer').load("{{ route('shifts.create') }}", function() {
-            // $('#loadingSpinner2').hide();
-            $('#formContainer form').attr('id', 'addShift');
-        });
-    });
-
-    $('#shiftsData').on('click', '.edit-shift', function() {
-        const shiftId = $(this).data('id');
-        $('#loadingSpinner2').show();
-
-        $('#formContainer').load(`/shifts/${shiftId}/edit`, function(response, status,
-            xhr) {
-            if (status === "error") {
-                console.error('Error loading form:', xhr.statusText);
-                alert('An error occurred while loading the form. Please try again.');
-                $('#loadingSpinner').hide();
-                return;
-            }
-
-            $('#loadingSpinner2').hide();
-            $('#formContainer form').attr('id', 'updateShift');
-        });
-    });
-
+<script>    
     $(document).ready(function() {
+        loadForm('a[data-type="add"]', '#formContainer', '{{ route('shifts.create') }}', 'addShift');
+        loadForm('.edit-shift', '#formContainer', '/shifts/{id}/edit', 'updateShift');
 
-        const fetchShiftsData = async () => {
-            const url = "{{ route('shifts.data') }}";
-            $('#loadingSpinner').show();
+        function fetchShiftsData() {
+            const endPoint = "{{ route('shifts.data') }}";
+            const targetTable = $('#shiftsData');
+            const targetPagination = $('#pagination');
 
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
+            const htmlRowCallback = (shift) => `
+                                    <tr>
+                                        <td>${new Date(shift.created_at).toLocaleDateString()}</td>
+                                        <td>${shift.name}</td>
+                                        <td>${shift.opening}</td>
+                                        <td>${shift.closing}</td>
+                                        <td>
+                                            <div class="manage-process">
+                                                <a href="#" class="edit-shift edit-item" data-toggle="modal" data-target="#shiftModal" data-id="${shift.id}">
+                                                    <i class="fa fa-edit"></i> Edit
+                                                </a>
+                                                <a href="#">
+                                                    <div class="delete-item delete-shift" data-shift-id="${shift.id}" data-delete-route="/shifts/${shift.id}">
+                                                        <i class="far fa-trash-alt"></i> Delete
+                                                        </div>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>`;
 
-                if (!response.ok) {
-                    const errorMessage = await response.json();
-                    throw new Error(errorMessage.message || 'Error fetching data');
-                }
-
-                const data = await response.json();
-                const shiftsData = $('#shiftsData');
-                shiftsData.empty();
-
-                if (data.length === 0) {
-                    shiftsData.append(
-                        '<tr><td colspan="5" class="text-center">No record found</td></tr>'
-                    );
-                    $('#loadingSpinner').hide();
-                } else {
-                    $('#loadingSpinner').hide();
-                    $.each(data, function(_, shift) {
-                        const row = `<tr>
-                            <td>${new Date(shift.created_at).toLocaleDateString()}</td>
-                    <td>${shift.name}</td>
-                    <td>${shift.opening}</td>
-                    <td>${shift.closing}</td>
-                    <td>
-                        <div class="manage-process">
-                            <a href="#" class="edit-shift edit-item" data-toggle="modal" data-target="#shiftModal" data-id="${shift.id}">
-                                <i class="fa fa-edit"></i> Edit
-                            </a>
-                            <a href="#">
-                                <div class="delete-item delete-shift" data-shift-id="${shift.id}" data-delete-route="/shifts/${shift.id}">
-                                    <i class="far fa-trash-alt"></i> Delete
-                                    </div>
-                            </a>
-                        </div>
-                    </td>
-                </tr>`;
-                        shiftsData.append(row);
-                    });
-                }
-            } catch (error) {
-                $('#loadingSpinner').hide();
-                console.error('Error:', error);
-                const shiftsData = $('#shiftsData');
-                shiftsData.empty();
-                shiftsData.append(
-                    '<tr><td colspan="5" class="text-center">Error fetching data</td></tr>');
-            }
+            fetchDataGlobal(1, endPoint, targetTable, targetPagination, htmlRowCallback);
+            initializePaginationClickHandler(endPoint, targetTable, targetPagination, htmlRowCallback);
         }
         fetchShiftsData();
 

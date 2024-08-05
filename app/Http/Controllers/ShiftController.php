@@ -15,18 +15,12 @@ class ShiftController extends Controller
      */
     public function index()
     {
-        $shifts = Shift::all();
-        $shifts->transform(function ($shift) {
-            $shift->opening =  Carbon::parse($shift->opening)->format('g:i A');
-            $shift->closing =  Carbon::parse($shift->closing)->format('g:i A');
-            return $shift;
-        });
-        return view('shifts.index', compact('shifts'));
+        return view('shifts.index');
     }
 
     public function getShiftData()
     {
-        $shifts = Shift::all();
+        $shifts = Shift::orderBy('created_at', 'DESC')->paginate(10);
         if ($shifts->isEmpty()) {
             return response()->json(['message' => 'No shifts found'], 404);
         }

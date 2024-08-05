@@ -37,6 +37,13 @@
             border: none;
             padding: 0;
         }
+
+        .data-table ul#pagination {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            margin: 30px 0px;
+        }
     </style>
 </head>
 
@@ -395,12 +402,6 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
-                                        <a href="{{ route('shifts.create') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Add New Shifts</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a href="{{ route('shifts.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>View Shifts</p>
@@ -465,12 +466,6 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('notices.create') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Add New Notice</p>
-                                        </a>
-                                    </li>
                                     <li class="nav-item">
                                         <a href="{{ route('notices.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
@@ -835,6 +830,7 @@
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" crossorigin="anonymous"
         referrerpolicy="no-referrer"></script>
     <script src="{{ asset('admin/js/customAjax.js') }}"></script>
+
     <script>
         toastr.options = {
             "closeButton": false,
@@ -949,9 +945,6 @@
         // });
 
         $(document).ready(function() {
-
-
-
 
             $('#checkin').submit(function(e) {
                 e.preventDefault();
@@ -1083,6 +1076,84 @@
             });
         });
     </script>
+    <script>
+        function loadForm(anchorSelector, formContainerSelector, urlTemplate, formId) {
+            $(document).on('click', anchorSelector, function(e) {
+                e.preventDefault();
+
+                const url = urlTemplate ? urlTemplate.replace('{id}', $(this).data('id')) : $(this).attr('href');
+
+                showLoadingSpinner('#loadingSpinner2', true);
+
+                $(formContainerSelector).load(url, function() {
+                    $(formContainerSelector + ' form').attr('id', formId);
+                    showLoadingSpinner('#loadingSpinner2', false);
+                    $(formContainerSelector).trigger('form.loaded');
+                });
+            });
+        }
+
+        function showLoadingSpinner(spinnerSelector, show) {
+            $(spinnerSelector).toggle(show);
+        }
+
+        const fetchDataGlobal = async (page = 1, endPoint, targetTable, targetPagination, htmlRowCallback) => {
+            const url = `${endPoint}?page=${page}`;
+            showLoadingSpinner('#loadingSpinner', true);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                targetTable.empty();
+                targetPagination.empty();
+
+                if (Array.isArray(data.data) && data.data.length === 0) {
+                    showLoadingSpinner('#loadingSpinner', false);
+                    targetTable.append('<tr><td colspan="8" class="text-center">No record found</td></tr>');
+                } else {
+                    showLoadingSpinner('#loadingSpinner', false);
+
+                    data.data.forEach(item => {
+                        const htmlRow = htmlRowCallback(item);
+                        targetTable.append(htmlRow);
+                    });
+
+                    if (data.per_page < data.total) {
+                        if (Array.isArray(data.links)) {
+                            data.links.forEach(link => {
+                                const pageItem = link.url ?
+                                    `<li class="page-item ${link.active ? 'active' : ''}">
+                                        <a class="page-link ${link.active ? 'disabled' : ''}" href="#" data-page="${new URL(link.url).searchParams.get('page')}">${link.label}</a>
+                                    </li>` :
+                                    `<li class="page-item disabled">
+                                        <a class="page-link" href="#">${link.label}</a>
+                                    </li>`;
+                                targetPagination.append(pageItem);
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                showLoadingSpinner('#loadingSpinner', false);
+                console.error('Error:', error);
+            }
+        };
+
+        const initializePaginationClickHandler = (endPoint, targetTable, targetPagination, htmlRowCallback) => {
+            $(document).off('click', '.page-link');
+            $(document).on('click', '.page-link', function(e) {
+                e.preventDefault();
+                if ($(this).hasClass('disabled')) {
+                    return;
+                }
+                const page = $(this).data('page');
+                if (page) {
+                    fetchDataGlobal(page, endPoint, targetTable, targetPagination, htmlRowCallback);
+                }
+            });
+        };
+    </script>
+
     @stack('js')
 </body>
 

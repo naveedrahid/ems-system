@@ -74,7 +74,7 @@
                         <div class="col-md-2 col-12">
                             <div class="mb-3 form-group">
                                 {!! Form::label('title', 'Branch Code') !!}
-                                {!! Form::text('branch_code', null, ['class' => 'form-control']) !!}
+                                {!! Form::number('branch_code', null, ['class' => 'form-control']) !!}
                                 <div id="branch_codeError" class="text-danger"></div>
                             </div>
                         </div>
@@ -203,6 +203,9 @@
             if (account_number === '') {
                 toastr.error('Account number is required.');
                 hasError = true;
+            }else if (!/^\d+$/.test(account_number)){
+                toastr.error('Account number should contain only numbers.');
+                hasError = true;
             }
             if (ibn === '') {
                 toastr.error('IBN is required.');
@@ -210,6 +213,9 @@
             }
             if (branch_code === '') {
                 toastr.error('Branch Code is required.');
+                hasError = true;
+            }else if (!/^\d+$/.test(branch_code)){
+                toastr.error('Branch code should contain only numbers.');
                 hasError = true;
             }
             if (branch_address === '') {
@@ -251,7 +257,7 @@
                 })
                 .fail(function(xhr) {
                     console.error(xhr);
-                    toastr.error(xhr.responseJSON.message);
+                    toastr.error(xhr.message);
                 })
                 .always(function() {
                     submitButton.prop('disabled', false);

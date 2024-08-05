@@ -16,13 +16,12 @@ class DesignationController extends Controller
      */
     public function index()
     {
-        $designations = Designation::with('department')->paginate(10);
-        return view('designation.index', compact('designations'));
+        return view('designation.index');
     }
 
     public function getData()
     {
-        $designation = Designation::with('department')->paginate(10);
+        $designation = Designation::with('department')->orderBy('id', 'desc')->paginate(10);
         return response()->json($designation);
     }
 

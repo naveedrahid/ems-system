@@ -72,7 +72,7 @@ class BankDetailController extends Controller
             'account_title' => 'required',
             'account_number' => 'required|numeric',
             'ibn' => 'required',
-            'branch_code' => 'required',
+            'branch_code' => 'required|numeric',
             'branch_address' => 'required',
             'status' => 'required|in:active,deactive',
         ]);

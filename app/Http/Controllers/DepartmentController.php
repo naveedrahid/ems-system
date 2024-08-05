@@ -14,23 +14,23 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::all();
+        // $departments = Department::all();
 
-        // Variables for creating a new department
-        $newDepartment = new Department();
-        $createFormMethod = 'POST';
-        $createRoute = route('department.store');
+        // // Variables for creating a new department
+        // $newDepartment = new Department();
+        // $createFormMethod = 'POST';
+        // $createRoute = route('department.store');
     
-        $editDepartment = null;
-        $editFormMethod = 'PUT';
-        $editRoute = '';
+        // $editDepartment = null;
+        // $editFormMethod = 'PUT';
+        // $editRoute = '';
     
-        return view('department.index', compact('departments', 'newDepartment', 'createFormMethod', 'createRoute', 'editDepartment', 'editFormMethod', 'editRoute'));
+        return view('department.index');
     }
 
     public function getData()
     {
-        $departments = Department::all();
+        $departments = Department::orderBy('created_at', 'DESC')->paginate(10);
         return response()->json($departments);
     }
 

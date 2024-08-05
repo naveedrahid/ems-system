@@ -45,6 +45,7 @@
                             </div>
                         </tbody>
                     </table>
+                    <ul id="pagination"></ul>
                 </div>
             </div>
         </div>
@@ -64,11 +65,6 @@
                         <i class="fas fa-spinner fa-spin fa-3x"></i>
                     </div>
                     <div id="formContainer">
-                        @include('department.form', [
-                            'department' => $editDepartment ?? $newDepartment,
-                            'formMethod' => $editDepartment ? $editFormMethod : $createFormMethod,
-                            'route' => $editDepartment ? $editRoute : $createRoute,
-                        ])
                     </div>
                 </div>
             </div>
@@ -159,41 +155,15 @@
 @push('js')
 <script>
     $(document).ready(function() {
-        $('a[data-type="add"]').click(function() {
-            $('#loadingSpinner').show();
-            $('#formContainer').load("{{ route('department.create') }}", function() {
-                $('#loadingSpinner').hide();
-                $('#formContainer form').attr('id', 'departmentData');
-            });
-        });
+        loadForm('a[data-type="add"]', '#formContainer', '{{ route('department.create') }}', 'departmentData');
+        loadForm('.edit-department', '#formContainer', '/department/{id}/edit', 'departmentDataUpdate');
 
-        $('#departmentTable').on('click', '.edit-department', function() {
-            const departmentId = $(this).data('id');
-            $('#loadingSpinner').show();
+        function fetchDepartmentData() {
+            const endPoint = "{{ route('department.data') }}";
+            const targetTable = $('#departments-body');
+            const targetPagination = $('#pagination');
 
-            $('#formContainer').load("/department/" + departmentId + "/edit", function() {
-                $('#loadingSpinner').hide();
-                $('#formContainer form').attr('id', 'departmentDataUpdate');
-            });
-        });
-
-        const fetchDepartmentData = async () => {
-            const url = "{{ route('department.data') }}";
-            $('#loadingSpinner2').show();
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const tableData = $('#departments-body');
-                tableData.empty();
-
-                if (data.length === 0) {
-                    $('#loadingSpinner2').hide();
-                    tableData.append(
-                        '<tr><td colspan="3" class="text-center">No record found</td></tr>');
-                } else {
-                    $('#loadingSpinner2').hide();
-                    $.each(data, function(_, department) {
-                        const row = `
+            const htmlRowCallback = (department) => `
                     <tr>
                         <td>${new Date(department.created_at).toLocaleDateString()}</td>
                         <td>${department.department_name}</td>
@@ -201,8 +171,7 @@
                             <div class="manage-process">
                                 <a href="#" class="edit-department edit-item"
                                     data-toggle="modal" data-target="#selectedNotes"
-                                    data-id="${department.id}"><i class="fa fa-edit"></i> edit
-                                </a>
+                                    data-id="${department.id}"><i class="fa fa-edit"></i> Edit</a>
                                 <a href="#">
                                     <div class="delete-item delete-department"
                                         data-department-id="${department.id}"
@@ -213,15 +182,9 @@
                             </div>
                         </td>
                     </tr>`;
-                        tableData.append(row);
-                    });
-                }
-
-            } catch (error) {
-                $('#loadingSpinner2').hide();
-                console.error('Error:', error);
-            }
-        };
+            fetchDataGlobal(1, endPoint, targetTable, targetPagination, htmlRowCallback);
+            initializePaginationClickHandler(endPoint, targetTable, targetPagination, htmlRowCallback);
+        }
         fetchDepartmentData();
 
         $(document).on('click', '.delete-department', function(e) {
@@ -291,7 +254,6 @@
                     }
                 })
                 .then(function(response) {
-                    console.log(response);
                     toastr.success(response.message);
                     button.prop('disabled', false);
                     if ($(e.target).attr('id') === 'departmentData') {

@@ -99,10 +99,12 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     Route::resource('awards', AwardController::class)->except(['show']);
 
     Route::resource('holidays', HolidayController::class)->except(['index', 'show']);
+    Route::get('/holidays/data/set', [HolidayController::class, 'getData'])->name('holidays.data');
     Route::put('/holidays-status/{holiday}', [HolidayController::class, 'updateStatus'])->name('holidays.status');
 
     Route::resource('notices', NoticeController::class)->except(['index', 'show']);
     Route::put('/notices/notices-status/{id}', [NoticeController::class, 'updateStatus'])->name('notices.status');
+    Route::get('/notices/data/set', [NoticeController::class, 'getData'])->name('notices.data');
 
     Route::resource('documents', DocumentUserController::class)->except(['show']);
     Route::post('/documents/upload', [DocumentUserController::class, 'upload'])->name('documents.upload');

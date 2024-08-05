@@ -15,8 +15,13 @@ class NoticeController extends Controller
      */
     public function index()
     {
-        $notices = Notice::with('department')->get();
-        return view('notices.index', compact('notices'));
+        return view('notices.index');
+    }
+
+    public function getData()
+    {
+        $notices = Notice::with('department')->orderBy('created_at', 'DESC')->paginate(5);
+        return response()->json($notices);    
     }
 
     /**

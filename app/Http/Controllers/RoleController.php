@@ -21,7 +21,7 @@ class RoleController extends Controller
 
     public function roleFetchData()
     {
-        $roles = Role::get();
+        $roles = Role::orderBy('created_at', 'DESC')->paginate(5);
         return response()->json($roles);
     }
 

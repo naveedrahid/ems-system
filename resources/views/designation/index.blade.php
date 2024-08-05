@@ -159,116 +159,46 @@
 @push('js')
 <script>
     $(document).ready(function() {
+        loadForm('a[data-type="add"]', '#formContainer', '{{ route('designation.create') }}',
+            'designationData');
+        loadForm('.edit-designation', '#formContainer', '/designation/{id}/edit', 'designationDataUpdate');
 
-        $('a[data-type="add"]').click(function() {
-            $('#loadingSpinner2').show();
-            $('#formContainer').load("{{ route('designation.create') }}", function() {
-                $('#loadingSpinner2').hide();
-                $('#formContainer form').attr('id', 'designationData');
-            });
-        });
-
-        $('#designations-body').on('click', '.edit-designation', function() {
-            const designationId = $(this).data('id');
-            $('#loadingSpinner2').show();
-
-            $('#formContainer').load(`/designation/${designationId}/edit`, function(response, status,
-                xhr) {
-                if (status === "error") {
-                    console.error('Error loading form:', xhr.statusText);
-                    alert('An error occurred while loading the form. Please try again.');
-                    $('#loadingSpinner').hide();
-                    return;
-                }
-
-                $('#loadingSpinner2').hide();
-                $('#formContainer form').attr('id', 'designationDataUpdate');
-            });
-        });
-
-
-        const fetchDesignationData = async (page = 1) => {
-            const url = `{{ route('designation.data') }}?page=${page}`;
-            $('#loadingSpinner').show();
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const tableData = $('#designations-body');
-                const pagination = $('#pagination');
-
-                tableData.empty();
-                pagination.empty();
-
-                if (data.data.length === 0) {
-                    $('#loadingSpinner').hide();
-                    tableData.append(
-                        '<tr><td colspan="8" class="text-center">No record found</td></tr>'
-                    );
-                } else {
-                    $('#loadingSpinner').hide();
-                    data.data.forEach(designation => {
-                        const row = `
-                        <tr>
-                            <td>${new Date(designation.created_at).toLocaleDateString()}</td>
-                            <td>${designation.designation_name}</td>
-                            <td>${designation.department ? designation.department.department_name : 'N/A'}</td>
-                            <td>
-                                <div class="manage-process">
-                                    <a style="width:70px;text-align:right;" href="#"
-                                        class="designation-toggle" data-id="${designation.id}"
-                                        data-status="${designation.status}">
-                                        <span
-                                            class="badges ${designation.status === 'active' ? 'active-badge' : designation.status === 'deactive' ? 'deactive-badge' : 'active-badge'}">
-                                            ${designation.status}
-                                        </span>
-                                    </a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="manage-process">
-                                    <a href="#" class="edit-designation edit-item" data-toggle="modal" data-target="#selectedNotes" data-id="${designation.id}"><i class="fa fa-edit"></i> Edit</a>
-                                    <a href="#">
-                                        <div class="delete-item delete-designation"
-                                            data-designation-id="${designation.id}"
-                                            data-delete-route="/designation/${designation.id}">
-                                            <i class="far fa-trash-alt"></i> Delete
-                                        </div>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>`;
-                        tableData.append(row);
-                    });
-
-                    if (data.per_page <= data.total) {
-                        if (data.links) {
-                            data.links.forEach(link => {
-                                const pageItem = link.url ?
-                                    `<li class="page-item ${link.active ? 'active' : ''}">
-                                        <a class="page-link" href="#" data-page="${link.url ? new URL(link.url).searchParams.get('page') : ''}">${link.label}</a>
-                                   </li>` :
-                                    `<li class="page-item disabled">
-                                        <a class="page-link" href="#">${link.label}</a>
-                                   </li>`;
-                                pagination.append(pageItem);
-                            });
-                        }
-                    }
-                }
-            } catch (error) {
-                $('#loadingSpinner').hide();
-                console.error('Error:', error);
-            }
-        };
-
-        $(document).on('click', '.page-link', function(e) {
-            e.preventDefault();
-            const page = $(this).data('page');
-            if (page) {
-                fetchDesignationData(page);
-            }
-        });
-
+        function fetchDesignationData(){
+            const endPoint = "{{ route('designation.data') }}";
+            const targetTable = $('#designations-body');
+            const targetPagination = $('#pagination');
+    
+            const htmlRowCallback = (designation) => `
+                                                    <tr>
+                                                        <td>${new Date(designation.created_at).toLocaleDateString()}</td>
+                                                        <td>${designation.designation_name}</td>
+                                                        <td>${designation.department ? designation.department.department_name : 'N/A'}</td>
+                                                        <td>
+                                                            <div class="manage-process">
+                                                                <a style="width:70px;text-align:right;" href="#"
+                                                                    class="designation-toggle" data-id="${designation.id}"
+                                                                    data-status="${designation.status}">
+                                                                    <span class="badges ${designation.status === 'active' ? 'active-badge' : designation.status === 'deactive' ? 'deactive-badge' : 'active-badge'}">
+                                                                        ${designation.status}
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="manage-process">
+                                                                <a href="#" class="edit-designation edit-item" data-toggle="modal" data-target="#selectedNotes" data-id="${designation.id}"><i class="fa fa-edit"></i> Edit</a>
+                                                                <a href="#">
+                                                                    <div class="delete-item delete-designation" data-designation-id="${designation.id}" data-delete-route="/designation/${designation.id}">
+                                                                        <i class="far fa-trash-alt"></i> Delete
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>`;
+    
+            fetchDataGlobal(1, endPoint, targetTable, targetPagination, htmlRowCallback);
+            initializePaginationClickHandler(endPoint, targetTable, targetPagination, htmlRowCallback);
+        }
         fetchDesignationData();
 
         $(document).on('click', '.delete-designation', function(e) {

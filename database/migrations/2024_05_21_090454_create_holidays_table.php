@@ -19,7 +19,7 @@ class CreateHolidaysTable extends Migration
             $table->text('description', 255)->nullable();
             $table->string('date');
             $table->enum('holiday_type', ['National Holidays', 'Religious']);
-            $table->string('status')->default('deactivate');
+            $table->string('status')->default('deactive');
             $table->timestamps();
         });
     }

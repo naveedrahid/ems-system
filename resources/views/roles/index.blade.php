@@ -41,6 +41,7 @@
                             </div>
                         </tbody>
                     </table>
+                    <ul id="pagination"></ul>
                 </div>
             </div>
         </div>
@@ -153,82 +154,38 @@
 @push('js')
 <script>
     $(document).ready(function() {
+        loadForm('a[data-type="add"]', '#formContainer', '{{ route('roles.create') }}', 'addRoleForm');
+        loadForm('.edit-role', '#formContainer', '/roles/{id}/edit', 'editRoleForm');
 
-        $('a[data-type="add"]').click(function(e) {
-            e.preventDefault();
-            $('#loadingSpinner2').show();
-            $('#formContainer').load("{{ route('roles.create') }}", function() {
-                $('#formContainer form').attr('id', 'addRoleForm');
-                $('#loadingSpinner2').hide();
-            });
-        });
-        $('#roleTableData').on('click', '.edit-role', function(e) {
-            e.preventDefault();
+        function fetchRolesData(){
+            const endPoint = "{{ route('roles.data') }}";
+            const targetTable = $('#roleTableData');
+            const targetPagination = $('#pagination');
 
-            const roleId = $(this).data('id');
+            const htmlRowCallback = (role) => `
+                                    <tr>
+                                        <td>${new Date(role.created_at).toLocaleDateString()}</td>
+                                        <td>${role.name}</td>
+                                        <td>
+                                            <div class="manage-process">
+                                                <a href="#" class="edit-role edit-item"
+                                                    data-toggle="modal" data-target="#roleModal"
+                                                    data-id="${role.id}"><i class="fa fa-edit"></i> edit
+                                                </a>
+                                                <a href="#">
+                                                    <div class="delete-item delete-role"
+                                                        data-role-id="${role.id}"
+                                                        data-delete-route="/roles/${role.id}">
+                                                        <i class="far fa-trash-alt"></i> Delete
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>`;
 
-            $('#loadingSpinner2').show();
-            $('#formContainer').load(`/roles/${roleId}/edit`, function() {
-                $('#formContainer form').attr('id', 'editRoleForm');
-                $('#loadingSpinner2').hide();
-            });
-        });
-
-        const fetchRolesData = async () => {
-            const url = "{{ route('roles.data') }}";
-            $('#loadingSpinner2').show();
-
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-
-                const roleTableData = $('#roleTableData');
-                roleTableData.empty();
-
-                if (!response.ok) {
-                    throw new Error("Network response was not ok" + response.statusText);
-                    $('#loadingSpinner2').hide();
-                }
-
-                const data = await response.json();
-
-                if (data.length === 0) {
-                    roleTableData.append(
-                        '<tr><td colspan="3" class="text-center">No record found</td></tr>');
-                    $('#loadingSpinner2').hide();
-                } else {
-                    $.each(data, function(data, role) {
-                        const row = `<tr>
-                                    <td>${new Date(role.created_at).toLocaleDateString()}</td>
-                                    <td>${role.name}</td>
-                                    <td>
-                                        <div class="manage-process">
-                                            <a href="#" class="edit-role edit-item"
-                                                data-toggle="modal" data-target="#roleModal"
-                                                data-id="${role.id}"><i class="fa fa-edit"></i> edit
-                                            </a>
-                                            <a href="#">
-                                                <div class="delete-item delete-role"
-                                                    data-role-id="${role.id}"
-                                                    data-delete-route="/roles/${role.id}">
-                                                    <i class="far fa-trash-alt"></i> Delete
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>`;
-                        roleTableData.append(row);
-                        $('#loadingSpinner2').hide();
-                    });
-                }
-            } catch (error) {
-                console.log(error);
-                $('#loadingSpinner2').hide();
-            }
-        };
+            fetchDataGlobal(1, endPoint, targetTable, targetPagination, htmlRowCallback);
+            initializePaginationClickHandler(endPoint, targetTable, targetPagination, htmlRowCallback);
+        }
 
         fetchRolesData();
 

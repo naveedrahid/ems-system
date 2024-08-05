@@ -14,8 +14,13 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        $holidays = Holiday::orderBy('id', 'DESC')->get();
-        return view('holidays.index', compact('holidays'));
+        return view('holidays.index');
+    }
+
+    public function getData()
+    {
+        $holidays = Holiday::orderBy('id', 'DESC')->paginate(5);
+        return response()->json($holidays);
     }
     
     /**
@@ -48,7 +53,7 @@ class HolidayController extends Controller
         ]);
 
         Holiday::create($validate);
-        return response()->json(['message' => 'Holiday Created Successfully']);
+        return response()->json(['message' => 'Holiday Created Successfully'], 200);
     }
 
     /**
