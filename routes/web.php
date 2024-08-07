@@ -26,6 +26,7 @@ use App\Http\Controllers\TimeLogController;
 use App\Models\JobModels\ScheduleInterview;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 Auth::routes(['register' => true]);
 
@@ -35,6 +36,11 @@ Route::get('/', function () {
 
 Route::fallback(function () {
     return redirect('/login');
+});
+
+Route::get('/optimize-clear', function() {
+    Artisan::call('optimize:clear');
+    return response()->json(['message' => 'Cache cleared successfully']);
 });
 
 Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function () {
