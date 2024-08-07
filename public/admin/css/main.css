@@ -295,7 +295,17 @@ ul.pagination {
 body#asdasd p, body#asdasd span, body#asdasd td, body#asdasd th, body#asdasd div, body#asdasd li, body#asdasd li a {
     font-size: 13px;
 }
+.content-wrapper .card-body label {
+    font-weight: 400;
+    font-size: 15px;
+}
 
+.content-wrapper .card-body select .select2-selection, .content-wrapper .card-body select, .content-wrapper .card-body input{
+    height: calc(2.25rem) !important;
+    border-radius: 10px !important;
+    text-indent: 10px;
+    padding-left: 0;
+}
 
 
 
