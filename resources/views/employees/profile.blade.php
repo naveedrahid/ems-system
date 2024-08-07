@@ -355,8 +355,8 @@
     }
 
     .profile-img img#profileImage {
-        min-width: 100px;
-        min-height: 100px;
+        width: 100px;
+        height: 100px;
         object-fit: cover;
         background-position: center center;
     }
