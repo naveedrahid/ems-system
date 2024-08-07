@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
     });
 
 
+    Route::get('/dashboard/notification', [HomeController::class, 'notification'])->name('dashboard.notification');
 
 
     // Route::get('/admin', [HomeController::class, 'dashboard'])->name('home');
@@ -123,6 +124,7 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
         'show',
     ]);
 
+    Route::put('/employees/image/set', [EmployeeController::class, 'updateImage'])->name('employees.image');
     Route::put('/employees-status/{id}', [EmployeeController::class, 'updateStatus'])->name('employees.status');
     Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 

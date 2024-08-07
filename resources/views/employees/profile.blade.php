@@ -6,15 +6,26 @@
 @section('page-content')
     <div class="card-body profile-box">
         <div class="btnGroup mb-4">
-            <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary mr-5">Add Bank Detail</a>
-            <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-primary">Documnet user</a>
+            <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary mr-5">Add
+                Bank Detail</a>
+            <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-primary">Documnet
+                user</a>
         </div>
         <div class="row ">
             <div class="col-md-5">
                 <div class="card small-box">
                     <div class="row align-items-center ">
                         <div class="col-md-5 profile-img bg-primary p-5">
+                            <div id="loadingSpinner" style="display: none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            </div>
                             <div class="text-center bg-primary">
+                                @auth
+                                    <i class="far fa-edit" id="edit-icon">
+                                        <input type="file" name="employee_img" id="employee_img">
+                                    </i>
+                                @endauth
+
                                 <div class="image d-block">
                                     @php
                                         $user = auth()->user();
@@ -27,14 +38,14 @@
                                             class="img-circle" alt="User Image">
                                     @elseif($employee->employee->employee_img)
                                         <img src="{{ asset('upload/' . $employee->employee->employee_img) }}"
-                                            style="width: 100%;" class="img-circle" alt="User Image">
+                                            style="width: 100%;" class="img-circle" id="profileImage" alt="User Image">
                                     @endif
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-7 p-0">
                             <div class="info text-center">
-                                <h4 class="text-bold">{{$employee->name}}</h4>
+                                <h4 class="text-bold">{{ $employee->name }}</h4>
                                 <span>{{ $employee->employee->department->department_name ?? '-' }}</span><br>
                                 <span>{{ $employee->employee->designation->designation_name ?? '-' }}</span>
                             </div>
@@ -52,23 +63,23 @@
                                 <tbody class="menual-update-1">
                                     <tr>
                                         <td class="text-bold">Name</td>
-                                        <td>{{$employee->name ?? '-'}}</td>
+                                        <td>{{ $employee->name ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Phone</td>
-                                        <td>{{$employee->employee->phone_number ?? '-'}}</td>
+                                        <td>{{ $employee->employee->phone_number ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Email Address</td>
-                                        <td>{{$employee->email ?? '-'}}</td>
+                                        <td>{{ $employee->email ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Country</td>
-                                        <td>{{$employee->employee->country ?? ''}}</td>
+                                        <td>{{ $employee->employee->country ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">City</td>
-                                        <td>{{$employee->employee->city ?? ''}}</td>
+                                        <td>{{ $employee->employee->city ?? '' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -84,11 +95,11 @@
                                 <tbody class="menual-update-1">
                                     <tr>
                                         <td class="text-bold">Date of birth</td>
-                                        <td>{{$employee->employee->date_of_birth ?? '-'}}</td>
+                                        <td>{{ $employee->employee->date_of_birth ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Gender</td>
-                                        <td>{{$employee->employee->gender ?? '-'}}</td>
+                                        <td>{{ $employee->employee->gender ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Martial Status</td>
@@ -100,11 +111,11 @@
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Work in City</td>
-                                        <td>{{$employee->employee->city ?? '-'}}</td>
+                                        <td>{{ $employee->employee->city ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">City of Residence</td>
-                                        <td>{{$employee->employee->address ?? '-'}}</td>
+                                        <td>{{ $employee->employee->address ?? '-' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -123,23 +134,23 @@
                                 <tbody class="menual-update-1">
                                     <tr>
                                         <td class="text-bold">Sub Department</td>
-                                        <td>{{$employee->employee->department->department_name ?? '' }}</td>
+                                        <td>{{ $employee->employee->department->department_name ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Position</td>
-                                        <td>{{$employee->employee->designation->designation_name ?? ''}} </td>
+                                        <td>{{ $employee->employee->designation->designation_name ?? '' }} </td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Duty Type</td>
-                                        <td>{{$employee->job_type ?? ''}} </td>
+                                        <td>{{ $employee->job_type ?? '' }} </td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Hire Date</td>
-                                        <td>{{$employee->employee->joining_date ?? ''}} </td>
+                                        <td>{{ $employee->employee->joining_date ?? '' }} </td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Work Type</td>
-                                        <td>{{$employee->work_type ?? ''}}</td>
+                                        <td>{{ $employee->work_type ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Employee Type</td>
@@ -176,11 +187,11 @@
                                 <tbody class="menual-update-1">
                                     <tr>
                                         <td class="text-bold">Emergency Contact</td>
-                                        <td>{{$employee->employee->emergency_phone_number ?? '' }}</td>
+                                        <td>{{ $employee->employee->emergency_phone_number ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Emergency Contact Person Name</td>
-                                        <td>{{$employee->employee->emergency_person_name ?? '' }}</td>
+                                        <td>{{ $employee->employee->emergency_person_name ?? '' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="text-bold">Emergency Home Phone</td>
@@ -208,7 +219,8 @@
                                     <label for="new_password">New Password</label>
                                     <input type="password" name="new_password" id="new_password" class="form-control">
                                     <small>
-                                        Password must contain at least one special character, Uppercase & two numbers (@, #, !).<br>
+                                        Password must contain at least one special character, Uppercase & two numbers (@, #,
+                                        !).<br>
                                         <strong>Example:</strong> Password99@
                                     </small>
                                 </div>
@@ -216,8 +228,8 @@
                             <div class="col-md-6 col-lg-6 col-12">
                                 <div class="form-group">
                                     <label for="new_password_confirmation">Confirm New Password</label>
-                                    <input type="password" name="new_password_confirmation" id="new_password_confirmation"
-                                        class="form-control">
+                                    <input type="password" name="new_password_confirmation"
+                                        id="new_password_confirmation" class="form-control">
                                     <span id="password-match-message" class="text-danger"></span>
                                 </div>
                             </div>
@@ -238,7 +250,7 @@
 
     {{-- <div class="container">
         <div class="row"> --}}
-            {{-- <div class="col-md-6">
+    {{-- <div class="col-md-6">
                 <div class="personalInfo">
                     <h3>Employee Personal Info</h3>
                     <p><strong>Name:</strong> {{ $employee->name ?? '' }}</p>
@@ -249,7 +261,7 @@
                     <p><strong>Emergency Contact Name:</strong> {{ $employee->employee->emergency_person_name ?? '' }}</p>
                 </div>
             </div> --}}
-            {{-- <div class="col-md-6">
+    {{-- <div class="col-md-6">
                 <div class="employeeDetail">
                     <h3>Employee Details</h3>
                     <p><strong>Joining Date:</strong> {{ $employee->employee->joining_date ?? '' }}</p>
@@ -263,7 +275,7 @@
                     <p><strong>Shift:</strong> {{ $employee->employee->shift->name ?? '' }}</p>
                 </div>
             </div> --}}
-            {{-- <div class="col-md-6">
+    {{-- <div class="col-md-6">
                 <div class="bankDetails">
                     <h3>Employee Bank Details</h3>
                     @if ($employee->employee && $employee->employee->bank->isNotEmpty())
@@ -278,13 +290,78 @@
                     @endif
                 </div>
             </div> --}}
-            {{-- <div class="col-md-6">
+    {{-- <div class="col-md-6">
                 
             </div>
         </div>
     </div> --}}
 @endsection
 @endsection
+
+@push('css')
+<style>
+    div#loadingSpinner {
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        z-index: 99;
+        background: #00000036;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    div#loadingSpinner i {
+        color: #fff !important;
+    }
+
+    .profile-img i.fa-edit {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    .profile-img i img {
+        display: inline;
+        font-size: 0;
+    }
+
+    .profile-img i input[type="file"] {
+        display: inline;
+        font-size: 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: transparent;
+        background: transparent;
+        outline: none;
+        border: none;
+        width: 30px;
+        height: 30px;
+        opacity: 0;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .profile-img {
+        position: relative;
+    }
+
+    .profile-img img#profileImage {
+        min-width: 100px;
+        min-height: 100px;
+        object-fit: cover;
+        background-position: center center;
+    }
+</style>
+@endpush
 @push('js')
 <script>
     $(document).ready(function() {
@@ -394,6 +471,51 @@
                     button.prop('disabled', false);
                 });
         });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#employee_img').on('change', function(e) {
+            const file = e.target.files[0];
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+            const maxSize = 1 * 1024 * 1024; // 1 MB
+
+            if (!allowedTypes.includes(file.type)) {
+                toastr.error('Only PNG, JPEG, JPG, and WEBP formats are allowed.');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                toastr.error('File size must be less than 1 MB.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('employee_img', file);
+            formData.append('_method', 'PUT');
+            formData.append('_token', '{{ csrf_token() }}');
+
+            $('#loadingSpinner').show();
+
+            $.ajax({
+                method: 'POST',
+                url: "{{ route('employees.image') }}",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    toastr.success(response.message);
+                    $('#profileImage').attr('src', '/upload/' + response.image);
+                    $('#loadingSpinner').hide();
+                },
+                error: function(response) {
+                    toastr.error('An error occurred while updating the profile image.');
+                    $('#loadingSpinner').hide();
+                }
+            });
+        });
+
     });
 </script>
 @endpush

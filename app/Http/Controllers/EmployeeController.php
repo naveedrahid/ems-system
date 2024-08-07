@@ -360,4 +360,33 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'Employee not found'], 404);
     }
+
+    public function updateImage(Request $request)
+    {
+        $request->validate([
+            'employee_img' => 'required|file|mimes:png,jpeg,jpg,webp|max:1024',
+        ]);
+
+        $user = auth()->user();
+        $employee = Employee::where('user_id', $user->id)->first();
+    
+        if ($request->hasFile('employee_img')) {
+            if ($employee->employee_img) {
+                $imagePath = public_path('upload') . '/' . $employee->employee_img;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+            $imageName = time() . '.' . $request->file('employee_img')->getClientOriginalExtension();
+            $request->file('employee_img')->move(public_path('upload'), $imageName);
+            $employee->employee_img = $imageName;
+            $employee->save();
+    
+            return response()->json(['image' => $imageName, 'message' => 'Profile image updated successfully!'], 200);
+        }
+    
+        return response()->json(['message' => 'No image uploaded.'], 400);
+    }
+    
+    
 }

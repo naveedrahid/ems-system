@@ -72,10 +72,10 @@
                                     </div>
                                 </div>
                             </div>
+                            @if (isAdmin($user))
                             <div class="col-md-6 col-12">
                                 <div class="mb-3 form-group">
                                     {!! Form::label('title', 'Leave Status') !!}
-                                    @if (isAdmin($user))
                                         {!! Form::select(
                                             'status',
                                             ['' => 'Select Leave Status'] + \App\Models\LeaveApplication::getStatusOptions(),
@@ -84,9 +84,9 @@
                                                 'class' => 'form-control form-select select2',
                                             ],
                                         ) !!}
-                                    @endif
                                 </div>
                             </div>
+                            @endif
                             <div class="col-md-12 col-12">
                                 <div class="mb-3 form-group">
                                     {!! Form::label('title', 'Reason') !!}

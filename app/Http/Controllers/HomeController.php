@@ -88,7 +88,7 @@ class HomeController extends Controller
         $notices = Notice::where('status', 'active')->orderBy('id', 'ASC')->take(10)->get();
 
         $attendanceCount = Attendance::whereDate('attendance_date', now()->toDateString())->select('status', 'check_in');
-            
+
         return view('dashboard', compact(
             'designation',
             'departmentName',
@@ -115,5 +115,15 @@ class HomeController extends Controller
     {
         Auth::logout();
         return redirect()->route('login');
+    }
+
+    public function notification()
+    {
+        $dataNow = date('Y-m-d');
+        $leaveApplications = LeaveApplication::whereDate('created_at', $dataNow)->get();
+        $users = User::whereIn('id', $leaveApplications->pluck('user_id'))->get();
+        // $userByLeave = $user->where('id', $leaveApplications->user_id);
+        dd($users);
+        // return response()->json($leaveApplications);
     }
 }
