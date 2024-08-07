@@ -124,7 +124,6 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
         'show',
     ]);
 
-    Route::put('/employees/image/set', [EmployeeController::class, 'updateImage'])->name('employees.image');
     Route::put('/employees-status/{id}', [EmployeeController::class, 'updateStatus'])->name('employees.status');
     Route::get('/get-designations/{departmentId}', [EmployeeController::class, 'getDesignations']);
 
@@ -148,6 +147,7 @@ Route::middleware(['auth', 'role:0,1,2', 'check.user.status'])->group(function (
 });
 
 Route::middleware(['auth', 'check.user.status'])->group(function () {
+    Route::put('/employees/image/set', [EmployeeController::class, 'updateImage'])->name('employees.image');
     Route::resource('time-logs', TimeLogController::class)->except(['edit', 'update', 'show', 'store', 'create']);
     Route::post('/start-time', [TimeLogController::class, 'startTime'])->name('start.time');
     Route::put('/end-time/{time_log}', [TimeLogController::class, 'endTimeTracker'])->name('end.time');
