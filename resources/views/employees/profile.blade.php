@@ -4,13 +4,18 @@
     Profile Detail
 @endsection
 @section('page-content')
+    @php
+        $user = auth()->user();
+    @endphp
     <div class="card-body profile-box">
-        <div class="btnGroup mb-4">
-            <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary mr-5">Add
-                Bank Detail</a>
-            <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-primary">Documnet
-                user</a>
-        </div>
+        @if (isAdmin($user))
+            <div class="btnGroup mb-4">
+                <a href="{{ route('bank-details.create', ['employee_id' => $employee->id]) }}" class="btn btn-primary mr-5">Add
+                    Bank Detail</a>
+                <a href="{{ route('documents.create', ['document_user' => $employee->id]) }}" class="btn btn-primary">Documnet
+                    user</a>
+            </div>
+        @endif
         <div class="row ">
             <div class="col-md-5">
                 <div class="card small-box">
@@ -27,9 +32,6 @@
                                 @endauth
 
                                 <div class="image d-block">
-                                    @php
-                                        $user = auth()->user();
-                                    @endphp
                                     @if (!$employee->employee->employee_img && $employee->employee->gender === 'male')
                                         <img src="{{ asset('admin/images/male.jpg') }}" style="width: 100%;"
                                             class="img-circle" alt="User Image">
